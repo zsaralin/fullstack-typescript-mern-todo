@@ -35,7 +35,7 @@ const useKeyPress = function(targetKey: string) {
 const App: React.FC = () => {
 
     const [todos, setTodos] = useState<ITodo[]>([]);
-    const [selected, setSelected] =  useState<ITodo>();
+    const [, setSelected] =  useState<ITodo>();
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
     const [cursor, setCursor] = useState<number>(-1);
@@ -107,7 +107,6 @@ const App: React.FC = () => {
         return (
             <DragDropContext onDragEnd={onDragEnd}>
             <main className='App'>
-                <span>Selected: {selected ? selected.name : "none"}</span>
                 <Droppable droppableId='col-1' isDropDisabled={false}>
                     {provided => (
                 <ul className="characters" {...provided.droppableProps} ref={provided.innerRef}>
@@ -124,7 +123,8 @@ const App: React.FC = () => {
                 </ul> )}
                 </Droppable>
 
-                <BonusItem/>
+                <BonusItem
+ />
             </main>
             </DragDropContext>
         )

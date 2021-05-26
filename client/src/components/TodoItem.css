@@ -2,7 +2,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 55%) right;
     background-size: 215%;
     flex-grow: 1;
     margin-bottom: 5px;
@@ -34,15 +33,15 @@
 }
 
 .Card--text {
+    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 55%) right;
     display: flex;
     background-size: 215%;
+    /*transition-duration: 10s;*/
     flex-grow: 1;
 }
 
-.Card--text true{
-    padding: .5em .8em .5em .5em;
-    font-weight: bold;
-    background: rgba(240, 240, 240, .5) ;
+.Card--text.active false{
+    /*color: blue;*/
 }
 
 .Card--button button {

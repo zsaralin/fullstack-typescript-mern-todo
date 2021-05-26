@@ -11,7 +11,6 @@ type Props = TodoProps & {
 }
 const Todo: React.FC<Props> = ({ todo, active, index }) => {
     const [longest, setLong] = useState<number>(50);
-    const style1 = active ? { border: 'dotted' } : {};
     useEffect(() => {
         handleLongest()
     },)
@@ -22,12 +21,19 @@ const Todo: React.FC<Props> = ({ todo, active, index }) => {
     }
 
     return (
-      <Draggable draggableId={todo._id} index={index} isDragDisabled={todo.status}>
+      <Draggable draggableId={todo._id} index={index} isDragDisabled={active}>
           {provided => (
     <div className='Card' ref={provided.innerRef}
          {...provided.draggableProps}
          {...provided.dragHandleProps}>
-      <div className="Card--text" style={style1} >
+      <div className="Card--text"
+           style={{
+               border: active ? 'dotted': 'none',
+               transitionProperty: 'background-position',
+               transitionTimingFunction: 'linear',
+               transitionDuration: todo.time*60/60+'s',
+               backgroundPosition: active ? '0%': '100%',
+               textDecoration: active ? 'line-through' : 'none',}}>
         <div className='name' style={{width: longest*6.5 + "px"}} > {todo.name} </div>
         <div className='description' style={{paddingBottom: todo.time/3 + '%'}}>{todo.description}</div>
           <div className="time">
