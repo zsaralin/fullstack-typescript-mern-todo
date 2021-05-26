@@ -12,10 +12,15 @@ const todoSchema: Schema = new Schema({
         required: true
     },
 
+    time: {
+        type: Number,
+        required: true
+    },
+
     status: {
         type: Boolean,
         required: true
-    }
+    },
 
 }, { timestamps: true })
 

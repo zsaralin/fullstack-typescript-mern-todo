@@ -1,33 +1,45 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react'
+import { Draggable } from 'react-beautiful-dnd'
+import {getLongestName} from "../API";
+import './TodoItem.css'
 
 type Props = TodoProps & {
     updateTodo: (todo: ITodo) => void
     deleteTodo: (_id: string) => void
+    index: number
+    active: boolean
 }
+const Todo: React.FC<Props> = ({ todo, active, index }) => {
+    const [longest, setLong] = useState<number>(50);
+    const style1 = active ? { border: 'dotted' } : {};
+    useEffect(() => {
+        handleLongest()
+    },)
+    const handleLongest = (): void => {
+        getLongestName()
+            .then(({ data: { longest} }:number|any) => setLong(longest))
+            .catch((err: Error) => console.log(err))
+    }
 
-const Todo: React.FC<Props> = ({ todo, updateTodo, deleteTodo }) => {
-  const checkTodo: string = todo.status ? `line-through` : ''
-  return (
-    <div className='Card'>
-      <div className='Card--text'>
-        <h1 className={checkTodo}>{todo.name}</h1>
-        <span className={checkTodo}>{todo.description}</span>
-      </div>
-      <div className='Card--button'>
-        <button
-          onClick={() => updateTodo(todo)}
-          className={todo.status ? `hide-button` : 'Card--button__done'}
-        >
-          Complete
-        </button>
-        <button
-          onClick={() => deleteTodo(todo._id)}
-          className='Card--button__delete'
-        >
-          Delete
-        </button>
+    return (
+      <Draggable draggableId={todo._id} index={index} isDragDisabled={todo.status}>
+          {provided => (
+    <div className='Card' ref={provided.innerRef}
+         {...provided.draggableProps}
+         {...provided.dragHandleProps}>
+      <div className="Card--text" style={style1} >
+        <div className='name' style={{width: longest*6.5 + "px"}} > {todo.name} </div>
+        <div className='description' style={{paddingBottom: todo.time/3 + '%'}}>{todo.description}</div>
+          <div className="time">
+              <div className="set-time">
+                  {todo.time} min</div>
+              <div className="real-time">
+                  - min</div>
+          </div>
       </div>
     </div>
+          )}
+      </Draggable>
   )
 }
 

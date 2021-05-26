@@ -1,0 +1,21 @@
+.bottom-panel{
+    width: 90%;
+    display: flex;
+    flex-direction: row;
+}
+
+.bonus{
+    flex-grow: 1;
+    padding: .5em .8em .5em .5em;
+    color: grey;
+    background: rgba(245, 245, 245, 1) ;
+    text-align: center;
+    font-weight: bold;
+}
+
+.bonus-time{
+    background: rgba(245, 245, 245, 1) ;
+    padding: .5em .8em .5em .5em;
+    float: right;
+    text-align: right
+}

@@ -2,13 +2,15 @@ interface ITodo {
     _id: string
     name: string
     description: string
-    status: boolean
+    time: number
+    status: true
     createdAt?: string
     updatedAt?: string
 }
 
 type TodoProps = {
     todo: ITodo
+    active: boolean
 }
 
 type ApiDataType = {

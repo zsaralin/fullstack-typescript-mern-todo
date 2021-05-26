@@ -1,0 +1,53 @@
+.Card{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 55%) right;
+    background-size: 215%;
+    flex-grow: 1;
+    margin-bottom: 5px;
+}
+
+.name{
+    padding: .3em .5em .2em .5em;
+    font-weight: bold;
+    background: rgba(270, 270, 270, .5) ;
+}
+
+.description {
+    padding: .3em .5em .2em .5em;
+    flex-grow: 1;
+}
+
+.set-time{
+    font-size: small;
+    font-weight: bold;
+}
+
+.real-time{
+    font-size: x-small;
+}
+
+.time{
+    padding: .3em .5em .2em .5em;
+    text-align: right
+}
+
+.Card--text {
+    display: flex;
+    background-size: 215%;
+    flex-grow: 1;
+}
+
+.Card--text true{
+    padding: .5em .8em .5em .5em;
+    font-weight: bold;
+    background: rgba(240, 240, 240, .5) ;
+}
+
+.Card--button button {
+    background: #f5f6f7;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+}
