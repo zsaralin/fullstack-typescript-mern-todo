@@ -1,22 +1,23 @@
+type TodoProps = {
+    todo: ITodo
+    active: boolean
+    done: boolean
+}
+
+
+type ApiDataType = {
+    message: string
+    status: boolean
+    todos: ITodo[]
+    todo?: ITodo
+  }
+
 interface ITodo {
     _id: string
     name: string
     description: string
     time: number
-    status: true
+    status: boolean
     createdAt?: string
     updatedAt?: string
 }
-
-type TodoProps = {
-    todo: ITodo
-    active: boolean
-}
-
-type ApiDataType = {
-    message: string
-    status: string
-    todos: ITodo[]
-    todo?: ITodo
-  }
-  

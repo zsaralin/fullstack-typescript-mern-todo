@@ -1,10 +1,12 @@
 .Card{
     display: flex;
+    position: relative;
     justify-content: space-between;
     align-items: center;
     background-size: 215%;
     flex-grow: 1;
-    margin-bottom: 5px;
+    margin-bottom: .5%;
+    /*height: 20%*/
 }
 
 .name{
@@ -16,32 +18,42 @@
 .description {
     padding: .3em .5em .2em .5em;
     flex-grow: 1;
+    /*padding-bottom: 90%;*/
+    /*height: 10%;*/
 }
 
 .set-time{
     font-size: small;
     font-weight: bold;
+    /*height: 50%*/
 }
-
-.real-time{
-    font-size: x-small;
+.timer{
+    /*height: 80%*/
 }
 
 .time{
     padding: .3em .5em .2em .5em;
-    text-align: right
+    text-align: right;
+    /*height:100%*/
 }
 
 .Card--text {
-    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 55%) right;
     display: flex;
-    background-size: 215%;
-    /*transition-duration: 10s;*/
+    transition-property: background-position;
+    transition-timing-function: linear;
+    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;
+    background-size: 215% ;
     flex-grow: 1;
 }
 
-.Card--text.active false{
-    /*color: blue;*/
+.Card--reverse{
+    display: flex;
+    flex-grow: 1;
+    transition-property: background-position;
+    transition-timing-function: linear;
+    background: linear-gradient(to right, turquoise 42%, magenta 60%) left;
+    background-size: 250%;
+
 }
 
 .Card--button button {

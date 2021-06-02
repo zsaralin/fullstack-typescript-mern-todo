@@ -1,0 +1,19 @@
+.slider{
+    display:block;
+    position: absolute;
+    width: 100%;
+    bottom:0;
+    height:5px;
+    background: rgba(60, 60, 60, .6);
+    animation-timing-function: linear;
+    animation-name: slidein;
+}
+
+@keyframes slidein {
+    from {
+        bottom: 90%;
+    }
+    to {
+        bottom: 0;
+    }
+}

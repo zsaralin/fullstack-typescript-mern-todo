@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import TodoItem from './components/TodoItem'
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-
 import {getTodos, updateTodo, deleteTodo} from './API'
 import BonusItem from "./components/BonusItem";
 
@@ -32,35 +31,47 @@ const useKeyPress = function(targetKey: string) {
 
     return keyPressed;
 };
+
+
 const App: React.FC = () => {
 
     const [todos, setTodos] = useState<ITodo[]>([]);
-    const [, setSelected] =  useState<ITodo>();
+    const [selected, setSelected] =  useState<ITodo>();
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
     const [cursor, setCursor] = useState<number>(-1);
 
     useEffect(() => {
-        if (todos.length && downPress) {
+        if (downPress) {
+            if(cursor < todos.length){
             setCursor(prevState =>
-                prevState < todos.length - 1 ? prevState + 1 : prevState
-            );
+                prevState < todos.length ? prevState + 1 : prevState
+            )
+            }
+            else{
+                setCursor(todos.length+1);
+            }
+
+            setSelected(todos[cursor]);
+            let before = todos[cursor-1];
+            if (before!== undefined){ before.status = true}
+            if (selected!== undefined){ selected.status = true}
         }
     }, [downPress]);
     useEffect(() => {
-        if (todos.length && upPress) {
+        if (upPress) {
             setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
+            setSelected(todos[cursor]);
+            let before = todos[cursor+1];
+            if (before!== undefined){ before.status = false}
+            if (selected!== undefined){ selected.status = true}
         }
     }, [upPress]);
-    useEffect(() => {
-        if (todos.length) {
-            setSelected(todos[cursor]);
-        }
-    }, [cursor]);
 
     const onDragEnd = ({ source, destination }: DropResult) => {
         // Make sure we have a valid destination
-        if (destination === undefined || destination === null) return null
+        if (destination === undefined || destination === null ||
+            destination.index < source.index && destination.index <= cursor ) return null
         // Make sure we're actually moving the item
         if (destination.index === source.index) return null
         // Move the item within the list
@@ -106,8 +117,9 @@ const App: React.FC = () => {
   }
         return (
             <DragDropContext onDragEnd={onDragEnd}>
-            <main className='App'>
-                <Droppable droppableId='col-1' isDropDisabled={false}>
+            <main className='App' >
+                {/*<Slider start = {cursor != -1} margin-top: />*/}
+                <Droppable droppableId='col-1' isDropDisabled={false} >
                     {provided => (
                 <ul className="characters" {...provided.droppableProps} ref={provided.innerRef}>
                     {todos.map((todo: ITodo, index) => (
@@ -117,14 +129,16 @@ const App: React.FC = () => {
                             deleteTodo={handleDeleteTodo}
                             todo={todo}
                             index= {index}
-                            active={index===cursor}/>
+                            active={index===cursor}
+                            done = {index <= cursor-1}/>
                     ))}
                     {provided.placeholder}
                 </ul> )}
                 </Droppable>
 
                 <BonusItem
- />
+                active = {cursor === todos.length} done = {cursor === todos.length+1}/>
+                <button className = "button"> Settings </button>
             </main>
             </DragDropContext>
         )

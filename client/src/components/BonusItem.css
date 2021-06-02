@@ -1,21 +1,45 @@
 .bottom-panel{
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+    background: rgba(245, 245, 245, 1);
     width: 90%;
+    height: 15%
+    /*margin-top: .5%;*/
+}
+.Bonus-text{
+    flex-grow: 1;
     display: flex;
     flex-direction: row;
+    background: linear-gradient(to left, rgba(245, 245, 245, .5) 50%, rgb(160,240,232) 55%) right;
+    transition-property: background-position;
+    transition-timing-function: linear;
+    background-size: 215%;
+
 }
 
+.Bonus-reverse {
+    display: flex;
+    flex-grow: 1;
+    transition-property: background-position;
+    transition-timing-function: linear;
+    background: linear-gradient(to right, rgb(160,240,232) 42%, rgb(255,125,255) 55%) left;
+    background-size: 300%;
+}
 .bonus{
     flex-grow: 1;
     padding: .5em .8em .5em .5em;
     color: grey;
-    background: rgba(245, 245, 245, 1) ;
     text-align: center;
     font-weight: bold;
+    /*height:15%;*/
 }
 
 .bonus-time{
-    background: rgba(245, 245, 245, 1) ;
     padding: .5em .8em .5em .5em;
     float: right;
-    text-align: right
+    text-align: right;
+    /*height:5%*/
 }

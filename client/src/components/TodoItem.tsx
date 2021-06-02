@@ -2,15 +2,40 @@ import React, {useEffect, useState} from 'react'
 import { Draggable } from 'react-beautiful-dnd'
 import {getLongestName} from "../API";
 import './TodoItem.css'
+import Timer from "./Timer";
+import Slider from "./Slider";
 
 type Props = TodoProps & {
     updateTodo: (todo: ITodo) => void
     deleteTodo: (_id: string) => void
     index: number
     active: boolean
+    done: boolean
 }
-const Todo: React.FC<Props> = ({ todo, active, index }) => {
-    const [longest, setLong] = useState<number>(50);
+const Todo: React.FC<Props> = ({ todo, active, done, index }) => {
+    const [realTime, setTime] = useState<number>(0);
+    // const minuteTime = Math.floor(realTime/60);
+    const minuteTime = realTime;
+    const myCallback = (dataFromChild: number) => {
+        setTime(dataFromChild);
+    }
+    const [longest, setLong] = useState<number>(0);
+    const [color, setColor] = useState<string>('rgb(160,240,232)');
+    useEffect(() => {
+        handleColor()
+    },)
+    const handleColor = (): void => {
+        const diff = minuteTime-todo.time
+        if(Math.abs(diff) <= 1){
+            setColor('rgb(160,240,232)');
+        }
+        else if(diff > 4){
+            setColor('rgb(255,125,255)');
+        }
+        else if(diff > 1){
+            setColor('rgb(255,202,255)');
+        }
+    }
     useEffect(() => {
         handleLongest()
     },)
@@ -21,26 +46,32 @@ const Todo: React.FC<Props> = ({ todo, active, index }) => {
     }
 
     return (
-      <Draggable draggableId={todo._id} index={index} isDragDisabled={active}>
+    <Draggable draggableId={todo._id} index={index} isDragDisabled={done || active}>
           {provided => (
     <div className='Card' ref={provided.innerRef}
          {...provided.draggableProps}
          {...provided.dragHandleProps}>
-      <div className="Card--text"
-           style={{
-               border: active ? 'dotted': 'none',
-               transitionProperty: 'background-position',
-               transitionTimingFunction: 'linear',
-               transitionDuration: todo.time*60/60+'s',
-               backgroundPosition: active ? '0%': '100%',
-               textDecoration: active ? 'line-through' : 'none',}}>
-        <div className='name' style={{width: longest*6.5 + "px"}} > {todo.name} </div>
-        <div className='description' style={{paddingBottom: todo.time/3 + '%'}}>{todo.description}</div>
-          <div className="time">
-              <div className="set-time">
+        <Slider start={active} time = {(minuteTime<todo.time)?todo.time:0}/>
+      <div className= {(minuteTime<todo.time) ? "Card--text": "Card--reverse"}
+          style={{
+               transitionDuration: (minuteTime<todo.time) ?
+                   (todo.time-minuteTime)/**60*/ +'s' : todo.time/**60*/+'s',
+               backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
+              textDecoration: done ? 'line-through' : 'none',
+           }}>
+        <div className='name'
+             style={{width: longest*6.5 + "px", backgroundColor: done ? color: '' }} >
+            {todo.name} </div>
+        <div className='description'  style={{
+            height: (minuteTime<todo.time) ? 20+todo.time*4+'px': 20+todo.time*4+(realTime/*/60*/-todo.time)*5 + 'px',
+            // height: '30%',
+            backgroundColor: done ? 'rgba(230, 230, 230, 1)': ''
+        }}>{todo.description}</div>
+          <div className="time" style = {{backgroundColor: done ? 'rgba(230, 230, 230, 1)': ''}}>
+              <div className="set-time" >
                   {todo.time} min</div>
-              <div className="real-time">
-                  - min</div>
+              <Timer callbackFromParent={myCallback} initialMinute = {todo.time} active = {active} done = {done}  />
+
           </div>
       </div>
     </div>
