@@ -6,7 +6,7 @@
     flex-grow: 1;
     background: rgba(245, 245, 245, 1);
     width: 90%;
-    height: 15%
+    /*height: auto;*/
     /*margin-top: .5%;*/
 }
 .Bonus-text{
@@ -17,7 +17,7 @@
     transition-property: background-position;
     transition-timing-function: linear;
     background-size: 215%;
-
+    height: auto;
 }
 
 .Bonus-reverse {
@@ -34,7 +34,6 @@
     color: grey;
     text-align: center;
     font-weight: bold;
-    /*height:15%;*/
 }
 
 .bonus-time{

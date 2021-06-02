@@ -36,7 +36,7 @@ function BonusItem(props: { active: boolean, done: boolean }){
                      (fixedTime-realTime) +'s' : fixedTime+'s',
                      backgroundPosition: (realTime<fixedTime) && props.active ? '0% 100%': '100% 0%',
                      textDecoration: props.done ? 'grey line-through' : 'none',}}>
-            <div className="bonus" style={{//height:30+fixedTime*2 + '%',
+            <div className="bonus" style={{height:fixedTime/3 + '%',
                 background: props.done? color: '',}}> Bonus Time </div>
             <div className="bonus-time" style = {{color: "grey", textDecoration: props.done? 'grey line-through':'none',
                 background: props.done? color: '',}}>

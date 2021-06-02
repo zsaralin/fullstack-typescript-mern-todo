@@ -6,20 +6,20 @@
     background-size: 215%;
     flex-grow: 1;
     margin-bottom: .5%;
-    /*height: 20%*/
+    height: auto;
 }
 
 .name{
     padding: .3em .5em .2em .5em;
     font-weight: bold;
     background: rgba(270, 270, 270, .5) ;
+    height: auto
 }
 
 .description {
     padding: .3em .5em .2em .5em;
     flex-grow: 1;
-    /*padding-bottom: 90%;*/
-    /*height: 10%;*/
+    /*height: 50%;*/
 }
 
 .set-time{

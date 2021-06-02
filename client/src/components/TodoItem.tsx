@@ -63,8 +63,7 @@ const Todo: React.FC<Props> = ({ todo, active, done, index }) => {
              style={{width: longest*6.5 + "px", backgroundColor: done ? color: '' }} >
             {todo.name} </div>
         <div className='description'  style={{
-            height: (minuteTime<todo.time) ? 20+todo.time*4+'px': 20+todo.time*4+(realTime/*/60*/-todo.time)*5 + 'px',
-            // height: '30%',
+            paddingBottom: (minuteTime<todo.time) ? todo.time/3+'%': todo.time/3+(realTime/*/60*/-todo.time)/2 + '%',
             backgroundColor: done ? 'rgba(230, 230, 230, 1)': ''
         }}>{todo.description}</div>
           <div className="time" style = {{backgroundColor: done ? 'rgba(230, 230, 230, 1)': ''}}>
