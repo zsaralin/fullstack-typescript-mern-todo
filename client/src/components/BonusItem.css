@@ -6,7 +6,7 @@
     flex-grow: 1;
     background: rgba(245, 245, 245, 1);
     width: 90%;
-    /*height: auto;*/
+    height: auto;
     /*margin-top: .5%;*/
 }
 .Bonus-text{
@@ -27,6 +27,7 @@
     transition-timing-function: linear;
     background: linear-gradient(to right, rgb(160,240,232) 42%, rgb(255,125,255) 55%) left;
     background-size: 300%;
+    height: auto;
 }
 .bonus{
     flex-grow: 1;
@@ -40,5 +41,4 @@
     padding: .5em .8em .5em .5em;
     float: right;
     text-align: right;
-    /*height:5%*/
 }

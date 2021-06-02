@@ -60,7 +60,7 @@ const Todo: React.FC<Props> = ({ todo, active, done, index }) => {
               textDecoration: done ? 'line-through' : 'none',
            }}>
         <div className='name'
-             style={{width: longest*6.5 + "px", backgroundColor: done ? color: '' }} >
+             style={{width: 50+4*longest + "px", backgroundColor: done ? color: '' }} >
             {todo.name} </div>
         <div className='description'  style={{
             paddingBottom: (minuteTime<todo.time) ? todo.time/3+'%': todo.time/3+(realTime/*/60*/-todo.time)/2 + '%',
