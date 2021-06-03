@@ -118,6 +118,7 @@ const App: React.FC = () => {
         return (
             <DragDropContext onDragEnd={onDragEnd}>
             <main className='App' >
+                <div className='test'>
                 {/*<Slider start = {cursor != -1} margin-top: />*/}
                 <Droppable droppableId='col-1' isDropDisabled={false} >
                     {provided => (
@@ -139,6 +140,7 @@ const App: React.FC = () => {
                 <BonusItem
                 active = {cursor === todos.length} done = {cursor === todos.length+1}/>
                 <button className = "button"> Settings </button>
+                </div>
             </main>
             </DragDropContext>
         )

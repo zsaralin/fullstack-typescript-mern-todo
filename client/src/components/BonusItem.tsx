@@ -28,18 +28,19 @@ function BonusItem(props: { active: boolean, done: boolean }){
 
     }
         return(
-        <div className="bottom-panel">
+        <div className="bottom-panel" >
             <Slider start={props.active} time = {fixedTime}/>
             <div className={(realTime<fixedTime) ? "Bonus-text": "Bonus-reverse"}
                  style = {{
                      transitionDuration: (realTime<fixedTime) && props.active?
                      (fixedTime-realTime) +'s' : fixedTime+'s',
                      backgroundPosition: (realTime<fixedTime) && props.active ? '0% 100%': '100% 0%',
+                     background: props.done? color:'',
                      textDecoration: props.done ? 'grey line-through' : 'none',}}>
             <div className="bonus" style={{height:fixedTime/3 + '%',
-                background: props.done? color: '',}}> Bonus Time </div>
+             }}> Bonus Time </div>
             <div className="bonus-time" style = {{color: "grey", textDecoration: props.done? 'grey line-through':'none',
-                background: props.done? color: '',}}>
+                }}>
                 <div className="set-time" >
                     {fixedTime} min</div>
                 <Timer callbackFromParent={myCallback} initialMinute = {fixedTime} active = {props.active} done = {props.done} />

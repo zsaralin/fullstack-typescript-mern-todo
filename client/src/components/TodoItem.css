@@ -1,25 +1,58 @@
+
 .Card{
-    display: flex;
+    /*display: flex;*/
+    /*flex-direction: column;*/
+    /*flex: 1 1 0;*/
+    flex: 1;
+    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;
     position: relative;
-    justify-content: space-between;
-    align-items: center;
+    /*justify-content: space-between;*/
+    /*align-items: stretch;*/
+    /*justify-content: stretch;*/
     background-size: 215%;
-    flex-grow: 1;
+    height: 100%;
+    /*flex: 1 1 auto;*/
+    /*flex-grow: 3;*/
+    /*flex: 2;*/
     margin-bottom: .5%;
-    height: auto;
+    /*min-height: 7vh;*/
+}
+
+.Card--text {
+    display: flex;
+    height: 100%;
+    /*flex: 1 1 0;*/
+    transition-property: background-position;
+    transition-timing-function: linear;
+    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;
+    background-size: 215% ;
+    /*height: 10vh;*/
+}
+
+.Card--reverse{
+    display: flex;
+    flex-grow: 1;
+    transition-property: background-position;
+    transition-timing-function: linear;
+    background: linear-gradient(to right, turquoise 42%, magenta 60%) left;
+    background-size: 250%;
+
+
 }
 
 .name{
     padding: .3em .5em .2em .5em;
+    /*height: auto;*/
     font-weight: bold;
     background: rgba(270, 270, 270, .5) ;
-    height: auto
+    /*height: 100%*/
 }
 
 .description {
     padding: .3em .5em .2em .5em;
     flex-grow: 1;
     /*height: 50%;*/
+    /*height: 30%;*/
 }
 
 .set-time{
@@ -37,24 +70,6 @@
     /*height:100%*/
 }
 
-.Card--text {
-    display: flex;
-    transition-property: background-position;
-    transition-timing-function: linear;
-    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;
-    background-size: 215% ;
-    flex-grow: 1;
-}
-
-.Card--reverse{
-    display: flex;
-    flex-grow: 1;
-    transition-property: background-position;
-    transition-timing-function: linear;
-    background: linear-gradient(to right, turquoise 42%, magenta 60%) left;
-    background-size: 250%;
-
-}
 
 .Card--button button {
     background: #f5f6f7;
