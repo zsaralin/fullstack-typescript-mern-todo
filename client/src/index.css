@@ -10,12 +10,15 @@ body {
     font-family: 'Nunito', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /*height: 95vh;*/
+    /*height: 100vh;*/
 }
 
 .App {
     display: flex;
     height: 100vh;
+    /*height: auto;*/
+    margin-left: 5%;
+    margin-right: 5%;
     /*align-items: stretch;*/
     flex-direction: column;
     /*flex :1 1 0;*/
@@ -32,36 +35,25 @@ body {
 }
 .test{
     display: flex;
+    flex: 1 1;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
+
 }
 
 .characters {
     display: flex;
     flex-direction: column;
-    flex: 2;
-    /*margin-bottom: .5%;*/
-
-    /*display: flex;*/
-    /*flex-grow: 2;*/
-    /*flex-direction: column;*/
-    /*height: 10%;*/
-    /*flex-grow: 1;*/
-    /*width: 90%;*/
-    /*flex: 1 1 0;*/
-    /*height: 50px;*/
-    /*height: 50%;*/
-    /*max-height: 100%;*/
+    flex: 1 1;
+    /*background-color: red;*/
 }
 
 .App button {
-    margin: .5% 2% 0 90%;
-    padding: 0.5rem 1rem;
-    height: 7%;
+    height: 3vh;
+    width: 80px;
     cursor: pointer;
     font-weight: bold;
     color: darkgray;
-    font-size: 15px;
     background: rgba(245, 245, 245, 1);
     border-width: 2px;
     border-color: lightgrey;

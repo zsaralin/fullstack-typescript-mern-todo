@@ -17,6 +17,7 @@ interface ITodo {
     name: string
     description: string
     time: number
+    overtime: number
     status: boolean
     createdAt?: string
     updatedAt?: string

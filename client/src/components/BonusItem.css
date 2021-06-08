@@ -1,42 +1,62 @@
 .bottom-panel{
     position: relative;
-    justify-content: space-between;
-    align-items: center;
-    flex-grow: .5;
-    background: rgba(245, 245, 245, 1);
+    /*justify-content: space-between;*/
+    /*align-items: center;*/
+    /*flex-grow: .5;*/
+    /*flex: 1 1;*/
+    /*background: rgba(245, 245, 245, 1);*/
+    /*background-color: red;*/
     /*width: 90%;*/
-    height: auto;
+    /*height: 100%;*/
     /*margin-top: 2%;*/
 }
 .Bonus-text{
-    flex-grow: 1;
+    /*flex-grow: 1;*/
     display: flex;
     background: linear-gradient(to left, rgba(245, 245, 245, .5) 50%, rgb(160,240,232) 55%) right;
-    transition-property: background-position;
-    transition-timing-function: linear;
+    animation-name: forwardAnim;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
     background-size: 215%;
-    height: 100%;
+    /*height: 100%;*/
+    height: auto;
 }
-
+@keyframes forwardAnim {
+    from {
+        background-position: 100%;
+    }
+    to {
+        background-position: 0;
+    }
+}
+@keyframes backwardAnim {
+    from {
+        background-position: 0;
+    }
+    to {
+        background-position: 100%;
+    }
+}
 .Bonus-reverse {
     display: flex;
     flex-grow: 1;
-    transition-property: background-position;
-    transition-timing-function: linear;
+    animation-name: backwardAnim;
+    animation-timing-function: linear;
     background: linear-gradient(to right, rgb(160,240,232) 42%, rgb(255,125,255) 55%) left;
     background-size: 300%;
+    animation-fill-mode: forwards;
     height: 100%;
 }
 .bonus{
     flex-grow: 1;
-    padding: .5em .8em .5em .5em;
+    padding: 0 .5em 0 .5em;
     color: grey;
     text-align: center;
     font-weight: bold;
 }
 
 .bonus-time{
-    padding: .5em .8em .5em .5em;
+    padding: 0 .5em 0 .5em;
     float: right;
     text-align: right;
 }

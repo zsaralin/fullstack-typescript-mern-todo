@@ -22,6 +22,17 @@ export const getLongestName = async (): Promise<AxiosResponse<ApiDataType>> => {
     throw new Error(error)
   }
 }
+
+export const getSize = async (): Promise<AxiosResponse<ApiDataType>> => {
+  try {
+    const sizeArr: AxiosResponse<ApiDataType> = await axios.get(
+        baseUrl + '/todos-len'
+    )
+    return sizeArr
+  } catch (error) {
+    throw new Error(error)
+  }
+}
 // export const addTodo = async (
 //   formData: ITodo
 // ): Promise<AxiosResponse<ApiDataType>> => {

@@ -45,6 +45,19 @@ const getLongestName = async (req: Request, res: Response): Promise<void> => {
         throw error
     }
 }
+
+const getSize = async (req: Request, res: Response): Promise<void> => {
+    try {
+        let sizeArr = 0;
+        for (const file of fs.readdirSync(pathFull)) {
+            sizeArr ++;
+            }
+        res.status(200).json({ sizeArr })
+    } catch (error) {
+        throw error
+    }
+}
+
 const addTodo = async (req: Request, res: Response): Promise<void> => {
     // try {
     //         const body = req.body as Pick<ITodo, 'name' | 'description' | 'status'>
@@ -102,4 +115,4 @@ const deleteTodo = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-export { getTodos, addTodo, updateTodo, deleteTodo , getLongestName}
+export { getTodos, addTodo, updateTodo, deleteTodo , getLongestName, getSize}

@@ -1,39 +1,49 @@
 
 .Card{
-    /*display: flex;*/
     /*flex-direction: column;*/
-    /*flex: 1 1 0;*/
-    flex: 1;
-    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;
+    /*flex: 1 1;*/
+    /*height: auto;*/
     position: relative;
+    margin-bottom: .3%;
+    /*flex:6;*/
+    /*background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;*/
+    /*position: relative;*/
     /*justify-content: space-between;*/
     /*align-items: stretch;*/
     /*justify-content: stretch;*/
-    background-size: 215%;
-    height: 100%;
+    /*background-size: 215%;*/
+    /*flex: 1 1;*/
+    /*flex: auto;*/
     /*flex: 1 1 auto;*/
     /*flex-grow: 3;*/
     /*flex: 2;*/
-    margin-bottom: .5%;
+    /*height: 100%;*/
+    /*background-color: red;*/
+    /*height: 20%;*/
+    /*background-color: green;*/
     /*min-height: 7vh;*/
+    /*display: flex;*/
+
 }
 
 .Card--text {
     display: flex;
     height: 100%;
-    /*flex: 1 1 0;*/
-    transition-property: background-position;
-    transition-timing-function: linear;
+    /*flex: 1 1;*/
+    animation-name: forwardAnim;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
     background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;
     background-size: 215% ;
-    /*height: 10vh;*/
 }
 
 .Card--reverse{
     display: flex;
     flex-grow: 1;
-    transition-property: background-position;
-    transition-timing-function: linear;
+    height: 100%;
+    animation-name: backwardAnim;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
     background: linear-gradient(to right, turquoise 42%, magenta 60%) left;
     background-size: 250%;
 
@@ -41,31 +51,30 @@
 }
 
 .name{
-    padding: .3em .5em .2em .5em;
+    padding: 0 .5em 0 .5em;
     /*height: auto;*/
     font-weight: bold;
     background: rgba(270, 270, 270, .5) ;
-    /*height: 100%*/
+    height: auto;
 }
 
 .description {
-    padding: .3em .5em .2em .5em;
-    flex-grow: 1;
-    /*height: 50%;*/
-    /*height: 30%;*/
+    padding: 0 0 0 .3em;
+    flex: 1 1;
+    height: auto;
 }
 
 .set-time{
     font-size: small;
     font-weight: bold;
-    /*height: 50%*/
 }
 .timer{
     /*height: 80%*/
 }
 
 .time{
-    padding: .3em .5em .2em .5em;
+    /*height: auto;*/
+    padding: 0 .5em 0 .5em;
     text-align: right;
     /*height:100%*/
 }
@@ -76,4 +85,22 @@
     padding: 0.4rem 1rem;
     border-radius: 20px;
     cursor: pointer;
+}
+
+
+@keyframes forwardAnim {
+    from {
+        background-position: 100%;
+    }
+    to {
+        background-position: 0;
+    }
+}
+@keyframes backwardAnim {
+    from {
+        background-position: 0;
+    }
+    to {
+        background-position: 100%;
+    }
 }

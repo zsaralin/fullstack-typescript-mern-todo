@@ -34,8 +34,17 @@ const useKeyPress = function(targetKey: string) {
 
 
 const App: React.FC = () => {
-
+    const getTodoTime = (): number => {
+        let todoTime = 0;
+        for(let i=0; i<todos.length; i++){
+            todoTime += todos[i].time;
+        }
+        return todoTime;
+    }
     const [todos, setTodos] = useState<ITodo[]>([]);
+    let todoTime = getTodoTime();
+    // let totalOver = getOvertime();
+    let bonusTime = 8;
     const [selected, setSelected] =  useState<ITodo>();
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
@@ -84,8 +93,7 @@ const App: React.FC = () => {
     }
 
   useEffect(() => {
-    fetchTodos()
-
+    fetchTodos();
   }, [])
 
   const fetchTodos = (): void => {
@@ -93,7 +101,6 @@ const App: React.FC = () => {
     .then(({ data: { todos } }: ITodo[] | any) => setTodos(todos))
     .catch((err: Error) => console.log(err))
   }
-
   const handleUpdateTodo = (todo: ITodo): void => {
     updateTodo(todo)
     .then(({ status, data }) => {
@@ -105,6 +112,7 @@ const App: React.FC = () => {
       .catch((err) => console.log(err))
   }
 
+
   const handleDeleteTodo = (_id: string): void => {
     deleteTodo(_id)
     .then(({ status, data }) => {
@@ -115,14 +123,21 @@ const App: React.FC = () => {
       })
       .catch((err) => console.log(err))
   }
+
         return (
             <DragDropContext onDragEnd={onDragEnd}>
             <main className='App' >
+                {/*<span>{totalOver}</span>*/}
                 <div className='test'>
-                {/*<Slider start = {cursor != -1} margin-top: />*/}
                 <Droppable droppableId='col-1' isDropDisabled={false} >
-                    {provided => (
-                <ul className="characters" {...provided.droppableProps} ref={provided.innerRef}>
+                    {provided => {
+                        const style = {
+                            height: todoTime/(todoTime+bonusTime)*100,
+                            ...provided.droppableProps,
+                        };
+                        return (
+                <ul className="characters"
+                    {...provided.droppableProps} ref={provided.innerRef} style = {style}>
                     {todos.map((todo: ITodo, index) => (
                         <TodoItem
                             key={todo._id}
@@ -134,13 +149,13 @@ const App: React.FC = () => {
                             done = {index <= cursor-1}/>
                     ))}
                     {provided.placeholder}
-                </ul> )}
+                </ul> )}}
                 </Droppable>
-
                 <BonusItem
-                active = {cursor === todos.length} done = {cursor === todos.length+1}/>
-                <button className = "button"> Settings </button>
+                active = {cursor === todos.length} done = {cursor === todos.length+1}
+                percent = {bonusTime/(bonusTime+todoTime)*100}/>
                 </div>
+                <button className = "button"> Settings </button>
             </main>
             </DragDropContext>
         )

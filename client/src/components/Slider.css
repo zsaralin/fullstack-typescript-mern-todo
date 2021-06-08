@@ -4,14 +4,14 @@
     width: 100%;
     bottom:0;
     height:5px;
-    background: rgba(60, 60, 60, .6);
+    background: rgba(60, 60, 60, .4);
     animation-timing-function: linear;
     animation-name: slidein;
 }
 
 @keyframes slidein {
     from {
-        bottom: 90%;
+        bottom: 95%;
     }
     to {
         bottom: 0;

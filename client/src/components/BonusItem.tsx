@@ -4,7 +4,7 @@ import Timer from "./Timer";
 // import Timer from "./Timer";
 import Slider from "./Slider";
 
-function BonusItem(props: { active: boolean, done: boolean }){
+function BonusItem(props: { active: boolean, done: boolean, percent: number }){
     let fixedTime = 8;
     const [realTime, setTime] = useState<number>(0);
     const myCallback = (dataFromChild: number) => {
@@ -28,19 +28,21 @@ function BonusItem(props: { active: boolean, done: boolean }){
 
     }
         return(
-        <div className="bottom-panel" >
+        <div className="bottom-panel" style = {{height: props.percent+'%'}}>
             <Slider start={props.active} time = {fixedTime}/>
             <div className={(realTime<fixedTime) ? "Bonus-text": "Bonus-reverse"}
                  style = {{
-                     transitionDuration: (realTime<fixedTime) && props.active?
-                     (fixedTime-realTime) +'s' : fixedTime+'s',
-                     backgroundPosition: (realTime<fixedTime) && props.active ? '0% 100%': '100% 0%',
-                     background: props.done? color:'',
+                     animationDuration: fixedTime+'s',
+                     // height: props.percent+'%',
+                     height: '100%',
+                     animationPlayState: props.active? 'running':'paused',
+                     background: props.done ? color:'',
                      textDecoration: props.done ? 'grey line-through' : 'none',}}>
-            <div className="bonus" style={{height:fixedTime/3 + '%',
-             }}> Bonus Time </div>
-            <div className="bonus-time" style = {{color: "grey", textDecoration: props.done? 'grey line-through':'none',
-                }}>
+                <div className="bonus" style={{//height:30+fixedTime*2 + '%',
+                    background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}> Bonus Time </div>
+                <div className="bonus-time" style = {{color: "grey", textDecoration: props.done? 'grey line-through':'none',
+                    background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}>
+
                 <div className="set-time" >
                     {fixedTime} min</div>
                 <Timer callbackFromParent={myCallback} initialMinute = {fixedTime} active = {props.active} done = {props.done} />
