@@ -21,14 +21,14 @@ const Todo: React.FC<Props> = ({ todo, active, done, index }) => {
     }
     const [longest, setLong] = useState<number>(0);
     const [sizeArr, setSize] = useState<number>(0);
-    const [color, setColor] = useState<string>('rgb(160,240,232)');
+    const [color, setColor] = useState<string>('rgb(198,246,241)');
     useEffect(() => {
         handleColor()
     },)
     const handleColor = (): void => {
         const diff = minuteTime - todo.time
         if (Math.abs(diff) <= 1) {
-            setColor('rgb(160,240,232)');
+            setColor('rgb(198,246,241)');
         } else if (diff > 4) {
             setColor('rgb(255,125,255)');
         } else if (diff > 1) {
