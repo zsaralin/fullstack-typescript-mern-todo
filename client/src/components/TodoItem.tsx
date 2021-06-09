@@ -11,10 +11,10 @@ type Props = TodoProps & {
     done: boolean
 }
 const Todo: React.FC<Props> = ({ todo, active, done, index}) => {
-
     const [realTime, setTime] = useState<number>(0);
     // const minuteTime = Math.floor(realTime/60);
     const minuteTime = realTime;
+    let totalOver = minuteTime-todo.time > 0 ?minuteTime-todo.time: 0 ;
     const timeCallback = (timerTime: number) => {
         setTime(timerTime);
     }
@@ -50,20 +50,14 @@ const Todo: React.FC<Props> = ({ todo, active, done, index}) => {
         handleOvertime()
     });
     function handleOvertime(){
-        let myInterval = setInterval(() => {
-            if(minuteTime>=todo.time){
-                todo.overtime=minuteTime-todo.time+1;
-        }},1000);
-        return () => {
-            clearInterval(myInterval);
-        };
+        totalOver = minuteTime - todo.time;
     }
     return (
             <Draggable draggableId={todo._id} index={index} isDragDisabled={done || active} >
                 {provided => {
                     const style = {
-                        // height: (minuteTime < todo.time) ? (todo.time/sizeArr)*100+ '%':
-                        height: (todo.time/sizeArr)*100 + '%',
+                        height: (minuteTime < todo.time) ? (todo.time/sizeArr)*100+ '%':((todo.time+totalOver)/(sizeArr))*100+ '%',
+                        // height: (todo.time/sizeArr)*100 + '%',
                         textDecoration: done ? 'line-through' : 'none',
                         color: done? 'grey':'',
                         ...provided.draggableProps.style,
@@ -94,7 +88,7 @@ const Todo: React.FC<Props> = ({ todo, active, done, index}) => {
                             }}>{todo.description} </div>
                             <div className="time" style={{backgroundColor: done ? 'rgba(240, 240, 240, 1)' : ''}}>
                                 <div className="set-time" >
-                                    {todo.time} {todo.overtime} min
+                                    {todo.time} {totalOver} min
                                 </div>
                                 <Timer callbackFromParent={timeCallback} initialMinute={todo.time} active={active}
                                        done={done}/>

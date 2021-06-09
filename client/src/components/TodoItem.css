@@ -31,7 +31,7 @@
     height: 100%;
     /*flex: 1 1;*/
     animation-name: forwardAnim;
-    animation-timing-function: linear;
+    animation-timing-function: ease-out;
     animation-fill-mode: forwards;
     background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;
     background-size: 215% ;

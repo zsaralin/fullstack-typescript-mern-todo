@@ -4,8 +4,7 @@ import Timer from "./Timer";
 // import Timer from "./Timer";
 import Slider from "./Slider";
 
-function BonusItem(props: { active: boolean, done: boolean, percent: number }){
-    let fixedTime = 8;
+function BonusItem(props: { time: number, active: boolean, done: boolean, percent: number }){
     const [realTime, setTime] = useState<number>(0);
     const myCallback = (dataFromChild: number) => {
         setTime(dataFromChild);
@@ -15,7 +14,7 @@ function BonusItem(props: { active: boolean, done: boolean, percent: number }){
         handleColor()
     },)
     const handleColor = (): void => {
-        const diff = realTime-fixedTime
+        const diff = realTime-props.time
         if(Math.abs(diff) <= 1){
             setColor('rgb(160,240,232)');
         }
@@ -28,11 +27,11 @@ function BonusItem(props: { active: boolean, done: boolean, percent: number }){
 
     }
         return(
-        <div className="bottom-panel" style = {{height: props.percent+'%'}}>
-            <Slider start={props.active} time = {fixedTime}/>
-            <div className={(realTime<fixedTime) ? "Bonus-text": "Bonus-reverse"}
+        <div className="bottom-panel" style = {{height: props.percent+'%', display: props.time <1 ?'none':''}}>
+            <Slider start={props.active} time = {props.time}/>
+            <div className={(realTime<props.time) ? "Bonus-text": "Bonus-reverse"}
                  style = {{
-                     animationDuration: fixedTime+'s',
+                     animationDuration: props.time+'s',
                      // height: props.percent+'%',
                      height: '100%',
                      animationPlayState: props.active? 'running':'paused',
@@ -44,8 +43,8 @@ function BonusItem(props: { active: boolean, done: boolean, percent: number }){
                     background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}>
 
                 <div className="set-time" >
-                    {fixedTime} min</div>
-                <Timer callbackFromParent={myCallback} initialMinute = {fixedTime} active = {props.active} done = {props.done} />
+                    {props.time} min</div>
+                <Timer callbackFromParent={myCallback} initialMinute = {props.time} active = {props.active} done = {props.done} />
             </div>
         </div>
         </div>

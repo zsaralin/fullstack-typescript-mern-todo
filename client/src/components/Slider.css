@@ -11,7 +11,7 @@
 
 @keyframes slidein {
     from {
-        bottom: 95%;
+        bottom: 90%;
     }
     to {
         bottom: 0;

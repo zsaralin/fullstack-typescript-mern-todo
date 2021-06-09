@@ -39,19 +39,23 @@ const App: React.FC = () => {
     const [todos, setTodos] = useState<ITodo[]>([]);
     const [selected, setSelected] =  useState<ITodo>();
     const [cursor, setCursor] = useState<number>(-1);
-    let name = selected===undefined? 'nothing':selected.name;
+    const [totalOver, setOver] = useState<number>(0);
     const [realTime, setTime] = useState<number>(0);
     useEffect(() => {
         let myInterval = setInterval(() => {
             if (cursor != -1) {
                 setTime(realTime + 1);
             }
-
         }, 1000)
         return () => {
             clearInterval(myInterval);
         };
     });
+    useEffect(()=>{
+        if (selected !== undefined && realTime >= selected.time){
+            setOver(realTime - selected.time);
+        }
+    })
     const getTodoTime = (): number => {
         let todoTime = 0;
         for(let i=0; i<todos.length; i++){
@@ -70,7 +74,7 @@ const App: React.FC = () => {
             } else {
                 setCursor(todos.length + 1);
             }
-
+            // setTime (0);
             setSelected(todos[cursor+1]);
 
             let before = todos[cursor ];
@@ -87,6 +91,7 @@ const App: React.FC = () => {
         if (upPress) {
             setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
             setSelected(todos[cursor-1]);
+            // setTime (0);
             let before = todos[cursor];
             if (before!== undefined){ before.status = false}
             if (selected!== undefined){ selected.status = true}
@@ -121,12 +126,12 @@ const App: React.FC = () => {
         return (
             <DragDropContext onDragEnd={onDragEnd}>
             <main className='App' >
-                <span>{realTime}{name} </span>
+                {/*<span style={{textAlign: 'right'}}>{realTime}{totalOver} </span>*/}
                 <div className='test'>
                 <Droppable droppableId='col-1' isDropDisabled={false} >
                     {provided => {
                         const style = {
-                            height: todoTime/(todoTime+bonusTime)*100,
+                            height: (todoTime+totalOver)/(todoTime+bonusTime)*100,
                             ...provided.droppableProps,
                         };
                         return (
@@ -144,8 +149,8 @@ const App: React.FC = () => {
                 </ul> )}}
                 </Droppable>
                 <BonusItem
-                active = {cursor === todos.length} done = {cursor === todos.length+1}
-                percent = {bonusTime/(bonusTime+todoTime)*100}/>
+                time = {bonusTime-totalOver} active = {cursor === todos.length} done = {cursor === todos.length+1}
+                percent = {(bonusTime-totalOver)/(bonusTime+todoTime)*100}/>
                 </div>
                 <button className = "button"> Settings </button>
             </main>
