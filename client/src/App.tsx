@@ -39,15 +39,14 @@ const App: React.FC = () => {
     const [todos, setTodos] = useState<ITodo[]>([]);
     const [selected, setSelected] =  useState<ITodo>();
     const [cursor, setCursor] = useState<number>(-1);
-
+    let name = selected===undefined? 'nothing':selected.name;
     const [realTime, setTime] = useState<number>(0);
-    let totalOver = 0;
-
     useEffect(() => {
         let myInterval = setInterval(() => {
             if (cursor != -1) {
                 setTime(realTime + 1);
             }
+
         }, 1000)
         return () => {
             clearInterval(myInterval);
@@ -72,9 +71,9 @@ const App: React.FC = () => {
                 setCursor(todos.length + 1);
             }
 
-            setSelected(todos[cursor]);
+            setSelected(todos[cursor+1]);
 
-            let before = todos[cursor - 1];
+            let before = todos[cursor ];
             if (before !== undefined) {
                 before.status = true
             }
@@ -87,12 +86,13 @@ const App: React.FC = () => {
     useEffect(() => {
         if (upPress) {
             setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
-            setSelected(todos[cursor]);
-            let before = todos[cursor+1];
+            setSelected(todos[cursor-1]);
+            let before = todos[cursor];
             if (before!== undefined){ before.status = false}
             if (selected!== undefined){ selected.status = true}
         }
     }, [upPress]);
+
 
     const onDragEnd = ({ source, destination }: DropResult) => {
         // Make sure we have a valid destination
@@ -121,7 +121,7 @@ const App: React.FC = () => {
         return (
             <DragDropContext onDragEnd={onDragEnd}>
             <main className='App' >
-                <span>{realTime} {totalOver}</span>
+                <span>{realTime}{name} </span>
                 <div className='test'>
                 <Droppable droppableId='col-1' isDropDisabled={false} >
                     {provided => {
