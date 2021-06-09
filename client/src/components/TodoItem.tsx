@@ -97,7 +97,7 @@ const Todo: React.FC<Props> = ({ todo, active, done, index }) => {
                             }}>{todo.description} </div>
                             <div className="time" style={{backgroundColor: done ? 'rgba(240, 240, 240, 1)' : ''}}>
                                 <div className="set-time" >
-                                    {todo.time} {todo.overtime} min
+                                    {todo.time} min
                                 </div>
                                 <Timer callbackFromParent={myCallback} initialMinute={todo.time} active={active}
                                        done={done}/>
