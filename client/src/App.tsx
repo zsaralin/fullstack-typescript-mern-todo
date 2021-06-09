@@ -41,6 +41,8 @@ const App: React.FC = () => {
     const [cursor, setCursor] = useState<number>(-1);
 
     const [realTime, setTime] = useState<number>(0);
+    let totalOver = 0;
+
     useEffect(() => {
         let myInterval = setInterval(() => {
             if (cursor != -1) {
@@ -59,24 +61,26 @@ const App: React.FC = () => {
         return todoTime;
     }
     let todoTime = getTodoTime();
-    let totalOver = 0;
     let bonusTime = 8;
 
     useEffect(() => {
         if (downPress) {
-            if(cursor < todos.length){
+            if (cursor < todos.length) {
                 setCursor(prevState =>
                     prevState < todos.length ? prevState + 1 : prevState)
+            } else {
+                setCursor(todos.length + 1);
             }
-            else{ setCursor(todos.length+1); }
 
             setSelected(todos[cursor]);
-            if(realTime > todos[cursor].time){
-                totalOver += realTime - todos[cursor].time;
+
+            let before = todos[cursor - 1];
+            if (before !== undefined) {
+                before.status = true
             }
-            let before = todos[cursor-1];
-            if (before!== undefined){ before.status = true}
-            if (selected!== undefined){ selected.status = true}
+            if (selected !== undefined) {
+                selected.status = true
+            }
         }
     }, [downPress]);
 
