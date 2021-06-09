@@ -11,19 +11,28 @@ type Props = TodoProps & {
     index: number
     active: boolean
     done: boolean
+    callbackFromParent(listInfo: number): void;
 }
-const Todo: React.FC<Props> = ({ todo, active, done, index }) => {
+const Todo: React.FC<Props> = ({ todo, active, done, index ,callbackFromParent}) => {
+    const overtimeFn = () => {
+        callbackFromParent(todo.overtime);
+    }
+    useEffect(() => {
+        overtimeFn()
+    },)
     const [realTime, setTime] = useState<number>(0);
     // const minuteTime = Math.floor(realTime/60);
     const minuteTime = realTime;
-    const myCallback = (dataFromChild: number) => {
-        setTime(dataFromChild);
+    const timeCallback = (timerTime: number) => {
+        setTime(timerTime);
     }
     const [longest, setLong] = useState<number>(0);
     const [sizeArr, setSize] = useState<number>(0);
     const [color, setColor] = useState<string>('rgb(198,246,241)');
     useEffect(() => {
         handleColor()
+        handleLongest()
+        handleSize()
     },)
     const handleColor = (): void => {
         const diff = minuteTime - todo.time
@@ -35,17 +44,11 @@ const Todo: React.FC<Props> = ({ todo, active, done, index }) => {
             setColor('rgb(255,202,255)');
         }
     }
-    useEffect(() => {
-        handleLongest()
-    },)
     const handleLongest = (): void => {
         getLongestName()
             .then(({data: {longest}}: number | any) => setLong(longest))
             .catch((err: Error) => console.log(err))
     }
-    useEffect(() => {
-        handleSize()
-    },)
     const handleSize = (): void => {
         getSize()
             .then(({data: {sizeArr}}: number | any) => setSize(sizeArr))
@@ -99,7 +102,7 @@ const Todo: React.FC<Props> = ({ todo, active, done, index }) => {
                                 <div className="set-time" >
                                     {todo.time} {todo.overtime} min
                                 </div>
-                                <Timer callbackFromParent={myCallback} initialMinute={todo.time} active={active}
+                                <Timer callbackFromParent={timeCallback} initialMinute={todo.time} active={active}
                                        done={done}/>
                             </div>
                         </div>

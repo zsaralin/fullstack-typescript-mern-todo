@@ -34,6 +34,10 @@ const useKeyPress = function(targetKey: string) {
 
 
 const App: React.FC = () => {
+    const [totalOver, setOver] = useState<number>();
+    const overtimeCallback = (overtimeVal: number) => {
+        setOver(overtimeVal);
+    }
     const getTodoTime = (): number => {
         let todoTime = 0;
         for(let i=0; i<todos.length; i++){
@@ -127,7 +131,7 @@ const App: React.FC = () => {
         return (
             <DragDropContext onDragEnd={onDragEnd}>
             <main className='App' >
-                {/*<span>{totalOver}</span>*/}
+                <span>{totalOver}</span>
                 <div className='test'>
                 <Droppable droppableId='col-1' isDropDisabled={false} >
                     {provided => {
@@ -146,7 +150,8 @@ const App: React.FC = () => {
                             todo={todo}
                             index= {index}
                             active={index===cursor}
-                            done = {index <= cursor-1}/>
+                            done = {index <= cursor-1}
+                            callbackFromParent={overtimeCallback}/>
                     ))}
                     {provided.placeholder}
                 </ul> )}}
