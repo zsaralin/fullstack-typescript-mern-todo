@@ -44,7 +44,7 @@ const App: React.FC = () => {
     const [todos, setTodos] = useState<ITodo[]>([]);
     let todoTime = getTodoTime();
     // let totalOver = getOvertime();
-    let bonusTime = 8;
+    let bonusTime = 5;
     const [selected, setSelected] =  useState<ITodo>();
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");

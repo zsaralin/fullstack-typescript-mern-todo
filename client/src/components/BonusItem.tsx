@@ -5,7 +5,7 @@ import Timer from "./Timer";
 import Slider from "./Slider";
 
 function BonusItem(props: { active: boolean, done: boolean, percent: number }){
-    let fixedTime = 8;
+    let fixedTime = 5;
     const [realTime, setTime] = useState<number>(0);
     const myCallback = (dataFromChild: number) => {
         setTime(dataFromChild);
