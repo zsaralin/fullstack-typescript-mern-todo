@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import TodoItem from './components/TodoItem'
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-import {getTodos, updateTodo, deleteTodo} from './API'
+import {getTodos,} from './API'
 import BonusItem from "./components/BonusItem";
 
 const useKeyPress = function(targetKey: string) {
@@ -12,7 +12,6 @@ const useKeyPress = function(targetKey: string) {
             setKeyPressed(true);
         }
     }
-
     const upHandler = ({ key }: { key: string }) => {
         if (key === targetKey) {
             setKeyPressed(false);
@@ -32,12 +31,26 @@ const useKeyPress = function(targetKey: string) {
     return keyPressed;
 };
 
-
 const App: React.FC = () => {
-    const [totalOver, setOver] = useState<number>();
-    const overtimeCallback = (overtimeVal: number) => {
-        setOver(overtimeVal);
-    }
+
+    const downPress = useKeyPress("ArrowDown");
+    const upPress = useKeyPress("ArrowUp");
+
+    const [todos, setTodos] = useState<ITodo[]>([]);
+    const [selected, setSelected] =  useState<ITodo>();
+    const [cursor, setCursor] = useState<number>(-1);
+
+    const [realTime, setTime] = useState<number>(0);
+    useEffect(() => {
+        let myInterval = setInterval(() => {
+            if (cursor != -1) {
+                setTime(realTime + 1);
+            }
+        }, 1000)
+        return () => {
+            clearInterval(myInterval);
+        };
+    });
     const getTodoTime = (): number => {
         let todoTime = 0;
         for(let i=0; i<todos.length; i++){
@@ -45,32 +58,28 @@ const App: React.FC = () => {
         }
         return todoTime;
     }
-    const [todos, setTodos] = useState<ITodo[]>([]);
     let todoTime = getTodoTime();
-    // let totalOver = getOvertime();
+    let totalOver = 0;
     let bonusTime = 8;
-    const [selected, setSelected] =  useState<ITodo>();
-    const downPress = useKeyPress("ArrowDown");
-    const upPress = useKeyPress("ArrowUp");
-    const [cursor, setCursor] = useState<number>(-1);
 
     useEffect(() => {
         if (downPress) {
             if(cursor < todos.length){
-            setCursor(prevState =>
-                prevState < todos.length ? prevState + 1 : prevState
-            )
+                setCursor(prevState =>
+                    prevState < todos.length ? prevState + 1 : prevState)
             }
-            else{
-                setCursor(todos.length+1);
-            }
+            else{ setCursor(todos.length+1); }
 
             setSelected(todos[cursor]);
+            if(realTime > todos[cursor].time){
+                totalOver += realTime - todos[cursor].time;
+            }
             let before = todos[cursor-1];
             if (before!== undefined){ before.status = true}
             if (selected!== undefined){ selected.status = true}
         }
     }, [downPress]);
+
     useEffect(() => {
         if (upPress) {
             setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
@@ -96,42 +105,19 @@ const App: React.FC = () => {
           setTodos(newList)
     }
 
-  useEffect(() => {
-    fetchTodos();
-  }, [])
-
   const fetchTodos = (): void => {
     getTodos()
     .then(({ data: { todos } }: ITodo[] | any) => setTodos(todos))
     .catch((err: Error) => console.log(err))
   }
-  const handleUpdateTodo = (todo: ITodo): void => {
-    updateTodo(todo)
-    .then(({ status, data }) => {
-        if (status !== 200) {
-          throw new Error('Error! Todo not updated')
-        }
-        setTodos(data.todos)
-      })
-      .catch((err) => console.log(err))
-  }
-
-
-  const handleDeleteTodo = (_id: string): void => {
-    deleteTodo(_id)
-    .then(({ status, data }) => {
-        if (status !== 200) {
-          throw new Error('Error! Todo not deleted')
-        }
-        setTodos(data.todos)
-      })
-      .catch((err) => console.log(err))
-  }
+    useEffect(() => {
+        fetchTodos();
+    }, [])
 
         return (
             <DragDropContext onDragEnd={onDragEnd}>
             <main className='App' >
-                <span>{totalOver}</span>
+                <span>{realTime} {totalOver}</span>
                 <div className='test'>
                 <Droppable droppableId='col-1' isDropDisabled={false} >
                     {provided => {
@@ -145,13 +131,10 @@ const App: React.FC = () => {
                     {todos.map((todo: ITodo, index) => (
                         <TodoItem
                             key={todo._id}
-                            updateTodo={handleUpdateTodo}
-                            deleteTodo={handleDeleteTodo}
                             todo={todo}
                             index= {index}
                             active={index===cursor}
-                            done = {index <= cursor-1}
-                            callbackFromParent={overtimeCallback}/>
+                            done = {index <= cursor-1}/>
                     ))}
                     {provided.placeholder}
                 </ul> )}}

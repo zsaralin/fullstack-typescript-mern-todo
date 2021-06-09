@@ -6,20 +6,12 @@ import Timer from "./Timer";
 import Slider from "./Slider";
 
 type Props = TodoProps & {
-    updateTodo: (todo: ITodo) => void
-    deleteTodo: (_id: string) => void
     index: number
     active: boolean
     done: boolean
-    callbackFromParent(listInfo: number): void;
 }
-const Todo: React.FC<Props> = ({ todo, active, done, index ,callbackFromParent}) => {
-    const overtimeFn = () => {
-        callbackFromParent(todo.overtime);
-    }
-    useEffect(() => {
-        overtimeFn()
-    },)
+const Todo: React.FC<Props> = ({ todo, active, done, index}) => {
+
     const [realTime, setTime] = useState<number>(0);
     // const minuteTime = Math.floor(realTime/60);
     const minuteTime = realTime;
@@ -58,11 +50,13 @@ const Todo: React.FC<Props> = ({ todo, active, done, index ,callbackFromParent})
         handleOvertime()
     });
     function handleOvertime(){
-        setTimeout(() => {
-        todo.overtime = 0;
-        if(minuteTime>=todo.time){
-            todo.overtime=minuteTime-todo.time+1;
-        }},500);
+        let myInterval = setInterval(() => {
+            if(minuteTime>=todo.time){
+                todo.overtime=minuteTime-todo.time+1;
+        }},1000);
+        return () => {
+            clearInterval(myInterval);
+        };
     }
     return (
             <Draggable draggableId={todo._id} index={index} isDragDisabled={done || active} >
