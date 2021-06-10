@@ -38,10 +38,10 @@ function BonusItem(props: { time: number, active: boolean, done: boolean, percen
                      animationPlayState: props.active? 'running':'paused',
                      background: props.done ? color:'',
                      textDecoration: props.done ? 'grey line-through' : 'none',}}>
-                <div className="bonus" style={{textIndent: props.time < 2 ? '-9999px':'',
+                <div className="bonus" style={{textIndent: props.time < 3 ? '-9999px':'',
                     background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}> Bonus Time </div>
                 <div className="bonus-time" style = {{
-                    textIndent: props.time < 2 ? '300%':'',
+                    textIndent: props.time < 3 ? '300%':'',
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     color: "grey", textDecoration: props.done? 'grey line-through':'none',
