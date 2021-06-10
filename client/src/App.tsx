@@ -37,34 +37,55 @@ const App: React.FC = () => {
     const upPress = useKeyPress("ArrowUp");
 
     const [todos, setTodos] = useState<ITodo[]>([]);
-    const [selected, setSelected] =  useState<ITodo>();
+    const [selected, setSelected] = useState<ITodo>();
     const [cursor, setCursor] = useState<number>(-1);
-    const [totalOver, setOver] = useState<number>(0);
+    // const [totalOver, setOver] = useState<number>(0);
+
     const [realTime, setTime] = useState<number>(0);
+    // useEffect(() => {
+    //     let myInterval = setInterval(() => {
+    //         if (cursor != -1) {
+    //             setTime(realTime + 1);
+    //         }
+    //     }, 1000)
+    //     return () => {
+    //         clearInterval(myInterval);
+    //     };
+    // });
+
+    const timeCallback = (timerTime: number) => {
+        setTime(timerTime);
+    }
     useEffect(() => {
-        let myInterval = setInterval(() => {
-            if (cursor != -1) {
-                setTime(realTime + 1);
+        if (selected !== undefined) {
+            if (realTime >= selected.time) {
+                selected.overtime = (realTime - selected.time);
             }
-        }, 1000)
-        return () => {
-            clearInterval(myInterval);
-        };
-    });
-    useEffect(()=>{
-        if (selected !== undefined && realTime >= selected.time){
-            setOver(realTime - selected.time);
         }
     })
     const getTodoTime = (): number => {
         let todoTime = 0;
-        for(let i=0; i<todos.length; i++){
+        for (let i = 0; i < todos.length; i++) {
             todoTime += todos[i].time;
         }
         return todoTime;
     }
+    const getTotalOver = (): number => {
+        let totalOver = 0;
+        for (let i = 0; i < todos.length; i++) {
+            totalOver += todos[i].overtime;
+        }
+        return totalOver;
+    }
+
+    const getPercent = (todo: ITodo): number => {
+        return (todo.time + todo.overtime) / (todoTime) * 100
+
+    }
+
     let todoTime = getTodoTime();
-    let bonusTime = 8;
+    let totalOver = getTotalOver();
+    let bonusTime = 5 - totalOver;
 
     useEffect(() => {
         if (downPress) {
@@ -75,11 +96,10 @@ const App: React.FC = () => {
                 setCursor(todos.length + 1);
             }
             // setTime (0);
-            setSelected(todos[cursor+1]);
-
-            let before = todos[cursor ];
+            setSelected(todos[cursor + 1]);
+            let before = todos[cursor];
             if (before !== undefined) {
-                before.status = true
+                before.status = false
             }
             if (selected !== undefined) {
                 selected.status = true
@@ -90,19 +110,23 @@ const App: React.FC = () => {
     useEffect(() => {
         if (upPress) {
             setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
-            setSelected(todos[cursor-1]);
+            setSelected(todos[cursor - 1]);
             // setTime (0);
             let before = todos[cursor];
-            if (before!== undefined){ before.status = false}
-            if (selected!== undefined){ selected.status = true}
+            if (before !== undefined) {
+                before.status = false
+            }
+            if (selected !== undefined) {
+                selected.status = true
+            }
         }
     }, [upPress]);
 
 
-    const onDragEnd = ({ source, destination }: DropResult) => {
+    const onDragEnd = ({source, destination}: DropResult) => {
         // Make sure we have a valid destination
         if (destination === undefined || destination === null ||
-            destination.index < source.index && destination.index <= cursor ) return null
+            destination.index < source.index && destination.index <= cursor) return null
         // Make sure we're actually moving the item
         if (destination.index === source.index) return null
         // Move the item within the list
@@ -111,51 +135,56 @@ const App: React.FC = () => {
         // Then insert the item at the right location
         newList.splice(destination.index, 0, todos[source.index])
         // Update the list
-          setTodos(newList)
+        setTodos(newList)
     }
 
-  const fetchTodos = (): void => {
-    getTodos()
-    .then(({ data: { todos } }: ITodo[] | any) => setTodos(todos))
-    .catch((err: Error) => console.log(err))
-  }
+    const fetchTodos = (): void => {
+        getTodos()
+            .then(({data: {todos}}: ITodo[] | any) => setTodos(todos))
+            .catch((err: Error) => console.log(err))
+    }
     useEffect(() => {
         fetchTodos();
     }, [])
 
-        return (
-            <DragDropContext onDragEnd={onDragEnd}>
-            <main className='App' >
-                {/*<span style={{textAlign: 'right'}}>{realTime}{totalOver} </span>*/}
+    return (
+        <DragDropContext onDragEnd={onDragEnd}>
+            <main className='App'>
+                <span
+                    style={{textAlign: 'right'}}>{realTime} {totalOver} {selected !== undefined ? selected.overtime : ''} </span>
                 <div className='test'>
-                <Droppable droppableId='col-1' isDropDisabled={false} >
-                    {provided => {
-                        const style = {
-                            height: (todoTime+totalOver)/(todoTime+bonusTime)*100,
-                            ...provided.droppableProps,
-                        };
-                        return (
-                <ul className="characters"
-                    {...provided.droppableProps} ref={provided.innerRef} style = {style}>
-                    {todos.map((todo: ITodo, index) => (
-                        <TodoItem
-                            key={todo._id}
-                            todo={todo}
-                            index= {index}
-                            active={index===cursor}
-                            done = {index <= cursor-1}/>
-                    ))}
-                    {provided.placeholder}
-                </ul> )}}
-                </Droppable>
-                <BonusItem
-                time = {bonusTime-totalOver} active = {cursor === todos.length} done = {cursor === todos.length+1}
-                percent = {(bonusTime-totalOver)/(bonusTime+todoTime)*100}/>
+                    <Droppable droppableId='col-1' isDropDisabled={false}>
+                        {provided => {
+                            const style = {
+                                // height: (todoTime + totalOver)/(todoTime) + '%' ,
+                                color: 'black',
+                                ...provided.droppableProps,
+                            };
+                            return (
+                                <ul className="characters"
+                                    {...provided.droppableProps} ref={provided.innerRef} style={style}>
+                                    {todos.map((todo: ITodo, index) => (
+                                        <TodoItem
+                                            key={todo._id}
+                                            todo={todo}
+                                            index={index}
+                                            active={index === cursor}
+                                            done={index <= cursor - 1}
+                                            callbackFromParent2={timeCallback}
+                                            percent={getPercent(todo)}/>
+                                    ))}
+                                    {provided.placeholder}
+                                </ul>)
+                        }}
+                    </Droppable>
+                    <BonusItem
+                        time={bonusTime} active={cursor === todos.length} done={cursor === todos.length + 1}
+                        percent={bonusTime / (todoTime + bonusTime) * 100}/>
                 </div>
-                <button className = "button"> Settings </button>
+                <button className="button"> Settings</button>
             </main>
-            </DragDropContext>
-        )
-    }
+        </DragDropContext>
+    )
+}
 
 export default App

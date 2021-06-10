@@ -3,7 +3,7 @@
     position: absolute;
     width: 100%;
     bottom:0;
-    height:5px;
+    height:8px;
     background: rgba(60, 60, 60, .4);
     animation-timing-function: linear;
     animation-name: slidein;

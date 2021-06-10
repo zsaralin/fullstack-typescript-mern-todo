@@ -29,9 +29,10 @@
 .Card--text {
     display: flex;
     height: 100%;
+    overflow: hidden;
     /*flex: 1 1;*/
     animation-name: forwardAnim;
-    animation-timing-function: ease-out;
+    animation-timing-function: linear;
     animation-fill-mode: forwards;
     background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;
     background-size: 215% ;
@@ -59,13 +60,13 @@
 }
 
 .description {
-    padding: 0 0 0 .3em;
+    padding: 0 .5em 0 .5em;
     flex: 1 1;
     height: auto;
 }
 
 .set-time{
-    font-size: small;
+    font-size: 22px;
     font-weight: bold;
 }
 .timer{

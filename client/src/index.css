@@ -10,6 +10,7 @@ body {
     font-family: 'Nunito', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-size: 30px;
     /*height: 100vh;*/
 }
 
@@ -38,7 +39,6 @@ body {
     flex: 1 1;
     flex-direction: column;
     height: 100%;
-
 }
 
 .characters {
@@ -49,8 +49,9 @@ body {
 }
 
 .App button {
-    height: 3vh;
-    width: 80px;
+    height: 4vh;
+    width: 90px;
+    font-size: 20px;
     cursor: pointer;
     font-weight: bold;
     color: darkgray;

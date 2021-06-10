@@ -10,7 +10,7 @@ function Slider(props: { start: boolean, time: number}){
                 animationPlayState: props.start? 'running':'paused',
                 animationDuration: props.start? props.time/**60*/ + 's':'0'}}>
                 <IconContext.Provider value={{color: 'rgba(60, 60, 60, .6)' }}>
-                    <GoTriangleRight  style= {{position: 'absolute', left:'-10px', top: '-12px', height: '30px'}} />
+                    <GoTriangleRight  style= {{position: 'absolute', left:'-18px', top: '-20px', height: '50px'}} />
                 </IconContext.Provider>
             </div>)
     }

@@ -33,6 +33,7 @@ const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 description: data.substring(2, data.length - 2),
                 time: timeNum,
                 status: false,
+                overtime: 0,
             });
             todos.push(todo);
             yield todo.save();

@@ -14,6 +14,10 @@ const todoSchema = new mongoose_1.Schema({
         type: Number,
         required: true
     },
+    overtime: {
+        type: Number,
+        required: true
+    },
     status: {
         type: Boolean,
         required: true

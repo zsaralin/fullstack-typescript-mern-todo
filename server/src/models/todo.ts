@@ -16,6 +16,10 @@ const todoSchema: Schema = new Schema({
         type: Number,
         required: true
     },
+    overtime: {
+        type: Number,
+        required: true
+    },
 
     status: {
         type: Boolean,

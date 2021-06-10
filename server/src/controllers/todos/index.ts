@@ -21,6 +21,7 @@ const getTodos = async (req: Request, res: Response): Promise<void> => {
                 description: data.substring(2, data.length - 2),
                 time: timeNum,
                 status: false,
+                overtime: 0,
             })
             todos.push(todo);
             await todo.save()

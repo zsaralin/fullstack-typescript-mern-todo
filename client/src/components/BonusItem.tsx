@@ -27,7 +27,8 @@ function BonusItem(props: { time: number, active: boolean, done: boolean, percen
 
     }
         return(
-        <div className="bottom-panel" style = {{height: props.percent+'%', display: props.time <1 ?'none':''}}>
+        <div className="bottom-panel" style = {{
+            height: props.percent+'%', display: props.time <1 ?'none':''}}>
             <Slider start={props.active} time = {props.time}/>
             <div className={(realTime<props.time) ? "Bonus-text": "Bonus-reverse"}
                  style = {{
@@ -37,12 +38,15 @@ function BonusItem(props: { time: number, active: boolean, done: boolean, percen
                      animationPlayState: props.active? 'running':'paused',
                      background: props.done ? color:'',
                      textDecoration: props.done ? 'grey line-through' : 'none',}}>
-                <div className="bonus" style={{//height:30+fixedTime*2 + '%',
+                <div className="bonus" style={{textIndent: props.time < 2 ? '-9999px':'',
                     background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}> Bonus Time </div>
-                <div className="bonus-time" style = {{color: "grey", textDecoration: props.done? 'grey line-through':'none',
+                <div className="bonus-time" style = {{
+                    textIndent: props.time < 2 ? '300%':'',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    color: "grey", textDecoration: props.done? 'grey line-through':'none',
                     background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}>
-
-                <div className="set-time" >
+                <div className="set-time">
                     {props.time} min</div>
                 <Timer callbackFromParent={myCallback} initialMinute = {props.time} active = {props.active} done = {props.done} />
             </div>
