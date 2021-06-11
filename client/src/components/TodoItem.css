@@ -34,13 +34,15 @@
     animation-name: forwardAnim;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
-    background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;
+    background: linear-gradient(to left, rgba(215, 215, 215, 1) 40%, turquoise 55%) right;
     background-size: 215% ;
+
 }
 
 .Card--reverse{
     display: flex;
     flex-grow: 1;
+    overflow: hidden;
     height: 100%;
     animation-name: backwardAnim;
     animation-timing-function: linear;
@@ -66,8 +68,28 @@
 }
 
 .set-time{
-    font-size: 22px;
+    font-size: 15px;
     font-weight: bold;
+}
+.crossedOut{
+    position: relative;
+}
+.crossedOut:before {
+    position: absolute;
+    content: "";
+    left: 0;
+    top: 45%;
+    right: 0;
+    bottom: 2%;
+    border-top: 2px solid;
+    border-color: inherit;
+    opacity: 60%;
+
+    -webkit-transform:rotate(-5deg);
+    -moz-transform:rotate(-5deg);
+    -ms-transform:rotate(-5deg);
+    -o-transform:rotate(-5deg);
+    transform:rotate(-30deg);
 }
 .timer{
     /*height: 80%*/

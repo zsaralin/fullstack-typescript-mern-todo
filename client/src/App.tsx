@@ -42,6 +42,8 @@ const App: React.FC = () => {
     // const [totalOver, setOver] = useState<number>(0);
 
     const [realTime, setTime] = useState<number>(0);
+    const [nonZeroTime, setZero] = useState<number>(0);
+
     // useEffect(() => {
     //     let myInterval = setInterval(() => {
     //         if (cursor != -1) {
@@ -54,12 +56,18 @@ const App: React.FC = () => {
     // });
 
     const timeCallback = (timerTime: number) => {
+        if(timerTime != 0){setZero(timerTime)}
         setTime(timerTime);
     }
     useEffect(() => {
         if (selected !== undefined) {
             if (realTime >= selected.time) {
                 selected.overtime = (realTime - selected.time);
+            }
+            if(bonusTime<1 && realTime > selected.time){
+                for (let i = cursor+1; i < todos.length; i++) {
+                    todos[i].extra += 1 / (todos.length-cursor-1);
+                }
             }
         }
     })
@@ -79,27 +87,39 @@ const App: React.FC = () => {
     }
 
     const getPercent = (todo: ITodo): number => {
-        return (todo.time + todo.overtime) / (todoTime) * 100
+        return (todo.time + todo.overtime - todo.extra) / (todoTime) * 100
 
     }
 
     let todoTime = getTodoTime();
     let totalOver = getTotalOver();
-    let bonusTime = 5 - totalOver;
+
+    // let origBonus = 10;
+    const [origBonus, setBonus] = useState<number>(10);
+
+    let bonusTime = origBonus-totalOver <0 ? 0 : origBonus - totalOver;
+    // let bonusTime = 0;
+    // setBonus(origBonus-totalOver <0 ? 0 : origBonus - totalOver);
 
     useEffect(() => {
         if (downPress) {
+            setTime(0);
             if (cursor < todos.length) {
                 setCursor(prevState =>
                     prevState < todos.length ? prevState + 1 : prevState)
             } else {
                 setCursor(todos.length + 1);
             }
+            if(selected !== undefined && nonZeroTime < selected.time ){
+                setBonus(origBonus+(selected.time-nonZeroTime));
+                selected.time = nonZeroTime;
+            }
             // setTime (0);
             setSelected(todos[cursor + 1]);
             let before = todos[cursor];
             if (before !== undefined) {
                 before.status = false
+                // if(before.overtime > 0){ before.overtime -= 1}
             }
             if (selected !== undefined) {
                 selected.status = true
@@ -150,8 +170,6 @@ const App: React.FC = () => {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <main className='App'>
-                <span
-                    style={{textAlign: 'right'}}>{realTime} {totalOver} {selected !== undefined ? selected.overtime : ''} </span>
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {

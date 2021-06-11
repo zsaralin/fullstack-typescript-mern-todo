@@ -24,8 +24,9 @@ const Timer = (props:{ initialMinute: number, active: boolean, done: boolean
         someFn()
     },)
     return (
-        <div className="timer" style={{fontSize: "17px"}}>
-            {props.active || props.done ? <div> {Math.floor(seconds/*/60*/)} min </div> : <div> - min </div>
+        <div className="timer" style={{fontSize: "12px", }}>
+            {props.active || props.done ? <div style = {{display: props.done && Math.floor(seconds/*/60*/) < 4 ?  'none':''}}>
+                {Math.floor(seconds/*/60*/)} min </div> : <div> - min </div>
             }
         </div>
     )

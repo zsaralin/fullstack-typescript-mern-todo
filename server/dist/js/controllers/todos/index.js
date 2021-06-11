@@ -31,9 +31,11 @@ const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const todo = new todo_1.default({
                 name: file.toString().substring(0, file.toString().length - 4),
                 description: data.substring(2, data.length - 2),
+                initTime: timeNum,
                 time: timeNum,
                 status: false,
                 overtime: 0,
+                extra: 0,
             });
             todos.push(todo);
             yield todo.save();

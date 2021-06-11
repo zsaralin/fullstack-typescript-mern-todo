@@ -17,7 +17,7 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
     const [realTime, setTime] = useState<number>(0);
     // const minuteTime = Math.floor(realTime/60);
     const minuteTime = realTime;
-    let totalOver = minuteTime-props.todo.time > 0 ?minuteTime-props.todo.time: 0 ;
+    // let totalOver = minuteTime - props.todo.time > 0 ? minuteTime - props.todo.time : 0;
     const timeCallback = (timerTime: number) => {
         setTime(timerTime);
     }
@@ -55,58 +55,72 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
             .then(({data: {sizeArr}}: number | any) => setSize(sizeArr))
             .catch((err: Error) => console.log(err))
     }
-    useEffect(() => {
-        handleOvertime()
-    });
-    function handleOvertime(){
-        totalOver = minuteTime - props.todo.time;
-    }
+    // useEffect(() => {
+    //     handleOvertime()
+    // });
+
+    // function handleOvertime() {
+    //     totalOver = minuteTime - props.todo.time;
+    // }
+
     return (
-            <Draggable draggableId={props.todo._id} index={props.index} isDragDisabled={props.done || props.active} >
-                {provided => {
-                    const style = {
-                        // height: (minuteTime < todo.time) ? (todo.time/sizeArr)*100+ '%':((todo.time+totalOver)/(sizeArr))*100+ '%',
-                        height: props.todo.time < 2? '4%':props.percent + '%',
-                        textDecoration: props.done ? 'line-through' : 'none',
-                        color: props.done? 'grey':'',
-                        ...provided.draggableProps.style,
-                    };
-                    return (
+        <Draggable draggableId={props.todo._id} index={props.index} isDragDisabled={props.done || props.active}>
+            {provided => {
+                const style = {
+                    display: (props.todo.time - props.todo.extra) < .5 ? 'none' : '',
+                    height: props.percent + '%',
+                    color: props.done ? 'grey' : '',
+                    ...provided.draggableProps.style,
+                };
+                return (
                     <div className="Card" ref={provided.innerRef}
                          {...provided.draggableProps}
-                         {...provided.dragHandleProps} style = {style}>
+                         {...provided.dragHandleProps} style={style}>
                         <Slider start={props.active} time={(minuteTime < props.todo.time) ? props.todo.time : 0}/>
                         <div className={(minuteTime < props.todo.time) ? "Card--text" : "Card--reverse"}
                              style={{
-                                 animationDuration: props.todo.time/**60*/ + 's',
+                                 animationDuration: props.todo.time + 2/**60*/ + 's',
                                  animationPlayState: props.active ? 'running' : 'paused',
-                                 backgroundColor: !props.active && !props.done ? 'rgb(245, 245, 245)' : '',
                                  // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
                                  // textDecoration: done ? 'line-through' : 'none',
+                                 textIndent: (props.todo.time -  props.todo.extra) < 3 ? '-300%' : '',
                              }}>
                             <div className='name'
                                  style={{
-                                     width: 50 + 7 * longest + "px", backgroundColor: props.done ? color : '',
+                                     textDecoration: props.done ? 'line-through' : 'none',
+                                     width: 50 + 5 * longest + "px", backgroundColor: props.done ? color : '',
                                      background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
                                  }}>
                                 {props.todo.name} </div>
                             <div className='description' style={{
-                                // paddingBottom: (minuteTime < todo.time) ? (todo.time/sizeArr)+ '%' : todo.time / (sizeArr/2) + (realTime/*/60*/ - todo.time) + '%',
+                                textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>{props.todo.description} </div>
-                            <div className="time" style={{backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : ''}}>
-                                <div className="set-time" >
-                                    {props.todo.time} {totalOver} min
+                            <div className="time" style={{
+                                display:  (props.todo.time - props.todo.extra) < 3 ? 'none' : '',
+                                backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
+                                background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
+                            }}>
+                                <div className="set-time">
+                                    {!props.active && !props.done && Math.round((props.todo.time - props.todo.extra)) < props.todo.initTime ?
+                                        <span style={{display: 'inline'}}>
+                                        <span className="crossedOut"
+                                              style={{color: 'grey', opacity: '70%',display: 'inline', marginRight: '4px'}}>
+                                            {Math.round(props.todo.initTime)}</span>
+                                            <span> {Math.round(props.todo.time - props.todo.extra)}</span>
+                                        </span>: Math.round(props.todo.time-props.todo.extra)} min
                                 </div>
-                                <Timer callbackFromParent={timeCallback} initialMinute={props.todo.time} active={props.active}
+                                <Timer callbackFromParent={timeCallback} initialMinute={props.todo.time}
+                                       active={props.active}
                                        done={props.done}/>
                             </div>
                         </div>
                     </div>
 
-                )}}
-            </Draggable>
+                )
+            }}
+        </Draggable>
     )
 }
 export default Todo

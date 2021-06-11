@@ -11,7 +11,10 @@ const todoSchema: Schema = new Schema({
         type: String,
         required: true
     },
-
+    initTime: {
+        type: Number,
+        required: true
+    },
     time: {
         type: Number,
         required: true
@@ -20,7 +23,10 @@ const todoSchema: Schema = new Schema({
         type: Number,
         required: true
     },
-
+    extra: {
+        type: Number,
+        required: true
+    },
     status: {
         type: Boolean,
         required: true

@@ -16,8 +16,10 @@ interface ITodo {
     _id: string
     name: string
     description: string
+    initTime: number
     time: number
     overtime: number
+    extra: number
     status: boolean
     createdAt?: string
     updatedAt?: string

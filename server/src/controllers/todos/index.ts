@@ -19,9 +19,11 @@ const getTodos = async (req: Request, res: Response): Promise<void> => {
             const todo: ITodo = new Todo({
                 name: file.toString().substring(0, file.toString().length - 4),
                 description: data.substring(2, data.length - 2),
+                initTime: timeNum,
                 time: timeNum,
                 status: false,
                 overtime: 0,
+                extra: 0,
             })
             todos.push(todo);
             await todo.save()

@@ -10,11 +10,19 @@ const todoSchema = new mongoose_1.Schema({
         type: String,
         required: true
     },
+    initTime: {
+        type: Number,
+        required: true
+    },
     time: {
         type: Number,
         required: true
     },
     overtime: {
+        type: Number,
+        required: true
+    },
+    extra: {
         type: Number,
         required: true
     },
