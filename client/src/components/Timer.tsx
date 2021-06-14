@@ -2,7 +2,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 
 
-const Timer = (props:{ initialMinute: number, active: boolean, done: boolean
+const Timer = (props:{ active: boolean, done: boolean
     callbackFromParent(listInfo: number): void;
 }) => {
     const [seconds, setSeconds] = useState(0);

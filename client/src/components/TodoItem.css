@@ -34,8 +34,8 @@
     animation-name: forwardAnim;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
-    background: linear-gradient(to left, rgba(215, 215, 215, 1) 40%, turquoise 55%) right;
-    background-size: 215% ;
+    background: linear-gradient(to left, rgba(215, 215, 215, 1) 45%, turquoise 55%) right;
+    background-size: 200% ;
 
 }
 
@@ -47,10 +47,8 @@
     animation-name: backwardAnim;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
-    background: linear-gradient(to right, turquoise 42%, magenta 60%) left;
-    background-size: 250%;
-
-
+    background: linear-gradient(to right, turquoise 45%, magenta 55%) left;
+    background-size: 220%;
 }
 
 .name{

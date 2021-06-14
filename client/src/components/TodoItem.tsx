@@ -40,7 +40,7 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
         if (Math.abs(diff) <= 1) {
             setColor('rgb(198,246,241)');
         } else if (diff > 4) {
-            setColor('rgb(255,125,255)');
+            setColor('rgb(240,144,250)');
         } else if (diff > 1) {
             setColor('rgb(255,202,255)');
         }
@@ -62,7 +62,7 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
     // function handleOvertime() {
     //     totalOver = minuteTime - props.todo.time;
     // }
-
+    let reducedTime = Math.round(props.todo.time - props.todo.extra)
     return (
         <Draggable draggableId={props.todo._id} index={props.index} isDragDisabled={props.done || props.active}>
             {provided => {
@@ -76,15 +76,15 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
                     <div className="Card" ref={provided.innerRef}
                          {...provided.draggableProps}
                          {...provided.dragHandleProps} style={style}>
-                        <Slider start={props.active} time={(minuteTime < (props.todo.time-props.todo.extra)) ?
-                            props.todo.time -props.todo.extra: 0}/>
-                        <div className={(minuteTime < props.todo.time) ? "Card--text" : "Card--reverse"}
+                        <Slider start={props.active} time={(minuteTime < reducedTime) ?
+                            reducedTime: 0}/>
+                        <div className={(minuteTime < reducedTime) ? "Card--text" : "Card--reverse"}
                              style={{
-                                 animationDuration: props.todo.time + 2/**60*/ + 's',
+                                 animationDuration: (minuteTime < reducedTime) ? reducedTime /**60*/ + 's': reducedTime + 1 + 's',
                                  animationPlayState: props.active ? 'running' : 'paused',
                                  // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
                                  // textDecoration: done ? 'line-through' : 'none',
-                                 textIndent: (props.todo.time -  props.todo.extra) < 3 ? '-300%' : '',
+                                 textIndent: reducedTime < 3 ? '-300%' : '',
                              }}>
                             <div className='name'
                                  style={{
@@ -97,23 +97,23 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
-                            }}>{props.todo.description} {props.todo.time-props.todo.extra}</div>
+                            }}>{props.todo.description} </div>
                             <div className="time" style={{
-                                display:  (props.todo.time - props.todo.extra) < 3 ? 'none' : '',
+                                display:  reducedTime < 3 ? 'none' : '',
                                 backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="set-time">
-                                    {!props.active && !props.done && Math.round((props.todo.time - props.todo.extra)) < props.todo.initTime ?
+                                    {!props.active && !props.done && reducedTime < props.todo.initTime ?
                                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{color: 'grey', opacity: '70%',display: 'inline', marginRight: '4px'}}>
-                                            {Math.round(props.todo.initTime)}</span>
-                                            <span> {Math.round(props.todo.time - props.todo.extra)}</span>
-                                        </span>: props.active ? Math.round(props.todo.time - props.todo.extra)
+                                            {props.todo.initTime}</span>
+                                            <span> {reducedTime}</span>
+                                        </span>: props.active ? reducedTime
                                             : props.todo.initTime} min
                                 </div>
-                                <Timer callbackFromParent={timeCallback} initialMinute={Math.round(props.todo.time-props.todo.extra)}
+                                <Timer callbackFromParent={timeCallback}
                                        active={props.active}
                                        done={props.done}/>
                             </div>

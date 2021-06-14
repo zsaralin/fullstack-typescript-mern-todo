@@ -48,7 +48,7 @@ function BonusItem(props: { time: number, active: boolean, done: boolean, percen
                     background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}>
                 <div className="set-time">
                     {props.time} min</div>
-                <Timer callbackFromParent={myCallback} initialMinute = {props.time} active = {props.active} done = {props.done} />
+                <Timer callbackFromParent={myCallback} active = {props.active} done = {props.done} />
             </div>
         </div>
         </div>
