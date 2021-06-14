@@ -95,7 +95,7 @@ const App: React.FC = () => {
     let totalOver = getTotalOver();
 
     // let origBonus = 10;
-    const [origBonus, setBonus] = useState<number>(10);
+    const [origBonus, setBonus] = useState<number>(0);
 
     let bonusTime = origBonus-totalOver <0 ? 0 : origBonus - totalOver;
     // let bonusTime = 0;

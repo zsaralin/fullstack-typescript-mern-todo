@@ -76,7 +76,8 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
                     <div className="Card" ref={provided.innerRef}
                          {...provided.draggableProps}
                          {...provided.dragHandleProps} style={style}>
-                        <Slider start={props.active} time={(minuteTime < props.todo.time) ? props.todo.time : 0}/>
+                        <Slider start={props.active} time={(minuteTime < (props.todo.time-props.todo.extra)) ?
+                            props.todo.time -props.todo.extra: 0}/>
                         <div className={(minuteTime < props.todo.time) ? "Card--text" : "Card--reverse"}
                              style={{
                                  animationDuration: props.todo.time + 2/**60*/ + 's',
@@ -96,7 +97,7 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
-                            }}>{props.todo.description} </div>
+                            }}>{props.todo.description} {props.todo.time-props.todo.extra}</div>
                             <div className="time" style={{
                                 display:  (props.todo.time - props.todo.extra) < 3 ? 'none' : '',
                                 backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
@@ -109,9 +110,10 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
                                               style={{color: 'grey', opacity: '70%',display: 'inline', marginRight: '4px'}}>
                                             {Math.round(props.todo.initTime)}</span>
                                             <span> {Math.round(props.todo.time - props.todo.extra)}</span>
-                                        </span>: Math.round(props.todo.time-props.todo.extra)} min
+                                        </span>: props.active ? Math.round(props.todo.time - props.todo.extra)
+                                            : props.todo.initTime} min
                                 </div>
-                                <Timer callbackFromParent={timeCallback} initialMinute={props.todo.time}
+                                <Timer callbackFromParent={timeCallback} initialMinute={Math.round(props.todo.time-props.todo.extra)}
                                        active={props.active}
                                        done={props.done}/>
                             </div>
