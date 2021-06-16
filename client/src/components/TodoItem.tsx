@@ -97,7 +97,7 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
-                            }}>{props.todo.description} time: {props.todo.time} overtime: {props.todo.overtime}</div>
+                            }}>{props.todo.description} </div>
                             <div className="time" style={{
                                 display:  reducedTime < 3 ? 'none' : '',
                                 backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
