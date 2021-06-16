@@ -36,6 +36,9 @@ const App: React.FC = () => {
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
 
+    //time used to minimize the bonus time (from people going overtime)
+    const [bonusLost, setBonusLost] = useState<number>(0);
+
     const [todos, setTodos] = useState<ITodo[]>([]);
     const [selected, setSelected] = useState<ITodo>();
     const [cursor, setCursor] = useState<number>(-1);
@@ -44,16 +47,8 @@ const App: React.FC = () => {
     const [realTime, setTime] = useState<number>(0);
     const [nonZeroTime, setZero] = useState<number>(0);
 
-    // useEffect(() => {
-    //     let myInterval = setInterval(() => {
-    //         if (cursor != -1) {
-    //             setTime(realTime + 1);
-    //         }
-    //     }, 1000)
-    //     return () => {
-    //         clearInterval(myInterval);
-    //     };
-    // });
+    let origBonus = 0;
+    const [bonusTime, setBonus] = useState<number>(origBonus);
 
     const timeCallback = (timerTime: number) => {
         if(timerTime != 0){setZero(timerTime)}
@@ -61,12 +56,18 @@ const App: React.FC = () => {
     }
     useEffect(() => {
         if (selected !== undefined) {
-            if (realTime >= selected.time) {
-                selected.overtime = (realTime - selected.time);
-            }
-            if(bonusTime<1 && realTime > selected.time){
-                for (let i = cursor+1; i < todos.length; i++) {
-                    todos[i].extra += 1 / (todos.length-cursor-1);
+            //if person goes overtime
+            if (realTime > Math.round(selected.time - selected.extra)) {
+                //increase selected.overtime so their box increases in size
+                selected.overtime = (realTime - Math.round(selected.time - selected.extra));
+                //decrease other slots if bonusTime == 0
+                if (bonusTime < 1) {
+                    let reducedSlot = cursor + selected.overtime -bonusLost;
+                    while(reducedSlot >= todos.length ){reducedSlot -= todos.length-cursor-1}
+                    todos[reducedSlot].extra += 1;
+                } else{ //decrease bonusTime
+                    setBonusLost(bonusLost+1);
+                    setBonus(bonusTime - 1)
                 }
             }
         }
@@ -78,43 +79,60 @@ const App: React.FC = () => {
         }
         return todoTime;
     }
-    const getTotalOver = (): number => {
-        let totalOver = 0;
-        for (let i = 0; i < todos.length; i++) {
-            totalOver += todos[i].overtime;
-        }
-        return totalOver;
-    }
+    // const getTotalOver = (): number => {
+    //     let totalOver = 0;
+    //     for (let i = 0; i < todos.length; i++) {
+    //         totalOver += todos[i].overtime;
+    //     }
+    //     return totalOver;
+    // }
 
     const getPercent = (todo: ITodo): number => {
         return (todo.time + todo.overtime - todo.extra) / (todoTime) * 100
-
     }
 
+    const isSlotDecreased = (): boolean => {
+        for (let i = cursor + 1; i < todos.length; i++) {
+            if(todos[i].extra>0){
+                return true;
+            }
+        }
+        return false;
+    }
     let todoTime = getTodoTime();
-    let totalOver = getTotalOver();
+    // let totalOver = getTotalOver();
+    let slotDecreased = isSlotDecreased();
 
-    // let origBonus = 10;
-    const [origBonus, setBonus] = useState<number>(0);
-
-    let bonusTime = origBonus-totalOver <0 ? 0 : origBonus - totalOver;
-    // let bonusTime = 0;
-    // setBonus(origBonus-totalOver <0 ? 0 : origBonus - totalOver);
 
     useEffect(() => {
         if (downPress) {
-            setTime(0);
+            // setTime(0);
+            setBonusLost(0)
             if (cursor < todos.length) {
                 setCursor(prevState =>
                     prevState < todos.length ? prevState + 1 : prevState)
             } else {
                 setCursor(todos.length + 1);
             }
-            if(selected !== undefined && nonZeroTime < selected.time ){
-                setBonus(origBonus+(selected.time-nonZeroTime));
-                selected.time = nonZeroTime;
+            if(selected !== undefined) {
+                //if person takes less than set time
+                if (nonZeroTime < selected.time) {
+                    //increase subsequent slots that are under time (until they are back to their set times)
+                    if (slotDecreased) {
+                        for (let i = cursor + 1; i < todos.length; i++) {
+                            let addedTime = todos[i].extra - (selected.time - nonZeroTime) / (todos.length - cursor - 1);
+                            if(addedTime <= 0){
+                                todos[i].extra = 0
+                                setBonus(origBonus - (addedTime));
+                            }
+                            else{todos[i].extra = addedTime}
+                        }
+                    } else {
+                        setBonus(bonusTime + (selected.time - nonZeroTime));
+                    }
+                    selected.time = nonZeroTime;
+                }
             }
-            // setTime (0);
             setSelected(todos[cursor + 1]);
             let before = todos[cursor];
             if (before !== undefined) {
@@ -129,9 +147,11 @@ const App: React.FC = () => {
 
     useEffect(() => {
         if (upPress) {
+            if(cursor === 0){
+                window.location.reload();
+            }
             setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
             setSelected(todos[cursor - 1]);
-            // setTime (0);
             let before = todos[cursor];
             if (before !== undefined) {
                 before.status = false
@@ -189,7 +209,8 @@ const App: React.FC = () => {
                                             active={index === cursor}
                                             done={index <= cursor - 1}
                                             callbackFromParent2={timeCallback}
-                                            percent={getPercent(todo)}/>
+                                            percent={getPercent(todo)}
+                                        />
                                     ))}
                                     {provided.placeholder}
                                 </ul>)

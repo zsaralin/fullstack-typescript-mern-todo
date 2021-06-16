@@ -34,6 +34,7 @@ const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 initTime: timeNum,
                 time: timeNum,
                 status: false,
+                lessThan: false,
                 overtime: 0,
                 extra: 0,
             });

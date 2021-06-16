@@ -6,7 +6,6 @@
     /*flex: 1 1;*/
     /*background: rgba(245, 245, 245, 1);*/
     /*background-color: red;*/
-    /*width: 90%;*/
     /*height: 100%;*/
     /*margin-top: 2%;*/
 }
@@ -19,7 +18,7 @@
     animation-fill-mode: forwards;
     background-size: 215%;
     /*height: 100%;*/
-    height: auto;
+    /*height: auto;*/
 }
 @keyframes forwardAnim {
     from {

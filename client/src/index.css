@@ -16,7 +16,7 @@ body {
 
 .App {
     display: flex;
-    height: 100vh;
+    height: 97vh;
     /*height: auto;*/
     margin-left: 5%;
     margin-right: 5%;
@@ -39,6 +39,7 @@ body {
     flex: 1 1;
     flex-direction: column;
     height: 100%;
+    width: 100%;
 }
 
 .characters {

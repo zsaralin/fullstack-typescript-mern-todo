@@ -6,4 +6,5 @@ export interface ITodo extends Document {
     status: boolean
     index: number
     overtime: number
+    extra: number
 }

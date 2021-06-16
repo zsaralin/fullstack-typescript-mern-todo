@@ -40,7 +40,7 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
         if (Math.abs(diff) <= 1) {
             setColor('rgb(198,246,241)');
         } else if (diff > 4) {
-            setColor('rgb(240,144,250)');
+            setColor('rgb(254,188,254)');
         } else if (diff > 1) {
             setColor('rgb(255,202,255)');
         }
@@ -67,7 +67,7 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
         <Draggable draggableId={props.todo._id} index={props.index} isDragDisabled={props.done || props.active}>
             {provided => {
                 const style = {
-                    display: (props.todo.time - props.todo.extra) < .5 ? 'none' : '',
+                    display:    (props.todo.time - props.todo.extra) < .5 ? 'none' : '',
                     height: props.percent + '%',
                     color: props.done ? 'grey' : '',
                     ...provided.draggableProps.style,
@@ -97,14 +97,14 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
-                            }}>{props.todo.description} </div>
+                            }}>{props.todo.description} time: {props.todo.time} overtime: {props.todo.overtime}</div>
                             <div className="time" style={{
                                 display:  reducedTime < 3 ? 'none' : '',
                                 backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="set-time">
-                                    {!props.active && !props.done && reducedTime < props.todo.initTime ?
+                                    {props.todo.extra>0 && reducedTime < props.todo.initTime ?
                                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{color: 'grey', opacity: '70%',display: 'inline', marginRight: '4px'}}>
@@ -113,7 +113,7 @@ const Todo = (props:{ percent:number, todo: ITodo, active:boolean, done:boolean,
                                         </span>: props.active ? reducedTime
                                             : props.todo.initTime} min
                                 </div>
-                                <Timer callbackFromParent={timeCallback}
+                                <Timer callbackFromParent={timeCallback} startTime = {reducedTime}
                                        active={props.active}
                                        done={props.done}/>
                             </div>

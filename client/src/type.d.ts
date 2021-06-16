@@ -21,6 +21,4 @@ interface ITodo {
     overtime: number
     extra: number
     status: boolean
-    createdAt?: string
-    updatedAt?: string
 }
