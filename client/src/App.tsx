@@ -47,7 +47,7 @@ const App: React.FC = () => {
     const [realTime, setTime] = useState<number>(0);
     const [nonZeroTime, setZero] = useState<number>(0);
 
-    let origBonus = 0;
+    let origBonus = 5;
     const [bonusTime, setBonus] = useState<number>(origBonus);
 
     const timeCallback = (timerTime: number) => {
@@ -64,10 +64,10 @@ const App: React.FC = () => {
                 if (bonusTime < 1) {
                     let reducedSlot = cursor + selected.overtime -bonusLost;
                     while(reducedSlot >= todos.length ){reducedSlot -= todos.length-cursor-1}
-                    todos[reducedSlot].extra += 1;
+                    todos[reducedSlot].extra += 1/60;
                 } else{ //decrease bonusTime
-                    setBonusLost(bonusLost+1);
-                    setBonus(bonusTime - 1)
+                    setBonusLost(bonusLost+1/60);
+                    setBonus(bonusTime - 1/60)
                 }
             }
         }
@@ -88,7 +88,7 @@ const App: React.FC = () => {
     // }
 
     const getPercent = (todo: ITodo): number => {
-        return (todo.time + todo.overtime - todo.extra) / (todoTime) * 100
+        return (todo.time*60 + todo.overtime - todo.extra) / (todoTime*60) * 100
     }
 
     const isSlotDecreased = (): boolean => {
@@ -116,21 +116,21 @@ const App: React.FC = () => {
             }
             if(selected !== undefined) {
                 //if person takes less than set time
-                if (nonZeroTime < selected.time) {
+                if (nonZeroTime/60 < selected.time) {
                     //increase subsequent slots that are under time (until they are back to their set times)
                     if (slotDecreased) {
                         for (let i = cursor + 1; i < todos.length; i++) {
-                            let addedTime = todos[i].extra - (selected.time - nonZeroTime) / (todos.length - cursor - 1);
+                            let addedTime = todos[i].extra - (selected.time - nonZeroTime/60) / (todos.length - cursor - 1);
                             if(addedTime <= 0){
                                 todos[i].extra = 0
                                 setBonus(origBonus - (addedTime));
                             }
-                            else{todos[i].extra = addedTime}
+                            else{todos[i].extra = addedTime/60}
                         }
                     } else {
-                        setBonus(bonusTime + (selected.time - nonZeroTime));
+                        setBonus(bonusTime + (selected.time - nonZeroTime/60));
                     }
-                    selected.time = nonZeroTime;
+                    selected.time = nonZeroTime/60;
                 }
             }
             setSelected(todos[cursor + 1]);
@@ -218,7 +218,7 @@ const App: React.FC = () => {
                     </Droppable>
                     <BonusItem
                         time={bonusTime} active={cursor === todos.length} done={cursor === todos.length + 1}
-                        percent={bonusTime / (todoTime + bonusTime) * 100}/>
+                        percent={bonusTime/60 / (todoTime + bonusTime) * 60*100}/>
                 </div>
                 <button className="button"> Settings</button>
             </main>
