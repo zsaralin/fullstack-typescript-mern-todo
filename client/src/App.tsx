@@ -57,9 +57,9 @@ const App: React.FC = () => {
     useEffect(() => {
         if (selected !== undefined) {
             //if person goes overtime
-            if (realTime > Math.round(selected.time - selected.extra)) {
+            if (realTime > (selected.time*60 - selected.extra)){
                 //increase selected.overtime so their box increases in size
-                selected.overtime = (realTime - Math.round(selected.time - selected.extra));
+                selected.overtime = (realTime - (selected.time*60 - selected.extra));
                 //decrease other slots if bonusTime == 0
                 if (bonusTime < 1) {
                     let reducedSlot = cursor + selected.overtime -bonusLost;
