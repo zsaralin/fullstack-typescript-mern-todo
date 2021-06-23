@@ -52,8 +52,16 @@ const App: React.FC = () => {
     //number of slots skipped before reaching a non-zero one
     const [skippedSlots, setSkippedSlots] = useState<number>(0);
 
+    const getTodoTime = (): number => {
+        let todoTime = 0;
+        for (let i = 0; i < todos.length; i++) {
+            todoTime += todos[i].time+todos[i].overtime - todos[i].extra;
+        }
+        return todoTime;
+    }
+    let todoTime = getTodoTime();
 
-    let origBonus = 5;
+    let origBonus = 15;
     const [bonusTime, setBonus] = useState<number>(origBonus);
 
     const timeCallback = (timerTime: number) => {
@@ -101,13 +109,6 @@ const App: React.FC = () => {
             }}
         }
     })
-    const getTodoTime = (): number => {
-        let todoTime = 0;
-        for (let i = 0; i < todos.length; i++) {
-            todoTime += todos[i].time+todos[i].overtime - todos[i].extra;
-        }
-        return todoTime;
-    }
 
     const getPercent = (todo: ITodo): number => {
         let percent = (todo.time - todo.extra+todo.overtime);
@@ -135,7 +136,6 @@ const App: React.FC = () => {
             }
         return numDecreased;
     }
-    let todoTime = getTodoTime();
     let slotDecreased = isSlotDecreased();
 
     useEffect(() => {
