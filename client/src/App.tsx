@@ -63,10 +63,10 @@ const App: React.FC = () => {
     useEffect(() => {
         if (selected !== undefined) {
             //if person goes overtime
-            if (realTime > Math.round(selected.time - selected.extra) && !(cursor===todos.length-1 && bonusTime<=0)) {
+            if (realTime > Math.round(selected.time*60 - selected.extra) && !(cursor===todos.length-1 && bonusTime<=0)) {
                 //increase selected.overtime so their box increases in size
                 //only increase box when there is bonusTime or other people's time left to take from
-                if(isTimeLeft()) selected.overtime = (realTime - Math.round(selected.time - selected.extra));
+                if(isTimeLeft()) selected.overtime = (realTime - Math.round(selected.time*60 - selected.extra));
 
                 //decrease other slots if bonusTime == 0
                 if(cursor != todos.length - 1 || bonusTime >0){
@@ -77,7 +77,6 @@ const App: React.FC = () => {
                     while(reducedSlot >= todos.length ){
                         reducedSlot -= todos.length - cursor - 1;
                     }
-
                     // while(reducedSlot < todos.length && todos[reducedSlot].time == 1 && isTimeLeft()) {
                     //     reducedSlot += 1;
                     //     setDidSkipSlots(true)}
@@ -93,11 +92,11 @@ const App: React.FC = () => {
                         // }
 
                     todos[0].name = reducedSlot.toString()
-                    todos[reducedSlot].time > 1? todos[reducedSlot].time  -= 1: todos[reducedSlot].time = 1;
+                    todos[reducedSlot].time > 1? todos[reducedSlot].time  -= 1/60: todos[reducedSlot].time = 1;
                     if(didSkipSlots){setSkippedSlots(skippedSlots+1)}
                 } else{ //decrease bonusTime
-                    setBonus(bonusTime - 1)
-                    setInitBonus(initBonus + 1)
+                    setBonus(bonusTime - 1/60)
+                    setInitBonus(initBonus + 1/60)
                 }
             }}
         }
@@ -146,8 +145,8 @@ const App: React.FC = () => {
             setInitBonus(0)
             if(selected !== undefined) {
                 //if person takes less than set time
-                if (selected.overtime == 0 && nonZeroTime < (selected.time)) {
-                    let difference = selected.time - nonZeroTime;
+                if (selected.overtime == 0 && nonZeroTime < (selected.time*60)) {
+                    let difference = selected.time*60 - nonZeroTime;
                     let subtract = Math.floor(slotDecreased/difference)
                     for (let i = cursor + 1; i < todos.length; i++) {
                         todos[i].time += subtract;
@@ -157,13 +156,13 @@ const App: React.FC = () => {
                     if(slotDecreased>0){
                         for (let i = cursor + 1; i < todos.length; i++) {
                             while(difference > 0 && todos[i].time < todos[i].initTime) {
-                                todos[i].time += 1;
+                                todos[i].time += 1/60;
                                 difference -= 1;
                             }
                         }
                 }else{
                     setBonus(bonusTime + difference);}
-                    selected.extra += selected.time - nonZeroTime
+                    selected.extra += selected.time*60 - nonZeroTime
                     // selected.time = nonZeroTime;
                 }
             }
