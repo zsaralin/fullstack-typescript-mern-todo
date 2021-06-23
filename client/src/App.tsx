@@ -53,7 +53,7 @@ const App: React.FC = () => {
     const [skippedSlots, setSkippedSlots] = useState<number>(0);
 
 
-    let origBonus = 0;
+    let origBonus = 5;
     const [bonusTime, setBonus] = useState<number>(origBonus);
 
     const timeCallback = (timerTime: number) => {
@@ -242,7 +242,6 @@ const App: React.FC = () => {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <main className='App'>
-                <span>{skippedSlots}</span>
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {

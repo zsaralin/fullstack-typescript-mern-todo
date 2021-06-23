@@ -17,8 +17,8 @@ const Todo = (props: {
     callbackFromParent2(listInfo: number): void;
 }) => {
     const [realTime, setTime] = useState<number>(0);
-    // const minuteTime = Math.floor(realTime/60);
-    const minuteTime = realTime;
+    const minuteTime = Math.floor(realTime/60);
+    // const minuteTime = realTime;
     // let totalOver = minuteTime - props.todo.time > 0 ? minuteTime - props.todo.time : 0;
     const timeCallback = (timerTime: number) => {
         setTime(timerTime);
@@ -82,7 +82,7 @@ const Todo = (props: {
                         <div
                             className={(minuteTime < props.todo.time ) ? "Card--text" : "Card--reverse"}
                             style={{
-                                animationDuration: (minuteTime <= reducedTime) ? reducedTime /**60*/ + 's' : reducedTime + 's',
+                                animationDuration: (minuteTime <= reducedTime) ? reducedTime *60 + 's' : reducedTime + 's',
                                 animationPlayState: props.active ? 'running' : 'paused',
                                 // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
                                 // textDecoration: done ? 'line-through' : 'none',
@@ -99,7 +99,7 @@ const Todo = (props: {
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
-                            }}> reducedTime: {reducedTime} percent: {props.percent} time: {props.todo.time} extra: {props.todo.extra} overtime: {props.todo.overtime}</div>
+                            }}> {props.todo.description}</div>
                             <div className="time" style={{
                                 backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
