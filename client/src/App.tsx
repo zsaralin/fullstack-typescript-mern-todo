@@ -51,7 +51,7 @@ const App: React.FC = () => {
     const [initBonus, setInitBonus] = useState<number>(0);
     //number of slots skipped before reaching a non-zero one
     const [skippedSlots, setSkippedSlots] = useState<number>(0);
-    const [lastIndex, setLastIndex] = useState<number>(0);
+    const [lastIndex, setLastIndex] = useState<number>(cursor>=0?cursor+1:1);
 
 
     let origBonus = 0;
@@ -74,11 +74,14 @@ const App: React.FC = () => {
                 if (bonusTime < 1) {
                     setDidSkipSlots(false)
                     // setSkippedSlots(0)
-                    let reducedSlot = cursor + selected.overtime-initBonus ;
+                    setLastIndex(lastIndex+1)
+                    let reducedSlot = lastIndex + cursor -initBonus ;
+                    // let reducedSlot = getNextNonZero();
+
                     while(reducedSlot >= todos.length ){
                         reducedSlot -= todos.length - cursor - 1;
                     }
-                    setLastIndex(reducedSlot)
+                    todos[1].name = reducedSlot.toString()
 
                     if(todos[reducedSlot].time == 1 && isTimeLeft()) {
                         reducedSlot = getNextNonZero();
@@ -95,9 +98,10 @@ const App: React.FC = () => {
                         //     setSkippedSlots(skippedSlots + 1)
                         }
 
-                    // todos[0].name = reducedSlot.toString()
+                    todos[0].name = reducedSlot.toString()
                     // todos[reducedSlot].time > 1? todos[reducedSlot].time  -= 1: todos[reducedSlot].time = 1;
                     todos[reducedSlot].time  -= 1
+                    setLastIndex(reducedSlot)
                     if(didSkipSlots){setSkippedSlots(skippedSlots+1)}
                 } else{ //decrease bonusTime
                     setBonus(bonusTime - 1)
