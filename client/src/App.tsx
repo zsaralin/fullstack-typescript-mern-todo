@@ -43,15 +43,12 @@ const App: React.FC = () => {
     const [cursor, setCursor] = useState<number>(-1);
 
     const [realTime, setTime] = useState<number>(0);
-    const [didSkipSlots, setDidSkipSlots] = useState<boolean>(false);
 
     const [nonZeroTime, setZero] = useState<number>(0);
 
     //amount bonusTime decreases before decreasing meeting slots
     const [initBonus, setInitBonus] = useState<number>(0);
-    //number of slots skipped before reaching a non-zero one
-    const [skippedSlots, setSkippedSlots] = useState<number>(0);
-    const [lastIndex, setLastIndex] = useState<number>(cursor>=0?cursor+1:1);
+    const [lastIndex, setLastIndex] = useState<number>(cursor +2);
 
 
     let origBonus = 0;
@@ -67,48 +64,63 @@ const App: React.FC = () => {
             if (realTime > Math.round(selected.time - selected.extra) && !(cursor===todos.length-1 && bonusTime<=0)) {
                 //increase selected.overtime so their box increases in size
                 //only increase box when there is bonusTime or other people's time left to take from
-                if(isTimeLeft()) selected.overtime = (realTime - Math.round(selected.time - selected.extra));
+                if (isTimeLeft()) {
+                    selected.overtime = (realTime - Math.round(selected.time - selected.extra));
+                }
 
                 //decrease other slots if bonusTime == 0
-                if(cursor != todos.length - 1 || bonusTime >0){
-                if (bonusTime < 1) {
-                    setDidSkipSlots(false)
-                    // setSkippedSlots(0)
-                    setLastIndex(lastIndex+1)
-                    let reducedSlot = lastIndex + cursor -initBonus ;
-                    // let reducedSlot = getNextNonZero();
+                if (cursor != todos.length - 1 || bonusTime > 0) {
+                    if (bonusTime < 1) {
+                        setLastIndex(lastIndex +1);
 
-                    while(reducedSlot >= todos.length ){
-                        reducedSlot -= todos.length - cursor - 1;
-                    }
-                    todos[1].name = reducedSlot.toString()
-
-                    if(todos[reducedSlot].time == 1 && isTimeLeft()) {
-                        reducedSlot = getNextNonZero();
-                        // reducedSlot += 1;
-                        // setDidSkipSlots(true)}
-                        // if (reducedSlot >= todos.length) {
-                        //     while(todos[cursor + skippedSlots+1].time == 1){
-                        //         setSkippedSlots(skippedSlots+1)
-                        //     }
-                        //     if (cursor + skippedSlots + 1 >= todos.length ) {
-                        //         setSkippedSlots(0)
-                        //     }
-                        //     reducedSlot = cursor + skippedSlots + 1 ;
-                        //     setSkippedSlots(skippedSlots + 1)
+                        // let reducedSlot = lastIndex - initBonus;
+                        // // let reducedSlot = getNextNonZero();
+                        // todos[0].name = reducedSlot.toString();
+                        //
+                        let changed = false;
+                        if (todos[lastIndex].time === 1 && isTimeLeft()) {
+                            for (let i = lastIndex; i < todos.length; i++) {
+                                if(todos[i].time !== 1){
+                                    setLastIndex(i);
+                                    changed = true;
+                                }
+                            }
+                            if(!changed){
+                            for (let i = cursor + 1; i < todos.length; i++) {
+                                if(todos[i].time !== 1){
+                                    setLastIndex(i);
+                                }
+                            }}
                         }
+                            // reducedSlot = lastIndex;}
+                            // reducedSlot += 1;
+                            // setDidSkipSlots(true)}
+                            // if (reducedSlot >= todos.length) {
+                            //     while(todos[cursor + skippedSlots+1].time == 1){
+                            //         setSkippedSlots(skippedSlots+1)
+                            //     }
+                            //     if (cursor + skippedSlots + 1 >= todos.length ) {
+                            //         setSkippedSlots(0)
+                            //     }
+                            //     reducedSlot = cursor + skippedSlots + 1 ;
+                            //     setSkippedSlots(skippedSlots + 1)
+                            // }
+                            if(todos[lastIndex-1].time > 1){
+                                todos[lastIndex-1].time  -= 1;
+                            }
+                            else{
+                                todos[lastIndex].time -= 1;
+                                setLastIndex(lastIndex+2)
+                            }
+                        // todos[lastIndex-1].time -= 1
 
-                    todos[0].name = reducedSlot.toString()
-                    // todos[reducedSlot].time > 1? todos[reducedSlot].time  -= 1: todos[reducedSlot].time = 1;
-                    todos[reducedSlot].time  -= 1
-                    setLastIndex(reducedSlot)
-                    if(didSkipSlots){setSkippedSlots(skippedSlots+1)}
-                } else{ //decrease bonusTime
-                    setBonus(bonusTime - 1)
-                    setInitBonus(initBonus + 1)
+                    } else { //decrease bonusTime
+                            setBonus(bonusTime - 1)
+                            setInitBonus(initBonus + 1)
+                        }
+                    }
                 }
-            }}
-        }
+            }
     })
     const getTodoTime = (): number => {
         let todoTime = 0;
@@ -119,23 +131,23 @@ const App: React.FC = () => {
     }
     //returns index of first non-zero slot to take time from
     //only call if isTimeLeft == true
-    const getNextNonZero = (): number => {
-        let changed = false;
-        for (let i = lastIndex+1; i < todos.length; i++) {
-            if(todos[i].time !== 1){
-                setLastIndex(i);
-                changed = true;
-            }
-        }
-        if(!changed){
-            for (let i = cursor + 1; i < todos.length; i++) {
-                if(todos[i].time !== 1){
-                    setLastIndex(i);
-                }
-            }
-        }
-        return lastIndex;
-    }
+    // function getNextNonZero(){
+    //     for (let i = lastIndex; i < todos.length; i++) {
+    //         if(todos[i].time !== 1){
+    //             setLastIndex(i);
+    //             return lastIndex;
+    //         }
+    //     }
+    //
+    //     for (let i = cursor + 1; i < todos.length; i++) {
+    //         if(todos[i].time !== 1){
+    //             todos[i].name = 'got'
+    //             setLastIndex(i);
+    //             return lastIndex;
+    //         }
+    //     }
+    //     return lastIndex;
+    // }
 
     const getPercent = (todo: ITodo): number => {
         let percent = (todo.time - todo.extra+todo.overtime);
@@ -168,6 +180,7 @@ const App: React.FC = () => {
 
     useEffect(() => {
         if (downPress) {
+            setLastIndex(cursor +2);
             // let trumpetSound = new Audio(audio);
             // if(cursor == -1){trumpetSound.play()}
             setInitBonus(0)
@@ -208,6 +221,7 @@ const App: React.FC = () => {
 
     useEffect(() => {
         if (upPress) {
+            setLastIndex(cursor+1)
             if(cursor === 0){
                 window.location.reload();
             }
@@ -269,7 +283,6 @@ const App: React.FC = () => {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <main className='App'>
-                <span>{skippedSlots}</span>
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {

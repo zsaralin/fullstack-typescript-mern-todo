@@ -21,7 +21,7 @@ const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const todos = [];
         for (const file of fs_1.default.readdirSync(pathFull)) {
             const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
-            let timeNum = 1;
+            let timeNum = 5;
             if (data[0] === 'm') {
                 timeNum = 10;
             }
