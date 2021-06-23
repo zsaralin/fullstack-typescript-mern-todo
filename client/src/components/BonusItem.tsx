@@ -4,7 +4,7 @@ import Timer from "./Timer";
 // import Timer from "./Timer";
 import Slider from "./Slider";
 
-function BonusItem(props: { time: number, active: boolean, done: boolean, percent: number }){
+function BonusItem(props: { origBonus: number, time: number, active: boolean, done: boolean, percent: number }){
     const [realTime, setTime] = useState<number>(0);
     const myCallback = (dataFromChild: number) => {
         setTime(dataFromChild);
@@ -38,19 +38,25 @@ function BonusItem(props: { time: number, active: boolean, done: boolean, percen
                      animationPlayState: props.active? 'running':'paused',
                      background: props.done ? color:'',
                      textDecoration: props.done ? 'grey line-through' : 'none',}}>
-                <div className="bonus" style={{textIndent: props.time < 3 ? '-9999px':'',
-                    background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}> Bonus Time </div>
+                <div className="bonus" style={{textIndent: props.percent < 6.25 ? '-9999px':'',
+                    background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}> Bonus Time {props.percent}</div>
                 <div className="bonus-time" style = {{
-                    textIndent: props.time < 3 ? '300%':'',
-                    whiteSpace: 'nowrap',
+                    display: props.percent < 6.25 ? 'none':'',
                     overflow: 'hidden',
                     color: "grey", textDecoration: props.done? 'grey line-through':'none',
                     background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}>
-                <div className="set-time">
-                    {Math.round(props.time)} min</div>
+                <div className="set-bonus">
+                    {props.origBonus !== Math.round(props.time)  ?
+                        <span style={{display: 'inline'}}>
+                                        <span className="crossedOut"
+                                              style={{color: 'grey', opacity: '70%',display: 'inline', marginRight: '4px'}}>
+                                            {props.origBonus}</span>
+                                            <span> {props.time}</span>
+                                        </span>:props.origBonus} min
                 <Timer callbackFromParent={myCallback} active = {props.active} done = {props.done}
                 startTime = {props.time}/>
             </div>
+        </div>
         </div>
         </div>
         )}

@@ -27,10 +27,6 @@ const todoSchema: Schema = new Schema({
         type: Number,
         required: true
     },
-    status: {
-        type: Boolean,
-        required: true
-    },
 
 }, { timestamps: true })
 

@@ -25,12 +25,10 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
     },)
     return (
         //timer disappears when reducedTime < 4
-        <div className="timer" style={{fontSize: "12px", }}>
-            {props.active || props.done ? <div
-                style = {{display: props.done && Math.floor(seconds/*/60*/) < 4 ||
-                        props.startTime < 4 ?  'none':'',}}>
+        <div className="timer" style={{fontSize: "10px", marginTop: '-2%'}}>
+            {props.active || props.done ? <div>
                 {Math.floor(seconds/*/60*/)} min </div> :
-                <div style = {{display: props.startTime < 4 ? 'none': ''}}> - min </div>
+                <div> - min </div>
             }
         </div>
     )

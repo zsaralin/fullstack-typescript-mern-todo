@@ -21,8 +21,6 @@ const getTodos = async (req: Request, res: Response): Promise<void> => {
                 description: data.substring(2, data.length - 2),
                 initTime: timeNum,
                 time: timeNum,
-                status: false,
-                lessThan: false,
                 overtime: 0,
                 extra: 0,
             })

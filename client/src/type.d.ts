@@ -7,7 +7,6 @@ type TodoProps = {
 
 type ApiDataType = {
     message: string
-    status: boolean
     todos: ITodo[]
     todo?: ITodo
   }
@@ -20,5 +19,4 @@ interface ITodo {
     time: number
     overtime: number
     extra: number
-    status: boolean
 }

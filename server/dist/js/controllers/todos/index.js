@@ -33,8 +33,6 @@ const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 description: data.substring(2, data.length - 2),
                 initTime: timeNum,
                 time: timeNum,
-                status: false,
-                lessThan: false,
                 overtime: 0,
                 extra: 0,
             });
