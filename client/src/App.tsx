@@ -140,8 +140,8 @@ const App: React.FC = () => {
 
     useEffect(() => {
         if (downPress) {
-            // let trumpetSound = new Audio(audio);
-            // if(cursor == -1){trumpetSound.play()}
+            let trumpetSound = new Audio(audio);
+            if(cursor == -1){trumpetSound.play()}
             setInitBonus(0)
             if(selected !== undefined) {
                 //if person takes less than set time
