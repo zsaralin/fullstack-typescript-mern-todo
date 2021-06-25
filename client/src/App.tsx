@@ -46,11 +46,7 @@ const App: React.FC = () => {
 
     const [nonZeroTime, setZero] = useState<number>(0);
 
-    //amount bonusTime decreases before decreasing meeting slots
-    const [initBonus, setInitBonus] = useState<number>(0);
-    const [lastIndex, setLastIndex] = useState<number>(cursor +2);
-
-
+    const [lastIndex, setLastIndex] = useState<number>(1);
     let origBonus = 0;
     const [bonusTime, setBonus] = useState<number>(origBonus);
 
@@ -71,52 +67,13 @@ const App: React.FC = () => {
                 //decrease other slots if bonusTime == 0
                 if (cursor != todos.length - 1 || bonusTime > 0) {
                     if (bonusTime < 1) {
-                        setLastIndex(lastIndex +1);
-
-                        // let reducedSlot = lastIndex - initBonus;
-                        // // let reducedSlot = getNextNonZero();
-                        // todos[0].name = reducedSlot.toString();
-                        //
-                        let changed = false;
-                        if (todos[lastIndex].time === 1 && isTimeLeft()) {
-                            for (let i = lastIndex; i < todos.length; i++) {
-                                if(todos[i].time !== 1){
-                                    setLastIndex(i);
-                                    changed = true;
-                                }
-                            }
-                            if(!changed){
-                            for (let i = cursor + 1; i < todos.length; i++) {
-                                if(todos[i].time !== 1){
-                                    setLastIndex(i);
-                                }
-                            }}
+                        let reducedSlot2 = cursor + lastIndex;
+                        if(isTimeLeft()){
+                        todos[reducedSlot2].time -= 1;
+                        setLastIndex(lastIndex+1);
                         }
-                            // reducedSlot = lastIndex;}
-                            // reducedSlot += 1;
-                            // setDidSkipSlots(true)}
-                            // if (reducedSlot >= todos.length) {
-                            //     while(todos[cursor + skippedSlots+1].time == 1){
-                            //         setSkippedSlots(skippedSlots+1)
-                            //     }
-                            //     if (cursor + skippedSlots + 1 >= todos.length ) {
-                            //         setSkippedSlots(0)
-                            //     }
-                            //     reducedSlot = cursor + skippedSlots + 1 ;
-                            //     setSkippedSlots(skippedSlots + 1)
-                            // }
-                            if(todos[lastIndex-1].time > 1){
-                                todos[lastIndex-1].time  -= 1;
-                            }
-                            else{
-                                todos[lastIndex].time -= 1;
-                                setLastIndex(lastIndex+2)
-                            }
-                        // todos[lastIndex-1].time -= 1
-
                     } else { //decrease bonusTime
                             setBonus(bonusTime - 1)
-                            setInitBonus(initBonus + 1)
                         }
                     }
                 }
@@ -129,25 +86,6 @@ const App: React.FC = () => {
         }
         return todoTime;
     }
-    //returns index of first non-zero slot to take time from
-    //only call if isTimeLeft == true
-    // function getNextNonZero(){
-    //     for (let i = lastIndex; i < todos.length; i++) {
-    //         if(todos[i].time !== 1){
-    //             setLastIndex(i);
-    //             return lastIndex;
-    //         }
-    //     }
-    //
-    //     for (let i = cursor + 1; i < todos.length; i++) {
-    //         if(todos[i].time !== 1){
-    //             todos[i].name = 'got'
-    //             setLastIndex(i);
-    //             return lastIndex;
-    //         }
-    //     }
-    //     return lastIndex;
-    // }
 
     const getPercent = (todo: ITodo): number => {
         let percent = (todo.time - todo.extra+todo.overtime);
@@ -177,23 +115,33 @@ const App: React.FC = () => {
     }
     let todoTime = getTodoTime();
     let slotDecreased = isSlotDecreased();
-
+    useEffect(() => {
+        if (cursor + lastIndex >= todos.length && isTimeLeft()) {
+            setLastIndex(1);
+        }
+    })
+    useEffect(() => {
+        if(cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time == 1 && isTimeLeft()){
+            setLastIndex(lastIndex+1)
+        }
+    })
     useEffect(() => {
         if (downPress) {
-            setLastIndex(cursor +2);
+            setLastIndex(1);
             // let trumpetSound = new Audio(audio);
             // if(cursor == -1){trumpetSound.play()}
-            setInitBonus(0)
             if(selected !== undefined) {
                 //if person takes less than set time
                 if (selected.overtime == 0 && nonZeroTime < (selected.time)) {
                     let difference = selected.time - nonZeroTime;
                     let subtract = Math.floor(slotDecreased/difference)
+                    //increase subsequent slots that are under time (until they are back to their set times)
                     for (let i = cursor + 1; i < todos.length; i++) {
+                        if(todos[i].time < todos[i].initTime){
                         todos[i].time += subtract;
-                        difference -= subtract;
+                        difference -= subtract;}
                     }
-                        //increase subsequent slots that are under time (until they are back to their set times)
+                slotDecreased = isSlotDecreased()
                     if(slotDecreased>0){
                         for (let i = cursor + 1; i < todos.length; i++) {
                             while(difference > 0 && todos[i].time < todos[i].initTime) {
@@ -201,8 +149,8 @@ const App: React.FC = () => {
                                 difference -= 1;
                             }
                         }
-                }else{
-                    setBonus(bonusTime + difference);}
+                }
+                    setBonus(bonusTime + difference);
                     selected.extra += selected.time - nonZeroTime
                     // selected.time = nonZeroTime;
                 }
@@ -221,7 +169,7 @@ const App: React.FC = () => {
 
     useEffect(() => {
         if (upPress) {
-            setLastIndex(cursor+1)
+            setLastIndex(1)
             if(cursor === 0){
                 window.location.reload();
             }
@@ -303,6 +251,7 @@ const App: React.FC = () => {
                                             done={index < cursor }
                                             callbackFromParent2={timeCallback}
                                             percent={getPercent(todo)}
+                                            bonusTime = {bonusTime}
                                         />
                                     ))}
                                     {provided.placeholder}

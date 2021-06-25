@@ -13,7 +13,7 @@ import Slider from "./Slider";
 //     callbackFromParent(listInfo:number): void
 // }
 const Todo = (props: {
-    percent: number, todo: ITodo, active: boolean, done: boolean, index: number
+    percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number,
     callbackFromParent2(listInfo: number): void;
 }) => {
     const [realTime, setTime] = useState<number>(0);
@@ -32,19 +32,29 @@ const Todo = (props: {
     const [longest, setLong] = useState<number>(0);
     const [, setSize] = useState<number>(0);
     const [color, setColor] = useState<string>('rgb(198,246,241)');
+
     useEffect(() => {
-        handleColor()
         handleLongest()
         handleSize()
     },)
+    useEffect(()=>{
+        if(props.active){
+            handleColor();
+        }
+    })
     const handleColor = (): void => {
         const diff = minuteTime - props.todo.time
-        if (Math.abs(diff) <= 1) {
+        if (minuteTime <= props.todo.time) {
             setColor('rgb(198,246,241)');
-        } else if (diff > 4) {
-            setColor('rgb(254,188,254)');
-        } else if (diff > 1) {
-            setColor('rgb(255,202,255)');
+        } else if (props.bonusTime > 0) {
+            if (diff > 4) {
+                setColor('rgb(254,188,254)');
+            }
+            if (diff > 1) {
+                setColor('rgb(255,202,255)');
+            }
+        } else if (props.bonusTime<1) {
+            setColor('rgb(252,190,236)');
         }
     }
     const handleLongest = (): void => {
@@ -72,6 +82,7 @@ const Todo = (props: {
                     height: props.percent + '%',
                     color: props.done ? 'grey' : '',
                     ...provided.draggableProps.style,
+
                 };
                 return (
                     <div className="Card" ref={provided.innerRef}
@@ -80,9 +91,13 @@ const Todo = (props: {
                         <Slider start={props.active} time={(minuteTime < reducedTime) ?
                             reducedTime : 0}/>
                         <div
-                            className={(minuteTime < props.todo.time ) ? "Card--text" : "Card--reverse"}
+                            className={(minuteTime < props.todo.time) ? "Card--text" : props.bonusTime > 0 ?
+                                "Card--reverse" : "Card--reverse2"}
                             style={{
-                                animationDuration: (minuteTime <= reducedTime) ? reducedTime /**60*/ + 's' : reducedTime + 's',
+                                // animationDuration: reducedTime /**60*/ + 's',
+                                animation: (minuteTime < props.todo.time) ? `forwardAnim ${reducedTime}s linear forwards`
+                                    :props.bonusTime>0?`backwardAnim ${5}s linear forwards`:`backwardAnim ${5}s linear forwards, changeColor ${1}s forwards`,
+
                                 animationPlayState: props.active ? 'running' : 'paused',
                                 // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
                                 // textDecoration: done ? 'line-through' : 'none',
@@ -105,7 +120,7 @@ const Todo = (props: {
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="set-time">
-                                    {props.todo.time < props.todo.initTime?
+                                    {props.todo.time < props.todo.initTime ?
                                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{

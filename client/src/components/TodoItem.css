@@ -29,11 +29,8 @@
 .Card--text {
     display: flex;
     height: 100%;
-    overflow: hidden;
+    /*overflow: hidden;*/
     /*flex: 1 1;*/
-    animation-name: forwardAnim;
-    animation-timing-function: linear;
-    animation-fill-mode: forwards;
     background: linear-gradient(to left, rgba(215, 215, 215, 1) 45%, turquoise 55%) right;
     background-size: 200% ;
 
@@ -41,14 +38,20 @@
 
 .Card--reverse{
     display: flex;
-    overflow: hidden;
+    /*overflow: hidden;*/
     height: 100%;
-    animation-name: backwardAnim;
-    animation-timing-function: linear;
-    animation-fill-mode: forwards;
     background: linear-gradient(to right, turquoise 45%, magenta 55%) left;
     background-size: 220%;
 }
+
+.Card--reverse2{
+    display: flex;
+    /*overflow: hidden;*/
+    height: 100%;
+    background: linear-gradient(to right, turquoise 45%,var(--color2)  55%) left;
+    background-size: 220%;
+}
+
 
 .name{
     padding: 0 .5em 0 .5em;
@@ -94,7 +97,7 @@
 
 .time{
     /*height: auto;*/
-    padding: 0 .5em .0 .5em;
+    padding: 0 .5em 0 .5em;
     text-align: right;
     /*height:100%*/
 }
@@ -123,4 +126,16 @@
     to {
         background-position: 100%;
     }
+}
+@keyframes changeColor{
+    0%{--color2: magenta;}
+    10%{--color2: rgb(255,0,250)}
+    20%{--color2: rgb(255,0,240)}
+    30%{--color2: rgb(255,0,230);}
+    40%{--color2: rgb(255,0,220)}
+    50%{--color2: rgb(255,0,210);}
+    60%{--color2: rgb(255,0,200);}
+    70%{--color2: rgb(255,0,190);}
+    100%{--color2: rgb(255,0,180);}
+
 }
