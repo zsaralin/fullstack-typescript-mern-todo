@@ -9,7 +9,7 @@ const getTodos = async (req: Request, res: Response): Promise<void> => {
         const todos: ITodo[] = [];
         for (const file of fs.readdirSync(pathFull)) {
             const data = fs.readFileSync(pathFull + '\\' + file).toString('utf8')
-            let timeNum = 3;
+            let timeNum = 5;
             if(data[0]==='m'){
                 timeNum = 10;
             }
@@ -19,8 +19,8 @@ const getTodos = async (req: Request, res: Response): Promise<void> => {
             const todo: ITodo = new Todo({
                 name: file.toString().substring(0, file.toString().length - 4),
                 description: data.substring(2, data.length - 2),
-                initTime: timeNum,
-                time: timeNum,
+                initTime: timeNum*60,
+                time: timeNum*60,
                 overtime: 0,
                 extra: 0,
             })

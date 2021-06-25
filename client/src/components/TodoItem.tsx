@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {Draggable} from 'react-beautiful-dnd'
-import {getLongestName, getSize,} from "../API";
+import {getLongestName,} from "../API";
 import './TodoItem.css'
 import Timer from "./Timer";
 import Slider from "./Slider";
@@ -17,9 +17,8 @@ const Todo = (props: {
     callbackFromParent2(listInfo: number): void;
 }) => {
     const [realTime, setTime] = useState<number>(0);
-    // const minuteTime = Math.floor(realTime/60);
-    const minuteTime = realTime;
-    // let totalOver = minuteTime - props.todo.time > 0 ? minuteTime - props.todo.time : 0;
+    const minuteTime = Math.floor(realTime / 60);
+    // const minuteTime = realTime;
     const timeCallback = (timerTime: number) => {
         setTime(timerTime);
     }
@@ -30,15 +29,13 @@ const Todo = (props: {
         someFn()
     },)
     const [longest, setLong] = useState<number>(0);
-    const [, setSize] = useState<number>(0);
     const [color, setColor] = useState<string>('rgb(198,246,241)');
 
     useEffect(() => {
         handleLongest()
-        handleSize()
     },)
-    useEffect(()=>{
-        if(props.active){
+    useEffect(() => {
+        if (props.active) {
             handleColor();
         }
     })
@@ -53,7 +50,7 @@ const Todo = (props: {
             if (diff > 1) {
                 setColor('rgb(255,202,255)');
             }
-        } else if (props.bonusTime<1) {
+        } else if (props.bonusTime < 1) {
             setColor('rgb(252,190,236)');
         }
     }
@@ -62,18 +59,6 @@ const Todo = (props: {
             .then(({data: {longest}}: number | any) => setLong(longest))
             .catch((err: Error) => console.log(err))
     }
-    const handleSize = (): void => {
-        getSize()
-            .then(({data: {sizeArr}}: number | any) => setSize(sizeArr))
-            .catch((err: Error) => console.log(err))
-    }
-    // useEffect(() => {
-    //     handleOvertime()
-    // });
-
-    // function handleOvertime() {
-    //     totalOver = minuteTime - props.todo.time;
-    // }
     let reducedTime = Math.round(props.todo.time - props.todo.extra)
     return (
         <Draggable draggableId={props.todo._id} index={props.index} isDragDisabled={props.done || props.active}>
@@ -88,15 +73,15 @@ const Todo = (props: {
                     <div className="Card" ref={provided.innerRef}
                          {...provided.draggableProps}
                          {...provided.dragHandleProps} style={style}>
-                        <Slider start={props.active} time={(minuteTime < reducedTime) ?
+                        <Slider start={props.active} time={(realTime < reducedTime) ?
                             reducedTime : 0}/>
                         <div
-                            className={(minuteTime < props.todo.time) ? "Card--text" : props.bonusTime > 0 ?
+                            className={(realTime < props.todo.time) ? "Card--text" : props.bonusTime > 0 ?
                                 "Card--reverse" : "Card--reverse2"}
                             style={{
                                 // animationDuration: reducedTime /**60*/ + 's',
-                                animation: (minuteTime < props.todo.time) ? `forwardAnim ${reducedTime}s linear forwards`
-                                    :props.bonusTime>0?`backwardAnim ${5}s linear forwards`:`backwardAnim ${5}s linear forwards, changeColor ${1}s forwards`,
+                                animation: (realTime < props.todo.time) ? `forwardAnim ${reducedTime}s linear forwards`
+                                    : props.bonusTime > 0 ? `backwardAnim ${reducedTime}s linear forwards` : `backwardAnim ${reducedTime}s linear forwards, changeColor ${1}s forwards`,
 
                                 animationPlayState: props.active ? 'running' : 'paused',
                                 // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
@@ -120,7 +105,7 @@ const Todo = (props: {
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="set-time">
-                                    {props.todo.time < props.todo.initTime ?
+                                    {Math.ceil(props.todo.time/60) < Math.ceil(props.todo.initTime/60) ?
                                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{
@@ -129,10 +114,10 @@ const Todo = (props: {
                                                   display: 'inline',
                                                   marginRight: '4px'
                                               }}>
-                                            {props.todo.initTime}</span>
-                                            <span> {props.todo.time <= 0 ? 0 : props.todo.time}</span>
-                                        </span> : props.active ? reducedTime
-                                            : props.todo.initTime} min
+                                            {Math.ceil(props.todo.initTime / 60)}</span>
+                                            <span> {props.todo.time <= 0 ? 0 : Math.ceil(props.todo.time / 60)}</span>
+                                        </span> : props.active ? Math.ceil(reducedTime / 60)
+                                            : Math.ceil(props.todo.initTime / 60)} min
                                 </div>
                                 <Timer callbackFromParent={timeCallback} startTime={reducedTime}
                                        active={props.active}

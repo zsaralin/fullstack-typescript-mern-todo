@@ -43,11 +43,12 @@ const App: React.FC = () => {
     const [cursor, setCursor] = useState<number>(-1);
 
     const [realTime, setTime] = useState<number>(0);
-
     const [nonZeroTime, setZero] = useState<number>(0);
 
     const [lastIndex, setLastIndex] = useState<number>(1);
-    let origBonus = 0;
+    const [amountSubtract, setAmountSubtract] = useState<number>(0);
+
+    let origBonus = 5*60;
     const [bonusTime, setBonus] = useState<number>(origBonus);
 
     const timeCallback = (timerTime: number) => {
@@ -70,7 +71,11 @@ const App: React.FC = () => {
                         let reducedSlot2 = cursor + lastIndex;
                         if(isTimeLeft()){
                         todos[reducedSlot2].time -= 1;
-                        setLastIndex(lastIndex+1);
+                        setAmountSubtract(amountSubtract+1)
+                        if(amountSubtract==60){
+                            setLastIndex(lastIndex+1);
+                            setAmountSubtract(0)
+                        }
                         }
                     } else { //decrease bonusTime
                             setBonus(bonusTime - 1)
@@ -89,7 +94,6 @@ const App: React.FC = () => {
 
     const getPercent = (todo: ITodo): number => {
         let percent = (todo.time - todo.extra+todo.overtime);
-        // if(isPercentLeft()){ percent = todo.time - todo.extra + todo.overtime}
         percent = percent/(todoTime+bonusTime)*100
         if(percent<6.5){
             return (6.5);
@@ -99,11 +103,10 @@ const App: React.FC = () => {
 
     const isTimeLeft = () : boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
-            if(todos[i].time != 1){
+            if(todos[i].time != 60){
                 return true}}
         return false;
     }
-
 
     const isSlotDecreased = (): number => {
         let numDecreased = 0;
@@ -121,7 +124,7 @@ const App: React.FC = () => {
         }
     })
     useEffect(() => {
-        if(cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time == 1 && isTimeLeft()){
+        if(cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time == 60 && isTimeLeft()){
             setLastIndex(lastIndex+1)
         }
     })
@@ -134,7 +137,7 @@ const App: React.FC = () => {
                 //if person takes less than set time
                 if (selected.overtime == 0 && nonZeroTime < (selected.time)) {
                     let difference = selected.time - nonZeroTime;
-                    let subtract = Math.floor(slotDecreased/difference)
+                    let subtract = Math.floor(difference/slotDecreased)
                     //increase subsequent slots that are under time (until they are back to their set times)
                     for (let i = cursor + 1; i < todos.length; i++) {
                         if(todos[i].time < todos[i].initTime){
@@ -179,7 +182,7 @@ const App: React.FC = () => {
                 if (before.extra > 0) {
                     let difference = before.extra;
                     before.extra = 0;
-                    let subtract = Math.floor(slotDecreased / difference)
+                    let subtract = Math.floor( difference/slotDecreased)
                     for (let i = cursor + 1; i < todos.length; i++) {
                         todos[i].time -= subtract;
                         difference -= subtract;
@@ -231,6 +234,7 @@ const App: React.FC = () => {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <main className='App'>
+                <span>{nonZeroTime}</span>
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {

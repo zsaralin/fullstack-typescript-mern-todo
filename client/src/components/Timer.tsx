@@ -12,7 +12,7 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
             if (props.active) {
                 setSeconds(seconds + 1);
             }
-        }, 1000)
+        },100)
         return () => {
             clearInterval(myInterval);
         };
@@ -24,15 +24,14 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
         someFn()
     },)
     return (
-        //timer disappears when reducedTime < 4
         <div className="timer" style={{fontSize: "10px", marginTop: '-2%'}}>
             {props.active || props.done ? <div>
-                {Math.floor(seconds/*/60*/)} min </div> :
+                    {Math.floor(seconds / 60)} min </div> :
                 <div> - min </div>
             }
         </div>
     )
-    }
+}
 
 
 export default Timer;
