@@ -80,8 +80,8 @@ const Todo = (props: {
                                 "Card--reverse" : "Card--reverse2"}
                             style={{
                                 // animationDuration: reducedTime /**60*/ + 's',
-                                animation: (realTime < props.todo.time) ? `forwardAnim ${reducedTime*30}ms linear forwards`
-                                    : props.bonusTime > 0 ? `backwardAnim ${reducedTime*30}ms linear forwards` : `backwardAnim ${reducedTime*30}ms linear forwards, changeColor ${1}s forwards`,
+                                animation: (realTime < props.todo.time) ? `forwardAnim ${reducedTime/30}s linear forwards`
+                                    : props.bonusTime > 0 ? `backwardAnim ${reducedTime/30}s linear forwards` : `backwardAnim ${reducedTime/30}s linear forwards, changeColor ${1}s forwards`,
 
                                 animationPlayState: props.active ? 'running' : 'paused',
                                 // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
