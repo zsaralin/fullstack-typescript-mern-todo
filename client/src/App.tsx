@@ -53,7 +53,7 @@ const App: React.FC = () => {
     const [prevTime, setPrevTime] = useState<number>(0);
 
     const timeCallback = (timerTime: number) => {
-        if(timerTime != prevTime){setZero(timerTime)}
+        if(timerTime != 0 && timerTime != prevTime){setZero(timerTime)}
         setTime(timerTime);
     }
     useEffect(() => {
