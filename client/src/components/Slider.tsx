@@ -8,7 +8,7 @@ function Slider(props: { start: boolean, time: number}) {
         <div className="slider" style={{
             visibility: props.start ? 'visible' : 'hidden',
             animationPlayState: props.start ? 'running' : 'paused',
-            animationDuration: props.start ? props.time*29 + 'ms' : '0'
+            animationDuration: props.start ? props.time*30 + 'ms' : '0'
         }}>
             <IconContext.Provider value={{color: 'rgba(60, 60, 60, .6)'}}>
                 <GoTriangleRight style={{position: 'absolute', left: '-14px', top: '-22px', height: '50px'}}/>

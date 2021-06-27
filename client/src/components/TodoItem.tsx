@@ -17,7 +17,7 @@ const Todo = (props: {
     callbackFromParent2(listInfo: number): void;
 }) => {
     const [realTime, setTime] = useState<number>(0);
-    const minuteTime = Math.floor(realTime / 60);
+    // const minuteTime = Math.floor(realTime / 60);
     // const minuteTime = realTime;
     const timeCallback = (timerTime: number) => {
         setTime(timerTime);
@@ -35,15 +35,15 @@ const Todo = (props: {
         handleLongest()
     },)
     useEffect(() => {
-        if (props.active) {
+        // if (props.active) {
             handleColor();
-        }
+        // }
     })
     const handleColor = (): void => {
-        const diff = minuteTime - props.todo.time
-        if (minuteTime <= props.todo.time) {
-            setColor('rgb(198,246,241)');
-        } else if (props.bonusTime > 0) {
+        const diff = realTime - props.todo.time
+        if (realTime <= props.todo.time) {
+            setColor('rgb(198,246,241)');}
+        else if (props.bonusTime > 0) {
             if (diff > 4) {
                 setColor('rgb(254,188,254)');
             }
