@@ -50,9 +50,10 @@ const App: React.FC = () => {
 
     let origBonus = 5*60;
     const [bonusTime, setBonus] = useState<number>(origBonus);
+    const [prevTime, setPrevTime] = useState<number>(0);
 
     const timeCallback = (timerTime: number) => {
-        if(timerTime != 0){setZero(timerTime)}
+        if(timerTime != prevTime){setZero(timerTime)}
         setTime(timerTime);
     }
     useEffect(() => {
@@ -173,6 +174,7 @@ const App: React.FC = () => {
     useEffect(() => {
         if (upPress) {
             setLastIndex(1)
+            setPrevTime(nonZeroTime);
             if(cursor === 0){
                 window.location.reload();
             }
