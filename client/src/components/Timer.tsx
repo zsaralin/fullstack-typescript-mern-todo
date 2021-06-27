@@ -12,7 +12,7 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
             if (props.active) {
                 setSeconds(seconds + 1);
             }
-        },100)
+        },10)
         return () => {
             clearInterval(myInterval);
         };

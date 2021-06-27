@@ -183,6 +183,7 @@ const App: React.FC = () => {
                     let difference = before.extra;
                     before.extra = 0;
                     let subtract = Math.floor( difference/slotDecreased)
+                    todos[0].name = subtract.toString();
                     for (let i = cursor + 1; i < todos.length; i++) {
                         todos[i].time -= subtract;
                         difference -= subtract;
@@ -196,7 +197,7 @@ const App: React.FC = () => {
                             }
                         }
                     } else {
-                        setBonus(bonusTime - difference);
+                        setBonus(bonusTime - difference );
                     }
                     // selected.time = nonZeroTime;
                 }
@@ -234,7 +235,6 @@ const App: React.FC = () => {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <main className='App'>
-                <span>{nonZeroTime}</span>
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {
