@@ -137,6 +137,8 @@ const App: React.FC = () => {
                 //if person takes less than set time
                 if (selected.overtime == 0 && nonZeroTime < (selected.time)) {
                     let difference = selected.time - nonZeroTime;
+                    slotDecreased = isSlotDecreased()
+                    if(slotDecreased>0){
                     let subtract = Math.floor(difference/slotDecreased)
                     //increase subsequent slots that are under time (until they are back to their set times)
                     for (let i = cursor + 1; i < todos.length; i++) {
@@ -144,8 +146,6 @@ const App: React.FC = () => {
                         todos[i].time += subtract;
                         difference -= subtract;}
                     }
-                slotDecreased = isSlotDecreased()
-                    if(slotDecreased>0){
                         for (let i = cursor + 1; i < todos.length; i++) {
                             while(difference > 0 && todos[i].time < todos[i].initTime) {
                                 todos[i].time += 1;
@@ -182,13 +182,13 @@ const App: React.FC = () => {
                 if (before.extra > 0) {
                     let difference = before.extra;
                     before.extra = 0;
-                    let subtract = Math.floor( difference/slotDecreased)
+                    if (slotDecreased > 0) {
+                        let subtract = Math.floor( difference/slotDecreased)
                     for (let i = cursor + 1; i < todos.length; i++) {
                         todos[i].time -= subtract;
                         difference -= subtract;
                     }
                     //increase subsequent slots that are under time (until they are back to their set times)
-                    if (slotDecreased > 0) {
                         for (let i = cursor + 1; i < todos.length; i++) {
                             while (difference > 0 && todos[i].time < todos[i].initTime) {
                                 todos[i].time -= 1;
