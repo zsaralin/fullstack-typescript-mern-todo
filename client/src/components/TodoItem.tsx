@@ -5,20 +5,11 @@ import './TodoItem.css'
 import Timer from "./Timer";
 import Slider from "./Slider";
 
-// type Props = TodoProps & {
-//     index: number
-//     active: boolean
-//     done: boolean
-//     percent: number
-//     callbackFromParent(listInfo:number): void
-// }
 const Todo = (props: {
     percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number,
     callbackFromParent2(listInfo: number): void;
 }) => {
     const [realTime, setTime] = useState<number>(0);
-    const minuteTime = Math.floor(realTime / 60);
-    // const minuteTime = realTime;
     const timeCallback = (timerTime: number) => {
         setTime(timerTime);
     }
@@ -40,8 +31,8 @@ const Todo = (props: {
         }
     })
     const handleColor = (): void => {
-        const diff = minuteTime - props.todo.time
-        if (minuteTime <= props.todo.time) {
+        const diff = realTime - props.todo.time
+        if (realTime <= props.todo.time) {
             setColor('rgb(198,246,241)');
         } else if (props.bonusTime > 0) {
             if (diff > 4) {

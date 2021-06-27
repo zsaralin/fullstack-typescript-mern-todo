@@ -234,7 +234,6 @@ const App: React.FC = () => {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <main className='App'>
-                <span>{nonZeroTime}</span>
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {
