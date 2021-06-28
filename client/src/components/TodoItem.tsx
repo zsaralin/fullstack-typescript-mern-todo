@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {Draggable} from 'react-beautiful-dnd'
 import {getLongestName,} from "../API";
 import './TodoItem.css'
-import Timer from "./Timer";
+import MyTimer from "./MyTimer";
 import Slider from "./Slider";
 
 // type Props = TodoProps & {
@@ -80,8 +80,8 @@ const Todo = (props: {
                                 "Card--reverse" : "Card--reverse2"}
                             style={{
                                 // animationDuration: reducedTime /**60*/ + 's',
-                                animation: (realTime < props.todo.time) ? `forwardAnim ${reducedTime/30}s linear forwards`
-                                    : props.bonusTime > 0 ? `backwardAnim ${reducedTime/30}s linear forwards` : `backwardAnim ${reducedTime/30}s linear forwards, changeColor ${1}s forwards`,
+                                animation: (realTime < props.todo.time) ? `forwardAnim ${reducedTime}s linear forwards`
+                                    : props.bonusTime > 0 ? `backwardAnim ${reducedTime}s linear forwards` : `backwardAnim ${reducedTime}s linear forwards, changeColor ${1}s forwards`,
 
                                 animationPlayState: props.active ? 'running' : 'paused',
                                 // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
@@ -105,7 +105,7 @@ const Todo = (props: {
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="set-time">
-                                    {Math.ceil(props.todo.time/60) < Math.ceil(props.todo.initTime/60) ?
+                                    {Math.ceil(props.todo.time) < Math.ceil(props.todo.initTime) ?
                                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{
@@ -115,13 +115,13 @@ const Todo = (props: {
                                                   marginRight: '4px'
                                               }}>
                                             {Math.ceil(props.todo.initTime / 60)}</span>
-                                            <span> {props.todo.time <= 0 ? 0 : Math.ceil(props.todo.time / 60)}</span>
-                                        </span> : props.active ? Math.ceil(reducedTime / 60)
-                                            : Math.ceil(props.todo.initTime / 60)} min
+                                            <span> {props.todo.time <= 0 ? 0 : Math.ceil(props.todo.time)}</span>
+                                        </span> : props.active ? Math.ceil(reducedTime)
+                                            : Math.ceil(props.todo.initTime)} min
                                 </div>
-                                <Timer callbackFromParent={timeCallback} startTime={reducedTime}
-                                       active={props.active}
-                                       done={props.done}/>
+                                <MyTimer callbackFromParent={timeCallback}
+                                         active={props.active}
+                                         done={props.done}/>
                             </div>
                         </div>
                     </div>

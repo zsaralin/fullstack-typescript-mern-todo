@@ -49,7 +49,7 @@ const App: React.FC = () => {
 
     const [amountSubtract, setAmountSubtract] = useState<number>(0);
 
-    let origBonus = 5 * 60;
+    let origBonus = 5;
     const [bonusTime, setBonus] = useState<number>(origBonus);
 
     const timeCallback = (timerTime: number) => {
@@ -106,7 +106,7 @@ const App: React.FC = () => {
 
     const isTimeLeft = (): boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
-            if (todos[i].time != 60) {
+            if (todos[i].time != 1) {
                 return true
             }
         }
@@ -130,7 +130,7 @@ const App: React.FC = () => {
         }
     })
     useEffect(() => {
-        if (cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time == 60 && isTimeLeft()) {
+        if (cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time == 1 && isTimeLeft()) {
             setLastIndex(lastIndex + 1)
         }
     })
