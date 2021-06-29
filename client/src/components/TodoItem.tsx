@@ -105,10 +105,10 @@ const Todo = (props: {
                                                   display: 'inline',
                                                   marginRight: '4px'
                                               }}>
-                                            {Math.ceil(props.todo.initTime / 60)}</span>
-                                            <span> {props.todo.time <= 0 ? 0 : Math.ceil(props.todo.time / 60)}</span>
-                                        </span> : props.active ? Math.ceil(reducedTime / 60)
-                                            : Math.ceil(props.todo.initTime / 60)} min
+                                            {Math.ceil(props.todo.initTime )}</span>
+                                            <span> {props.todo.time <= 0 ? 0 : Math.ceil(props.todo.time )}</span>
+                                        </span> : props.active ? Math.ceil(reducedTime)
+                                            : Math.ceil(props.todo.initTime )} min
                                 </div>
                                 <Timer callbackFromParent={timeCallback} startTime={reducedTime}
                                        active={props.active}

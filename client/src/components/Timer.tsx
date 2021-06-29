@@ -10,15 +10,15 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
     useEffect(() => {
         let myInterval = setInterval(() => {
             if (props.active) {
-                setSeconds(seconds + 1);
+                setSeconds(seconds + 50);
             }
-        },1000)
+        },36.75)
         return () => {
             clearInterval(myInterval);
         };
     });
     const someFn = () => {
-        props.callbackFromParent(seconds);
+        props.callbackFromParent(seconds/1000);
     }
     useEffect(() => {
         someFn()
@@ -26,7 +26,7 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
     return (
         <div className="timer" style={{fontSize: "10px", marginTop: '-2%'}}>
             {props.active || props.done ? <div>
-                    {Math.floor(seconds / 60)} min </div> :
+                    {Math.floor(seconds /1000)} min </div> :
                 <div> - min </div>
             }
         </div>
