@@ -4,7 +4,7 @@ import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
 import {getTodos,} from './API'
 import BonusItem from "./components/BonusItem";
 // @ts-ignore
-import audio from './boop.mp3';
+import audio from './fanfare.mp3';
 const useKeyPress = function(targetKey: string) {
     const [keyPressed, setKeyPressed] = useState(false);
 
@@ -49,7 +49,8 @@ const App: React.FC = () => {
 
     const [amountSubtract, setAmountSubtract] = useState<number>(0);
 
-    let origBonus = 5;
+    // let origBonus = 5*1000;
+    let origBonus = 0;
     const [bonusTime, setBonus] = useState<number>(origBonus);
 
     const timeCallback = (timerTime: number) => {
@@ -73,15 +74,15 @@ const App: React.FC = () => {
                     if (bonusTime < 1) {
                         let reducedSlot2 = cursor + lastIndex;
                         if (isTimeLeft()) {
-                            todos[reducedSlot2].time -= 1;
-                            setAmountSubtract(amountSubtract + 1)
-                            if (amountSubtract == 60) {
+                            todos[reducedSlot2].time -= 50;
+                            setAmountSubtract(amountSubtract + 50)
+                            if (amountSubtract == 1000) {
                                 setLastIndex(lastIndex + 1);
                                 setAmountSubtract(0)
                             }
                         }
                     } else { //decrease bonusTime
-                        setBonus(bonusTime - 1)
+                        setBonus(bonusTime-50)
                     }
                 }
             }
@@ -160,8 +161,6 @@ const App: React.FC = () => {
                             }
                         }
                     }
-                    todos[1].name = selected.time.toString()
-                    selected.name = Math.ceil((difference/60)).toString();
                     setBonus(bonusTime + difference);
                     // setBonus(origBonus)
                     selected.extra += selected.time - nonZeroTime
@@ -196,7 +195,6 @@ const App: React.FC = () => {
                     //increase subsequent slots that are under time (until they are back to their set times)
                     if (slotDecreased > 0) {
                         let subtract = Math.floor(difference / slotDecreased)
-                        todos[0].name = subtract.toString();
                         for (let i = cursor + 1; i < todos.length; i++) {
                             todos[i].time -= subtract;
                             difference -= subtract;
@@ -246,7 +244,6 @@ const App: React.FC = () => {
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <main className='App'>
-                <span>{nonZeroTime} {prevTimeT}</span>
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {

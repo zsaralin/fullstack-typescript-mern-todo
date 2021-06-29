@@ -46,13 +46,13 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
                     color: "grey", textDecoration: props.done? 'grey line-through':'none',
                     background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}>
                 <div className="set-bonus">
-                    {Math.ceil(props.origBonus) !== Math.ceil(props.time)  ?
+                    {Math.ceil(props.origBonus/1000) !== Math.ceil(props.time/1000)  ?
                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{color: 'grey', opacity: '70%',display: 'inline', marginRight: '4px'}}>
-                                            {Math.ceil(props.origBonus)}</span>
-                                            <span> {Math.ceil(props.time)}</span>
-                                        </span>:Math.ceil(props.origBonus)} min
+                                            {Math.ceil(props.origBonus/1000)}</span>
+                                            <span> {Math.ceil(props.time/1000)}</span>
+                                        </span>:Math.ceil(props.origBonus/1000)} min
                 <MyTimer callbackFromParent={myCallback} active = {props.active} done = {props.done}/>
             </div>
         </div>
