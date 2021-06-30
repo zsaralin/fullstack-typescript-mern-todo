@@ -28,7 +28,7 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
     }
         return(
         <div className="bottom-panel" style = {{
-            height: props.percent+'%', display: props.time <1000 ?'none':''}}>
+            height: props.percent+'%'}}>
             <Slider start={props.active} time = {props.time}/>
             <div className={(realTime<props.time) ? "Bonus-text": "Bonus-reverse"}
                  style = {{
