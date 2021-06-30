@@ -8,25 +8,22 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
     const [seconds, setSeconds] = useState(0);
 
     useEffect(() => {
-        let myInterval = setInterval(() => {
-            if (props.active) {
-                setSeconds(seconds + 1);
-            }
-        },1000)
+        let myInterval: any = null;
+        props.callbackFromParent(seconds);
+        if (props.active) {
+            myInterval = setInterval(() => {
+                setSeconds((seconds) => seconds + 1);
+                // props.callbackFromParent(time);
+            }, 1000);
+        }
         return () => {
             clearInterval(myInterval);
         };
     });
-    const someFn = () => {
-        props.callbackFromParent(seconds);
-    }
-    useEffect(() => {
-        someFn()
-    },)
     return (
         <div className="timer" style={{fontSize: "10px", marginTop: '-2%'}}>
             {props.active || props.done ? <div>
-                    {Math.floor(seconds / 60)} min </div> :
+                    {Math.floor(seconds /60)} min </div> :
                 <div> - min </div>
             }
         </div>

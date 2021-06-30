@@ -32,7 +32,7 @@ const Todo = (props: {
     })
     const handleColor = (): void => {
         const diff = realTime - props.todo.time
-        if (realTime <= props.todo.time) {
+        if (realTime <= props.todo.time+60) {
             setColor('rgb(198,246,241)');
         } else if (props.bonusTime > 0) {
             if (diff > 4) {
@@ -50,7 +50,7 @@ const Todo = (props: {
             .then(({data: {longest}}: number | any) => setLong(longest))
             .catch((err: Error) => console.log(err))
     }
-    let reducedTime = Math.round(props.todo.time - props.todo.extra)
+    let reducedTime =props.todo.time - props.todo.extra
     return (
         <Draggable draggableId={props.todo._id} index={props.index} isDragDisabled={props.done || props.active}>
             {provided => {
@@ -90,13 +90,13 @@ const Todo = (props: {
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
-                            }}> reducedTime: {reducedTime} percent: {props.percent} time: {props.todo.time} extra: {props.todo.extra} overtime: {props.todo.overtime}</div>
+                            }}>{props.todo.description}</div>
                             <div className="time" style={{
                                 backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="set-time">
-                                    {Math.ceil(props.todo.time/60) < Math.ceil(props.todo.initTime/60) ?
+                                    {Math.ceil(props.todo.time/1000) < Math.ceil(props.todo.initTime/1000) ?
                                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{
@@ -105,10 +105,10 @@ const Todo = (props: {
                                                   display: 'inline',
                                                   marginRight: '4px'
                                               }}>
-                                            {Math.ceil(props.todo.initTime / 60)}</span>
-                                            <span> {props.todo.time <= 0 ? 0 : Math.ceil(props.todo.time / 60)}</span>
-                                        </span> : props.active ? Math.ceil(reducedTime / 60)
-                                            : Math.ceil(props.todo.initTime / 60)} min
+                                            {Math.ceil(props.todo.initTime/1000 )}</span>
+                                            <span> {Math.ceil(props.todo.time/1000)}</span>
+                                        </span> : props.active ? Math.ceil(reducedTime/1000)
+                                            : Math.ceil(props.todo.initTime/1000 )} min
                                 </div>
                                 <Timer callbackFromParent={timeCallback} startTime={reducedTime}
                                        active={props.active}
