@@ -133,8 +133,8 @@ const App: React.FC = () => {
     useEffect(() => {
         if (downPress) {
             setLastIndex(1);
-            // let trumpetSound = new Audio(audio);
-            // if(cursor == -1){trumpetSound.play()}
+            let trumpetSound = new Audio(audio);
+            if(cursor == -1){trumpetSound.play()}
             if(selected !== undefined) {
                 //if person takes less than set time
                 if (selected.overtime == 0 && nonZeroTime < (selected.time)) {
