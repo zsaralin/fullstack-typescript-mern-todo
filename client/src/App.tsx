@@ -4,7 +4,7 @@ import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
 import {getTodos,} from './API'
 import BonusItem from "./components/BonusItem";
 // @ts-ignore
-import audio from './boop.mp3';
+import audio from './fanfare.mp3';
 const useKeyPress = function(targetKey: string) {
     const [keyPressed, setKeyPressed] = useState(false);
 
