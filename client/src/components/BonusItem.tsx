@@ -39,7 +39,7 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
                      background: props.done ? color:'',
                      textDecoration: props.done ? 'grey line-through' : 'none',}}>
                 <div className="bonus" style={{textIndent: props.percent < 6.25 ? '-9999px':'',
-                    background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}> Bonus Time {props.percent}</div>
+                    background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}>Bonus Time</div>
                 <div className="bonus-time" style = {{
                     display: props.percent < 6.25 ? 'none':'',
                     overflow: 'hidden',

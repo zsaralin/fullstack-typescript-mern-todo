@@ -48,7 +48,8 @@ const App: React.FC = () => {
     const [lastIndex, setLastIndex] = useState<number>(1);
     const [amountSubtract, setAmountSubtract] = useState<number>(0);
 
-    let origBonus = 5*60;
+    // let origBonus = 5*60;
+    let origBonus = 0;
     const [bonusTime, setBonus] = useState<number>(origBonus);
     const [prevTime, setPrevTime] = useState<number>(0);
 
