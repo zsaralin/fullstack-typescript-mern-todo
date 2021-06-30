@@ -73,7 +73,6 @@ const Todo = (props: {
                                 // animationDuration: reducedTime /**60*/ + 's',
                                 animation: (realTime < props.todo.time) ? `forwardAnim ${reducedTime}ms linear forwards`
                                     : props.bonusTime > 0 ? `backwardAnim ${reducedTime}ms linear forwards` : `backwardAnim ${reducedTime}ms linear forwards, changeColor ${1}s forwards`,
-
                                 animationPlayState: props.active ? 'running' : 'paused',
                                 // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
                                 // textDecoration: done ? 'line-through' : 'none',

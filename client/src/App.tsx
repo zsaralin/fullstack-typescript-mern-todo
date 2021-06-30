@@ -48,8 +48,8 @@ const App: React.FC = () => {
     const [lastIndex, setLastIndex] = useState<number>(1);
     const [amountSubtract, setAmountSubtract] = useState<number>(0);
 
-    // let origBonus = 5*60;
-    let origBonus = 5*1000;
+    let origBonus = 0;
+    // let origBonus = 5*1000;
     const [bonusTime, setBonus] = useState<number>(origBonus);
     const [prevTime, setPrevTime] = useState<number>(0);
 
@@ -68,8 +68,8 @@ const App: React.FC = () => {
                 }
 
                 //decrease other slots if bonusTime == 0
-                if (cursor != todos.length - 1 || bonusTime > 0) {
-                    if (bonusTime < 1) {
+                if (cursor != todos.length - 1) {
+                    if (bonusTime <50) {
                         let reducedSlot2 = cursor + lastIndex;
                         if(isTimeLeft()){
                         todos[reducedSlot2].time -= 50;
