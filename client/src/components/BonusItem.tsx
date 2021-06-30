@@ -28,7 +28,7 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
     }
         return(
         <div className="bottom-panel" style = {{
-            height: props.percent+'%', display: props.time <60 ?'none':''}}>
+            height: props.percent+'%', display: props.time <1000 ?'none':''}}>
             <Slider start={props.active} time = {props.time}/>
             <div className={(realTime<props.time) ? "Bonus-text": "Bonus-reverse"}
                  style = {{
@@ -46,13 +46,13 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
                     color: "grey", textDecoration: props.done? 'grey line-through':'none',
                     background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}>
                 <div className="set-bonus">
-                    {Math.ceil(props.origBonus/60) !== Math.ceil(props.time/60)  ?
+                    {Math.ceil(props.origBonus/1000) !== Math.ceil(props.time/1000)  ?
                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{color: 'grey', opacity: '70%',display: 'inline', marginRight: '4px'}}>
-                                            {Math.ceil(props.origBonus/60)}</span>
-                                            <span> {Math.ceil(props.time/60)}</span>
-                                        </span>:Math.ceil(props.origBonus/60)} min
+                                            {Math.ceil(props.origBonus/1000)}</span>
+                                            <span> {Math.ceil(props.time/1000)}</span>
+                                        </span>:Math.ceil(props.origBonus/1000)} min
                 <Timer callbackFromParent={myCallback} active = {props.active} done = {props.done}
                 startTime = {props.time}/>
             </div>

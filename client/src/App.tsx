@@ -49,7 +49,7 @@ const App: React.FC = () => {
     const [amountSubtract, setAmountSubtract] = useState<number>(0);
 
     // let origBonus = 5*60;
-    let origBonus = 0;
+    let origBonus = 5*1000;
     const [bonusTime, setBonus] = useState<number>(origBonus);
     const [prevTime, setPrevTime] = useState<number>(0);
 
@@ -60,7 +60,7 @@ const App: React.FC = () => {
     useEffect(() => {
         if (selected !== undefined) {
             //if person goes overtime
-            if (realTime > Math.round(selected.time - selected.extra) && !(cursor===todos.length-1 && bonusTime<=0)) {
+            if (realTime > Math.round(selected.time - selected.extra) && !(cursor===todos.length-1)) {
                 //increase selected.overtime so their box increases in size
                 //only increase box when there is bonusTime or other people's time left to take from
                 if (isTimeLeft()) {
@@ -72,15 +72,15 @@ const App: React.FC = () => {
                     if (bonusTime < 1) {
                         let reducedSlot2 = cursor + lastIndex;
                         if(isTimeLeft()){
-                        todos[reducedSlot2].time -= 1;
-                        setAmountSubtract(amountSubtract+1)
-                        if(amountSubtract==60){
+                        todos[reducedSlot2].time -= 50;
+                        setAmountSubtract(amountSubtract+50)
+                        if(amountSubtract==1000){
                             setLastIndex(lastIndex+1);
                             setAmountSubtract(0)
                         }
                         }
                     } else { //decrease bonusTime
-                            setBonus(bonusTime - 1)
+                            setBonus(bonusTime - 50)
                         }
                     }
                 }
@@ -105,7 +105,7 @@ const App: React.FC = () => {
 
     const isTimeLeft = () : boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
-            if(todos[i].time != 60){
+            if(todos[i].time != 1000){
                 return true}}
         return false;
     }
@@ -126,7 +126,7 @@ const App: React.FC = () => {
         }
     })
     useEffect(() => {
-        if(cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time == 60 && isTimeLeft()){
+        if(cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time == 1000 && isTimeLeft()){
             setLastIndex(lastIndex+1)
         }
     })

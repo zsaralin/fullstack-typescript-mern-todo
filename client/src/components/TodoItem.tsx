@@ -32,7 +32,7 @@ const Todo = (props: {
     })
     const handleColor = (): void => {
         const diff = realTime - props.todo.time
-        if (realTime <= props.todo.time+60) {
+        if (realTime <= props.todo.time+1000) {
             setColor('rgb(198,246,241)');
         } else if (props.bonusTime > 0) {
             if (diff > 4) {
@@ -71,8 +71,8 @@ const Todo = (props: {
                                 "Card--reverse" : "Card--reverse2"}
                             style={{
                                 // animationDuration: reducedTime /**60*/ + 's',
-                                animation: (realTime < props.todo.time) ? `forwardAnim ${reducedTime}s linear forwards`
-                                    : props.bonusTime > 0 ? `backwardAnim ${reducedTime}s linear forwards` : `backwardAnim ${reducedTime}s linear forwards, changeColor ${1}s forwards`,
+                                animation: (realTime < props.todo.time) ? `forwardAnim ${reducedTime}ms linear forwards`
+                                    : props.bonusTime > 0 ? `backwardAnim ${reducedTime}ms linear forwards` : `backwardAnim ${reducedTime}ms linear forwards, changeColor ${1}s forwards`,
 
                                 animationPlayState: props.active ? 'running' : 'paused',
                                 // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
@@ -96,7 +96,7 @@ const Todo = (props: {
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="set-time">
-                                    {Math.ceil(props.todo.time/60) < Math.ceil(props.todo.initTime/60) ?
+                                    {Math.ceil(props.todo.time/1000) < Math.ceil(props.todo.initTime/1000) ?
                                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{
@@ -105,10 +105,10 @@ const Todo = (props: {
                                                   display: 'inline',
                                                   marginRight: '4px'
                                               }}>
-                                            {Math.ceil(props.todo.initTime/60)}</span>
-                                            <span> {Math.ceil(props.todo.time/60)}</span>
-                                        </span> : props.active ? Math.ceil(reducedTime/60)
-                                            : Math.ceil(props.todo.initTime/60 )} min
+                                            {Math.ceil(props.todo.initTime/1000)}</span>
+                                            <span> {Math.ceil(props.todo.time/1000)}</span>
+                                        </span> : props.active ? Math.ceil(reducedTime/1000)
+                                            : Math.ceil(props.todo.initTime/1000 )} min
                                 </div>
                                 <Timer callbackFromParent={timeCallback} startTime={reducedTime}
                                        active={props.active}

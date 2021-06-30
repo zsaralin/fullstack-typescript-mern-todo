@@ -12,9 +12,9 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
         props.callbackFromParent(seconds);
         if (props.active) {
             myInterval = setInterval(() => {
-                setSeconds((seconds) => seconds + 1);
+                setSeconds((seconds) => seconds + 50);
                 // props.callbackFromParent(time);
-            }, 1000);
+            }, 26.5);
         }
         return () => {
             clearInterval(myInterval);
@@ -23,7 +23,7 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
     return (
         <div className="timer" style={{fontSize: "10px", marginTop: '-2%'}}>
             {props.active || props.done ? <div>
-                    {Math.floor(seconds /60)} min </div> :
+                    {Math.floor(seconds /1000)} min </div> :
                 <div> - min </div>
             }
         </div>
