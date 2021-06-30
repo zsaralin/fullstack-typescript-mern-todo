@@ -14,7 +14,7 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
             myInterval = setInterval(() => {
                 setSeconds((seconds) => seconds + 50);
                 // props.callbackFromParent(time);
-            }, 29);
+            }, 25);
         }
         return () => {
             clearInterval(myInterval);
