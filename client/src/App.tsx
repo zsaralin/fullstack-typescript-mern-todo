@@ -105,7 +105,7 @@ const App: React.FC = () => {
 
     const isTimeLeft = () : boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
-            if(todos[i].time != 1000){
+            if(todos[i].time >= 1000){
                 return true}}
         return false;
     }
@@ -126,15 +126,15 @@ const App: React.FC = () => {
         }
     })
     useEffect(() => {
-        if(cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time == 1000 && isTimeLeft()){
+        if(cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time <= 1000 && isTimeLeft()){
             setLastIndex(lastIndex+1)
         }
     })
     useEffect(() => {
         if (downPress) {
             setLastIndex(1);
-            let trumpetSound = new Audio(audio);
-            if(cursor == -1){trumpetSound.play()}
+            // let trumpetSound = new Audio(audio);
+            // if(cursor == -1){trumpetSound.play()}
             if(selected !== undefined) {
                 //if person takes less than set time
                 if (selected.overtime == 0 && nonZeroTime < (selected.time)) {

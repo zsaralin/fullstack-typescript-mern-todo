@@ -28,6 +28,7 @@
 
 .Card--text {
     display: flex;
+    animation: linear forwards;
     height: 100%;
     /*overflow: hidden;*/
     /*flex: 1 1;*/
@@ -38,6 +39,8 @@
 
 .Card--reverse{
     display: flex;
+    animation: linear forwards;
+
     /*overflow: hidden;*/
     height: 100%;
     background: linear-gradient(to right, turquoise 45%, magenta 55%) left;
@@ -46,6 +49,8 @@
 
 .Card--reverse2{
     display: flex;
+    animation: linear forwards;
+
     /*overflow: hidden;*/
     height: 100%;
     background: linear-gradient(to right, turquoise 45%,var(--color2)  55%) left;
