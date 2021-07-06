@@ -4,6 +4,7 @@ import Todo from '../../models/todo'
 import fs from 'fs';
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\"
 
+
 const getTodos = async (req: Request, res: Response): Promise<void> => {
     try {
         const todos: ITodo[] = [];
@@ -43,18 +44,6 @@ const getLongestName = async (req: Request, res: Response): Promise<void> => {
             }
         }
         res.status(200).json({ longest })
-    } catch (error) {
-        throw error
-    }
-}
-
-const getSize = async (req: Request, res: Response): Promise<void> => {
-    try {
-        let sizeArr = 0;
-        for (const file of fs.readdirSync(pathFull)) {
-            sizeArr ++;
-            }
-        res.status(200).json({ sizeArr })
     } catch (error) {
         throw error
     }
@@ -110,11 +99,20 @@ const deleteTodo = async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             message: 'Todo deleted',
             todo: deletedTodo,
-            todos:allTodos,
+            todos: allTodos,
         })
     } catch (error) {
         throw error
     }
 }
 
-export { getTodos, addTodo, updateTodo, deleteTodo , getLongestName, getSize}
+const getMeetingLen = async (req: Request, res: Response): Promise<void> => {
+    try {
+        let meetingLen = 50;
+        res.status(200).json({meetingLen})
+    } catch (error) {
+        throw error
+    }
+}
+
+export { getTodos, addTodo, updateTodo, deleteTodo , getLongestName, getMeetingLen}

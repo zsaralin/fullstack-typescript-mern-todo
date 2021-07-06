@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSize = exports.getLongestName = exports.deleteTodo = exports.updateTodo = exports.addTodo = exports.getTodos = void 0;
+exports.getMeetingLen = exports.getLongestName = exports.deleteTodo = exports.updateTodo = exports.addTodo = exports.getTodos = void 0;
 const todo_1 = __importDefault(require("../../models/todo"));
 const fs_1 = __importDefault(require("fs"));
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\";
@@ -61,19 +61,6 @@ const getLongestName = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getLongestName = getLongestName;
-const getSize = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let sizeArr = 0;
-        for (const file of fs_1.default.readdirSync(pathFull)) {
-            sizeArr++;
-        }
-        res.status(200).json({ sizeArr });
-    }
-    catch (error) {
-        throw error;
-    }
-});
-exports.getSize = getSize;
 const addTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // try {
     //         const body = req.body as Pick<ITodo, 'name' | 'description' | 'status'>
@@ -125,3 +112,13 @@ const deleteTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteTodo = deleteTodo;
+const getMeetingLen = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let meetingLen = 50;
+        res.status(200).json({ meetingLen });
+    }
+    catch (error) {
+        throw error;
+    }
+});
+exports.getMeetingLen = getMeetingLen;

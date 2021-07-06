@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import TodoItem from './components/TodoItem'
+import { MdSettings } from 'react-icons/md';
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-import {getTodos,} from './API'
+import {getMeetingLen, getTodos,} from './API'
 import BonusItem from "./components/BonusItem";
 // @ts-ignore
 import audio from './fanfare.mp3';
@@ -48,10 +49,10 @@ const App: React.FC = () => {
     const [lastIndex, setLastIndex] = useState<number>(1);
     const [amountSubtract, setAmountSubtract] = useState<number>(0);
 
-    let origBonus = 0;
-    // let origBonus = 5*1000;
-    const [bonusTime, setBonus] = useState<number>(origBonus);
-    const [prevTime, setPrevTime] = useState<number>(0);
+    const [menuVisible , setMenuVisible ] = useState(false);
+    const toggleMenu = () => {
+        setMenuVisible(!menuVisible);
+    }
 
     const timeCallback = (timerTime: number) => {
         if(timerTime != 0 && timerTime != prevTime){setZero(timerTime)}
@@ -93,6 +94,17 @@ const App: React.FC = () => {
         }
         return todoTime;
     }
+    let todoTime = getTodoTime();
+    const [meetingLen, setMeetingLen] = useState<number>(todoTime);
+    let origBonus = 5000;
+    const [prevTime, setPrevTime] = useState<number>(0);
+    useEffect(() => {
+        fetchTodos();
+        fetchMeetingLen()
+    }, [])
+    const [bonusTime, setBonus] = useState<number>(origBonus);
+    // let origBonus = 5*1000;
+
 
     const getPercent = (todo: ITodo): number => {
         let percent = (todo.time - todo.extra+todo.overtime);
@@ -118,7 +130,6 @@ const App: React.FC = () => {
             }
         return numDecreased;
     }
-    let todoTime = getTodoTime();
     let slotDecreased = isSlotDecreased();
     useEffect(() => {
         if (cursor + lastIndex >= todos.length && isTimeLeft()) {
@@ -230,13 +241,26 @@ const App: React.FC = () => {
             .then(({data: {todos}}: ITodo[] | any) => setTodos(todos))
             .catch((err: Error) => console.log(err))
     }
-    useEffect(() => {
-        fetchTodos();
-    }, [])
+
+    const fetchMeetingLen = (): void => {
+        getMeetingLen()
+            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen*1000))
+            .catch((err: Error) => console.log(err));
+    }
+    const handleForm = (e: any) => {
+        if (e.key === 'Enter') {
+            setMeetingLen(e.currentTarget.value*1000);
+        }
+    }
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <main className='App'>
+            <div className="meetingLen" style = {{display: !menuVisible? 'none':''}}> Meeting Length:
+                <input className = "inputMeetingLen" onKeyDown={handleForm} type='number' id='meetingLen' /> min
+                <button className = "xOutMeetingLen" onClick = {toggleMenu}>x</button>
+            </div>
+            <main className='App' id = "behindComponent">
+                <span>{meetingLen?.toString()} {origBonus} {bonusTime} {todoTime}</span>
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {
@@ -268,9 +292,14 @@ const App: React.FC = () => {
                         }}
 
                     </Droppable>
-
                 </div>
-                <button className="button"> Settings</button>
+                <div className = "topButton">
+                <div className="dropdown" > <MdSettings size={26} color='rgb(200,200,200)'/>
+                    <div className="dropdown-content">
+                        <a onClick = {toggleMenu}>Meeting length</a>
+                    </div>
+                    </div>
+                </div>
             </main>
         </DragDropContext>
     )

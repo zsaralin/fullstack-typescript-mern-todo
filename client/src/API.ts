@@ -23,12 +23,12 @@ export const getLongestName = async (): Promise<AxiosResponse<ApiDataType>> => {
   }
 }
 
-export const getSize = async (): Promise<AxiosResponse<ApiDataType>> => {
+export const getMeetingLen = async (): Promise<AxiosResponse<ApiDataType>> => {
   try {
-    const sizeArr: AxiosResponse<ApiDataType> = await axios.get(
-        baseUrl + '/todos-len'
+    const meetingLen: AxiosResponse<ApiDataType> = await axios.get(
+        baseUrl + '/meetingLen'
     )
-    return sizeArr
+    return meetingLen
   } catch (error) {
     throw new Error(error)
   }

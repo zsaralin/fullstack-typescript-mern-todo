@@ -6,7 +6,6 @@ const todoSchema: Schema = new Schema({
         type: String,
         required: true
     },
-
     description: {
         type: String,
         required: true
@@ -27,7 +26,6 @@ const todoSchema: Schema = new Schema({
         type: Number,
         required: true
     },
-
 }, { timestamps: true })
 
 

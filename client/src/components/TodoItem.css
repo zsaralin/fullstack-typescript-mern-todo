@@ -28,8 +28,10 @@
 
 .Card--text {
     display: flex;
-    animation: linear forwards;
     height: 100%;
+    animation-name: forwardAnim;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
     /*overflow: hidden;*/
     /*flex: 1 1;*/
     background: linear-gradient(to left, rgba(215, 215, 215, 1) 45%, turquoise 55%) right;
@@ -39,8 +41,9 @@
 
 .Card--reverse{
     display: flex;
-    animation: linear forwards;
-
+    animation-name: backwardAnim;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
     /*overflow: hidden;*/
     height: 100%;
     background: linear-gradient(to right, turquoise 45%, magenta 55%) left;
@@ -49,8 +52,9 @@
 
 .Card--reverse2{
     display: flex;
-    animation: linear forwards;
-
+    animation-name: backwardAnim, changeColor;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
     /*overflow: hidden;*/
     height: 100%;
     background: linear-gradient(to right, turquoise 45%,var(--color2)  55%) left;

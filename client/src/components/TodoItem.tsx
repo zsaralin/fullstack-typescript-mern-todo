@@ -70,16 +70,8 @@ const Todo = (props: {
                             className={(realTime < props.todo.time) ? "Card--text" : props.bonusTime > 0 ?
                                 "Card--reverse" : "Card--reverse2"}
                             style={{
-                                // animationDuration: reducedTime /**60*/ + 's'
                                 animationPlayState: props.active ? 'running' : 'paused',
-
-                                animation: reducedTime+'ms',
-                                // animation: (realTime < props.todo.time) ? `forwardAnim ${reducedTime}ms linear forwards`
-                                //     : props.bonusTime > 0 ? `backwardAnim ${reducedTime}ms linear forwards` : `backwardAnim ${reducedTime}ms linear forwards, changeColor ${1}s forwards`,
-
-                                // backgroundPosition: (minuteTime<todo.time) && active ? '0% 100%': '100% 0%',
-                                // textDecoration: done ? 'line-through' : 'none',
-                                // textIndent: reducedTime < 3 ? '-300%' : '',
+                                animationDuration: reducedTime + 'ms, .5s',
                             }}>
                             <div className='name'
                                  style={{
@@ -91,7 +83,7 @@ const Todo = (props: {
                             <div className='description' style={{
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
-                                // background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
+                                background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>{props.todo.description}</div>
                             <div className="time" style={{
                                 backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
