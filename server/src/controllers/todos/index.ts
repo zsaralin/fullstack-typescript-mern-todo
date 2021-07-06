@@ -108,7 +108,7 @@ const deleteTodo = async (req: Request, res: Response): Promise<void> => {
 
 const getMeetingLen = async (req: Request, res: Response): Promise<void> => {
     try {
-        let meetingLen = 50;
+        let meetingLen = 30;
         res.status(200).json({meetingLen})
     } catch (error) {
         throw error

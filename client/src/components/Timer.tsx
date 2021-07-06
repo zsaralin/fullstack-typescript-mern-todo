@@ -12,9 +12,9 @@ const Timer = (props:{ active: boolean, done: boolean, startTime: number
         props.callbackFromParent(seconds);
         if (props.active) {
             myInterval = setInterval(() => {
-                setSeconds((seconds) => seconds + 50);
+                setSeconds((seconds) => seconds + 100);
                 // props.callbackFromParent(time);
-            }, 27);
+            }, 61);
         }
         return () => {
             clearInterval(myInterval);

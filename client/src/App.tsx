@@ -58,35 +58,6 @@ const App: React.FC = () => {
         if(timerTime != 0 && timerTime != prevTime){setZero(timerTime)}
         setTime(timerTime);
     }
-    useEffect(() => {
-        if (selected !== undefined) {
-            //if person goes overtime
-            if (realTime > Math.round(selected.time - selected.extra) && !(cursor===todos.length-1)) {
-                //increase selected.overtime so their box increases in size
-                //only increase box when there is bonusTime or other people's time left to take from
-                if (isTimeLeft()) {
-                    selected.overtime = (realTime - Math.round(selected.time - selected.extra));
-                }
-
-                //decrease other slots if bonusTime == 0
-                if (cursor != todos.length - 1) {
-                    if (bonusTime <50) {
-                        let reducedSlot2 = cursor + lastIndex;
-                        if(isTimeLeft()){
-                        todos[reducedSlot2].time -= 50;
-                        setAmountSubtract(amountSubtract+50)
-                        if(amountSubtract==1000){
-                            setLastIndex(lastIndex+1);
-                            setAmountSubtract(0)
-                        }
-                        }
-                    } else { //decrease bonusTime
-                            setBonus(bonusTime - 50)
-                        }
-                    }
-                }
-            }
-    })
     const getTodoTime = (): number => {
         let todoTime = 0;
         for (let i = 0; i < todos.length; i++) {
@@ -95,15 +66,40 @@ const App: React.FC = () => {
         return todoTime;
     }
     let todoTime = getTodoTime();
-    const [meetingLen, setMeetingLen] = useState<number>(todoTime);
+    const [, setMeetingLen] = useState<number>(todoTime);
     let origBonus = 5000;
     const [prevTime, setPrevTime] = useState<number>(0);
     useEffect(() => {
         fetchTodos();
         fetchMeetingLen()
     }, [])
-    const [bonusTime, setBonus] = useState<number>(origBonus);
+    const [bonusTime, setBonus] = useState<number>(5000);
     // let origBonus = 5*1000;
+    useEffect(() => {
+        if (selected !== undefined) {
+            //if person goes overtime
+            if (realTime > Math.round(selected.time - selected.extra)) {
+                //increase selected.overtime so their box increases in size
+                //only increase box when there is bonusTime or other people's time left to take from
+                if (isTimeLeft() || bonusTime>0) {
+                    selected.overtime = (realTime - Math.round(selected.time - selected.extra));
+                }
+                //decrease other slots if bonusTime == 0
+                    if (bonusTime <100 && isTimeLeft()){
+                        let reducedSlot2 = cursor + lastIndex;
+                        todos[reducedSlot2].time -= 100;
+                        setAmountSubtract(amountSubtract+100)
+                        if(amountSubtract==1000){
+                            setLastIndex(lastIndex+1);
+                            setAmountSubtract(0)
+                        }
+                    } else if(bonusTime>=100 && cursor != todos.length-1) {//decrease bonusTime
+                            setBonus(bonusTime-100)
+                        }
+                    }
+            }
+    })
+
 
 
     const getPercent = (todo: ITodo): number => {
@@ -117,7 +113,7 @@ const App: React.FC = () => {
 
     const isTimeLeft = () : boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
-            if(todos[i].time >= 1000){
+            if(todos[i].time > 1000){
                 return true}}
         return false;
     }
@@ -260,7 +256,7 @@ const App: React.FC = () => {
                 <button className = "xOutMeetingLen" onClick = {toggleMenu}>x</button>
             </div>
             <main className='App' id = "behindComponent">
-                <span>{meetingLen?.toString()} {origBonus} {bonusTime} {todoTime}</span>
+                <span>{selected?.overtime} {isTimeLeft().toString()}</span>
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {

@@ -32,7 +32,7 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
             <Slider start={props.active} time = {props.time}/>
             <div className={(realTime<props.time) ? "Bonus-text": "Bonus-reverse"}
                  style = {{
-                     animationDuration: props.time+'s',
+                     animationDuration: props.time+'ms',
                      // height: props.percent+'%',
                      height: '100%',
                      animationPlayState: props.active? 'running':'paused',

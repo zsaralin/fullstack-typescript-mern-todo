@@ -114,7 +114,7 @@ const deleteTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.deleteTodo = deleteTodo;
 const getMeetingLen = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let meetingLen = 50;
+        let meetingLen = 30;
         res.status(200).json({ meetingLen });
     }
     catch (error) {
