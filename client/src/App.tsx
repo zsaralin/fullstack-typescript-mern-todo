@@ -79,6 +79,9 @@ const App: React.FC = () => {
         if (meetingLen > todoTime) {
             setOrigBonus(meetingLen - todoTime);
         }
+        else{
+            setOrigBonus(0)
+        }
     }, [todoTime, meetingLen])
     useEffect(() => {
         setBonus(origBonus)
