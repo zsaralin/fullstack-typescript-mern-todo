@@ -11,7 +11,7 @@ const app = express_1.default();
 const PORT = process.env.PORT || 4000;
 app.use(cors_1.default());
 app.use(routes_1.default);
-let meetingLen = 60;
+let meetingLen = 85;
 app.get('/meetingLen', function (req, res) {
     res.status(200).json({ meetingLen });
 });

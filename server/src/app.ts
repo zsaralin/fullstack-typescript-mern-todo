@@ -8,7 +8,7 @@ const PORT: string | number = process.env.PORT || 4000
 
 app.use(cors())
 app.use(todoRoutes)
-let meetingLen = 60;
+let meetingLen = 85;
 
 app.get('/meetingLen', function(req, res) {
     res.status(200).json({meetingLen})
