@@ -11,6 +11,14 @@ const app = express_1.default();
 const PORT = process.env.PORT || 4000;
 app.use(cors_1.default());
 app.use(routes_1.default);
+let meetingLen = 60;
+app.get('/meetingLen', function (req, res) {
+    res.status(200).json({ meetingLen });
+});
+app.post('/postMeetingLen', function (req, res) {
+    meetingLen = req.body;
+    res.status(200).json({ meetingLen });
+});
 const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.07m5b.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`;
 const options = { useNewUrlParser: true, useUnifiedTopology: true };
 mongoose_1.default.set('useFindAndModify', false);

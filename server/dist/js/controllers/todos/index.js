@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMeetingLen = exports.getLongestName = exports.deleteTodo = exports.updateTodo = exports.addTodo = exports.getTodos = void 0;
+exports.getLongestName = exports.deleteTodo = exports.updateTodo = exports.addTodo = exports.getTodos = void 0;
 const todo_1 = __importDefault(require("../../models/todo"));
 const fs_1 = __importDefault(require("fs"));
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\";
@@ -112,13 +112,3 @@ const deleteTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 });
 exports.deleteTodo = deleteTodo;
-const getMeetingLen = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let meetingLen = 30;
-        res.status(200).json({ meetingLen });
-    }
-    catch (error) {
-        throw error;
-    }
-});
-exports.getMeetingLen = getMeetingLen;

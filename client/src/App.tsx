@@ -1,20 +1,22 @@
 import React, {useEffect, useState} from 'react'
 import TodoItem from './components/TodoItem'
-import { MdSettings } from 'react-icons/md';
+import {MdSettings} from 'react-icons/md';
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-import {getMeetingLen, getTodos,} from './API'
+import {getMeetingLen, getTodos,postMeetingLen} from './API'
 import BonusItem from "./components/BonusItem";
 // @ts-ignore
 import audio from './fanfare.mp3';
-const useKeyPress = function(targetKey: string) {
+
+const useKeyPress = function (targetKey: string) {
     const [keyPressed, setKeyPressed] = useState(false);
 
-    function downHandler({ key }: { key: string }) {
+    function downHandler({key}: { key: string }) {
         if (key === targetKey) {
             setKeyPressed(true);
         }
     }
-    const upHandler = ({ key }: { key: string }) => {
+
+    const upHandler = ({key}: { key: string }) => {
         if (key === targetKey) {
             setKeyPressed(false);
         }
@@ -49,81 +51,97 @@ const App: React.FC = () => {
     const [lastIndex, setLastIndex] = useState<number>(1);
     const [amountSubtract, setAmountSubtract] = useState<number>(0);
 
-    const [menuVisible , setMenuVisible ] = useState(false);
+    const [menuVisible, setMenuVisible] = useState(false);
     const toggleMenu = () => {
         setMenuVisible(!menuVisible);
     }
 
     const timeCallback = (timerTime: number) => {
-        if(timerTime != 0 && timerTime != prevTime){setZero(timerTime)}
+        if (timerTime != 0 && timerTime != prevTime) {
+            setZero(timerTime)
+        }
         setTime(timerTime);
     }
     const getTodoTime = (): number => {
         let todoTime = 0;
         for (let i = 0; i < todos.length; i++) {
-            todoTime += todos[i].time+todos[i].overtime - todos[i].extra;
+            todoTime += todos[i].time + todos[i].overtime - todos[i].extra;
         }
         return todoTime;
     }
-    let todoTime = getTodoTime();
-    const [, setMeetingLen] = useState<number>(todoTime);
-    let origBonus = 5000;
+    const [todoTime, setTodoTime] = useState<number>(0);
+    useEffect(() => {
+        setTodoTime(getTodoTime())
+    }, [todos])
+    const [meetingLen, setMeetingLen] = useState<number>(0);
+    const [origBonus, setOrigBonus] = useState<number>(0);
+    useEffect(() => {
+        if (meetingLen > todoTime) {
+            setOrigBonus(meetingLen - todoTime);
+        }
+    }, [todoTime, meetingLen])
+    useEffect(() => {
+        setBonus(origBonus)
+    }, [origBonus])
     const [prevTime, setPrevTime] = useState<number>(0);
     useEffect(() => {
         fetchTodos();
         fetchMeetingLen()
     }, [])
-    const [bonusTime, setBonus] = useState<number>(5000);
-    // let origBonus = 5*1000;
+    const [bonusTime, setBonus] = useState<number>(0);
     useEffect(() => {
         if (selected !== undefined) {
             //if person goes overtime
-            if (realTime > Math.round(selected.time - selected.extra)) {
+            if (realTime > Math.round(selected.time - selected.extra) && !(cursor === todos.length - 1 && bonusTime <= 0)) {
                 //increase selected.overtime so their box increases in size
                 //only increase box when there is bonusTime or other people's time left to take from
-                if (isTimeLeft() || bonusTime>0) {
+                if (isTimeLeft() || bonusTime > 0) {
                     selected.overtime = (realTime - Math.round(selected.time - selected.extra));
                 }
                 //decrease other slots if bonusTime == 0
-                    if (bonusTime <100 && isTimeLeft()){
+                if (bonusTime < 100) {
+                    if (isTimeLeft()) {
                         let reducedSlot2 = cursor + lastIndex;
                         todos[reducedSlot2].time -= 100;
-                        setAmountSubtract(amountSubtract+100)
-                        if(amountSubtract==1000){
-                            setLastIndex(lastIndex+1);
+                        setAmountSubtract(amountSubtract + 100)
+                        if (amountSubtract == 1000) {
+                            setLastIndex(lastIndex + 1);
                             setAmountSubtract(0)
                         }
-                    } else if(bonusTime>=100 && cursor != todos.length-1) {//decrease bonusTime
-                            setBonus(bonusTime-100)
-                        }
                     }
+                } else if (bonusTime >= 100) {//decrease bonusTime
+                    setBonus(bonusTime - 100)
+                }
             }
-    })
-
+        }
+    }, [realTime])
 
 
     const getPercent = (todo: ITodo): number => {
-        let percent = (todo.time - todo.extra+todo.overtime);
-        percent = percent/(todoTime+bonusTime)*100
-        if(percent<6.5){
+        let percent = (todo.time - todo.extra + todo.overtime);
+        percent = percent / (todoTime + bonusTime) * 100
+        if (percent < 6.5) {
             return (6.5);
         }
         return percent;
     }
 
-    const isTimeLeft = () : boolean => {
+    const isTimeLeft = (): boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
-            if(todos[i].time > 1000){
-                return true}}
+            if (todos[i].time > 1000) {
+                return true
+            }
+        }
         return false;
     }
 
     const isSlotDecreased = (): number => {
         let numDecreased = 0;
         for (let i = cursor + 1; i < todos.length; i++) {
-            if(todos[i].initTime>todos[i].time){
-            numDecreased += todos[i].initTime-todos[i].time;}
+            if (todos[i].initTime > todos[i].time) {
+                numDecreased += todos[i].initTime - todos[i].time;
             }
+        }
         return numDecreased;
     }
     let slotDecreased = isSlotDecreased();
@@ -131,37 +149,38 @@ const App: React.FC = () => {
         if (cursor + lastIndex >= todos.length && isTimeLeft()) {
             setLastIndex(1);
         }
-    })
+    }, [lastIndex])
     useEffect(() => {
-        if(cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time <= 1000 && isTimeLeft()){
-            setLastIndex(lastIndex+1)
+        if (cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time <= 1000 && isTimeLeft()) {
+            setLastIndex(lastIndex + 1)
         }
-    })
+    }, [lastIndex])
     useEffect(() => {
         if (downPress) {
             setLastIndex(1);
             // let trumpetSound = new Audio(audio);
             // if(cursor == -1){trumpetSound.play()}
-            if(selected !== undefined) {
+            if (selected !== undefined) {
                 //if person takes less than set time
                 if (selected.overtime == 0 && nonZeroTime < (selected.time)) {
                     let difference = selected.time - nonZeroTime;
                     slotDecreased = isSlotDecreased()
-                    if(slotDecreased>0){
-                    let subtract = Math.floor(difference/slotDecreased)
-                    //increase subsequent slots that are under time (until they are back to their set times)
-                    for (let i = cursor + 1; i < todos.length; i++) {
-                        if(todos[i].time < todos[i].initTime){
-                        todos[i].time += subtract;
-                        difference -= subtract;}
-                    }
+                    if (slotDecreased > 0) {
+                        let subtract = Math.floor(difference / slotDecreased)
+                        //increase subsequent slots that are under time (until they are back to their set times)
                         for (let i = cursor + 1; i < todos.length; i++) {
-                            while(difference > 0 && todos[i].time < todos[i].initTime) {
+                            if (todos[i].time < todos[i].initTime) {
+                                todos[i].time += subtract;
+                                difference -= subtract;
+                            }
+                        }
+                        for (let i = cursor + 1; i < todos.length; i++) {
+                            while (difference > 0 && todos[i].time < todos[i].initTime) {
                                 todos[i].time += 1;
                                 difference -= 1;
                             }
                         }
-                }
+                    }
                     setBonus(bonusTime + difference);
                     selected.extra += selected.time - nonZeroTime
                     // selected.time = nonZeroTime;
@@ -183,22 +202,22 @@ const App: React.FC = () => {
         if (upPress) {
             setLastIndex(1)
             setPrevTime(nonZeroTime);
-            if(cursor === 0){
+            if (cursor === 0) {
                 window.location.reload();
             }
-            setBefore(todos[cursor-2])
-            if(before !== undefined) {
+            setBefore(todos[cursor - 2])
+            if (before !== undefined) {
                 //if slot before took less than designated time
                 if (before.extra > 0) {
                     let difference = before.extra;
                     before.extra = 0;
                     if (slotDecreased > 0) {
-                        let subtract = Math.floor( difference/slotDecreased)
-                    for (let i = cursor + 1; i < todos.length; i++) {
-                        todos[i].time -= subtract;
-                        difference -= subtract;
-                    }
-                    //increase subsequent slots that are under time (until they are back to their set times)
+                        let subtract = Math.floor(difference / slotDecreased)
+                        for (let i = cursor + 1; i < todos.length; i++) {
+                            todos[i].time -= subtract;
+                            difference -= subtract;
+                        }
+                        //increase subsequent slots that are under time (until they are back to their set times)
                         for (let i = cursor + 1; i < todos.length; i++) {
                             while (difference > 0 && todos[i].time < todos[i].initTime) {
                                 todos[i].time -= 1;
@@ -210,9 +229,9 @@ const App: React.FC = () => {
                     }
                     // selected.time = nonZeroTime;
                 }
-                }
+            }
             setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
-            setSelected(todos[cursor-1]);
+            setSelected(todos[cursor - 1]);
         }
     }, [upPress]);
 
@@ -240,23 +259,24 @@ const App: React.FC = () => {
 
     const fetchMeetingLen = (): void => {
         getMeetingLen()
-            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen*1000))
+            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 1000))
             .catch((err: Error) => console.log(err));
     }
+
     const handleForm = (e: any) => {
         if (e.key === 'Enter') {
-            setMeetingLen(e.currentTarget.value*1000);
+            setMeetingLen(e.currentTarget.value * 1000);
+            postMeetingLen(meetingLen);
         }
     }
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <div className="meetingLen" style = {{display: !menuVisible? 'none':''}}> Meeting Length:
-                <input className = "inputMeetingLen" onKeyDown={handleForm} type='number' id='meetingLen' /> min
-                <button className = "xOutMeetingLen" onClick = {toggleMenu}>x</button>
+            <div className="meetingLen" style={{display: !menuVisible ? 'none' : ''}}> Meeting Length:
+                <input className="inputMeetingLen" onKeyDown={handleForm} type='number' id='meetingLen'/> min
+                <button className="xOutMeetingLen" onClick={toggleMenu}>x</button>
             </div>
-            <main className='App' id = "behindComponent">
-                <span>{selected?.overtime} {isTimeLeft().toString()}</span>
+            <main className='App' id="behindComponent">
                 <div className='test'>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {
@@ -274,26 +294,27 @@ const App: React.FC = () => {
                                             todo={todo}
                                             index={index}
                                             active={index === cursor}
-                                            done={index < cursor }
+                                            done={index < cursor}
                                             callbackFromParent2={timeCallback}
                                             percent={getPercent(todo)}
-                                            bonusTime = {bonusTime}
+                                            bonusTime={bonusTime}
                                         />
                                     ))}
                                     {provided.placeholder}
                                     <BonusItem
-                                        origBonus={origBonus} time={bonusTime} active={cursor === todos.length} done={cursor === todos.length + 1}
-                                        percent={(bonusTime)/(todoTime + bonusTime)*100 }/>
+                                        origBonus={origBonus} time={bonusTime} active={cursor === todos.length}
+                                        done={cursor === todos.length + 1}
+                                        percent={(bonusTime) / (todoTime + bonusTime) * 100}/>
                                 </ul>)
                         }}
 
                     </Droppable>
                 </div>
-                <div className = "topButton">
-                <div className="dropdown" > <MdSettings size={26} color='rgb(200,200,200)'/>
-                    <div className="dropdown-content">
-                        <a onClick = {toggleMenu}>Meeting length</a>
-                    </div>
+                <div className="topButton">
+                    <div className="dropdown"><MdSettings size={26} color='rgb(200,200,200)'/>
+                        <div className="dropdown-content">
+                            <a onClick={toggleMenu}>Meeting length</a>
+                        </div>
                     </div>
                 </div>
             </main>

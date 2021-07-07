@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const todos_1 = require("../controllers/todos");
 const router = express_1.Router();
-router.get('/meetingLen', todos_1.getMeetingLen);
 router.get('/todos', todos_1.getTodos);
 router.get('/todos-long', todos_1.getLongestName);
 router.post('/add-todo', todos_1.addTodo);

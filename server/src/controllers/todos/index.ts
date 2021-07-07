@@ -106,13 +106,5 @@ const deleteTodo = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-const getMeetingLen = async (req: Request, res: Response): Promise<void> => {
-    try {
-        let meetingLen = 30;
-        res.status(200).json({meetingLen})
-    } catch (error) {
-        throw error
-    }
-}
 
-export { getTodos, addTodo, updateTodo, deleteTodo , getLongestName, getMeetingLen}
+export { getTodos, addTodo, updateTodo, deleteTodo , getLongestName}
