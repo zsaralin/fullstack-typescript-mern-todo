@@ -33,7 +33,7 @@ const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             namesList.push(file.toString().substring(0, file.toString().length - 4));
             todoList.push(file);
         }
-        let interns = ['Daron', 'Srishti', 'Matthew', 'Tobias', 'Vikram', 'Saralin', 'Damien', 'Karthik', 'Michael'];
+        let interns = ['Daron', 'Saralin', 'Srishti', 'Matthew', 'Tobias', 'Vikram', 'Damien', 'Karthik', 'Michael'];
         let fullTimers = ['Jo', 'Kendra', 'Qian', 'Bon', 'David'];
         let finalWord = ['Fraser', 'Justin'];
         // shuffleArray(interns);

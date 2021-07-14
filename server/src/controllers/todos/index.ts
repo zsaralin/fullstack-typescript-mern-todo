@@ -22,7 +22,7 @@ const getTodos = async (req: Request, res: Response): Promise<void> => {
             namesList.push(file.toString().substring(0, file.toString().length - 4));
             todoList.push(file)
         }
-        let interns = ['Daron','Srishti','Matthew','Tobias','Vikram','Saralin', 'Damien','Karthik','Michael']
+        let interns = ['Daron','Saralin','Srishti','Matthew','Tobias','Vikram','Damien','Karthik','Michael']
         let fullTimers = ['Jo','Kendra', 'Qian', 'Bon', 'David']
         let finalWord = ['Fraser', 'Justin']
         // shuffleArray(interns);
