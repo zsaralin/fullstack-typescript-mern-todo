@@ -12,7 +12,7 @@
 .Bonus-text{
     /*flex-grow: 1;*/
     display: flex;
-    background: linear-gradient(to left, rgba(245, 245, 245, .5) 50%, rgb(160,240,232) 55%) right;
+    background: linear-gradient(to left, rgba(245, 245, 245, .5) 40%, rgb(160,240,232) 55%) right;
     animation-name: forwardAnim;
     animation-timing-function: linear;
     animation-fill-mode: forwards;

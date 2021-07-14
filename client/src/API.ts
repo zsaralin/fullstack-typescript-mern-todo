@@ -12,9 +12,32 @@ export const getTodos = async (): Promise<AxiosResponse<ApiDataType>> => {
     throw new Error(error)
   }
 }
-export const getLongestName = async (): Promise<AxiosResponse<ApiDataType>> => {
+
+export const addTodo = async (
+    formData: ITodo
+): Promise<AxiosResponse<ApiDataType>> => {
   try {
-    const longest: AxiosResponse<ApiDataType> = await axios.get(
+    const todo: Omit<ITodo, '_id'> = {
+      name: formData.name,
+      description: formData.description,
+      time: formData.time,
+      initTime: formData.time,
+      nonCompressedTime: formData.time,
+      overtime: 0,
+      extra:0,
+    }
+    return await axios.post(
+        baseUrl + '/add-todo',
+        todo
+    )
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export const getLongestName = async (): Promise<number> => {
+  try {
+    const longest: number = await axios.get(
         baseUrl + '/todos-long'
     )
     return longest
@@ -22,6 +45,7 @@ export const getLongestName = async (): Promise<AxiosResponse<ApiDataType>> => {
     throw new Error(error)
   }
 }
+
 export const getMeetingLen = async (): Promise<AxiosResponse<ApiDataType>> => {
   try {
     return await axios.get(
@@ -31,10 +55,10 @@ export const getMeetingLen = async (): Promise<AxiosResponse<ApiDataType>> => {
     throw new Error(error)
   }
 }
-export const postMeetingLen = async (meetingLen: number) => {
+export const postMeetingLen = async (meetingLen:number): Promise<void> => {
   try {
-    await axios.post(
-        baseUrl + '/postMeetingLen', meetingLen
+    return await axios.post(
+        baseUrl + '/postMeetingLen', {meetingLen:meetingLen},
     )
   } catch (error) {
     throw new Error(error)

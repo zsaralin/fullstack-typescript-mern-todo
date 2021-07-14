@@ -1,8 +1,7 @@
 import { Router } from 'express'
 import {getTodos, addTodo, updateTodo, deleteTodo, getLongestName} from '../controllers/todos'
- 
-const router: Router = Router()
 
+const router: Router = Router()
 
 router.get('/todos', getTodos)
 

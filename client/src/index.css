@@ -12,13 +12,13 @@ body {
     -moz-osx-font-smoothing: grayscale;
     font-size: 20px;
     overflow: hidden;
-    /*height: 100vh;*/
+    /*height: 96vh;*/
 }
 
 .App {
     display: flex;
-    height: 100vh;
-    /*height: auto;*/
+    /*height: 90vh;*/
+    height: auto;
 
     /*align-items: stretch;*/
     flex-direction: row;
@@ -39,7 +39,7 @@ body {
     margin-left: 3%;
     flex: 1 1;
     flex-direction: column;
-    height: 100%;
+    height: 100vh;
     width: 100%;
 }
 
@@ -100,6 +100,8 @@ body {
 }
 
 .meetingLen{
+    display: flex;
+    flex-flow: row wrap;
     font-size: medium;
     position: absolute;
     background-color: #f9f9f9;
@@ -108,15 +110,16 @@ body {
     z-index: 1;
     color: gray;
     padding: 5px 9px;
-    display: block;
+    /*display: block;*/
 }
 
 .inputMeetingLen{
     width: 50px;
     height: 20px;
-    margin-left: 5px;
+    margin-left: 2px;
     background-color: rgba(200,200,200,.5);
     border: none;
+    margin-right: 5px;
 }
 .xOutMeetingLen{
     border: none;
@@ -127,4 +130,11 @@ body {
     position: absolute;
     background : none;
     right: 1%;
+}
+
+.buttonStyle {
+    margin-left: 10px;
+    padding: .1% .2% .1% .2%;
+    position: absolute;
+    right: 3%;
 }

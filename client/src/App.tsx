@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import TodoItem from './components/TodoItem'
 import {MdSettings} from 'react-icons/md';
+import AddTodo from './components/AddTodo'
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-import {getMeetingLen, getTodos,postMeetingLen} from './API'
+import {getMeetingLen, getTodos, postMeetingLen,addTodo } from './API'
 import BonusItem from "./components/BonusItem";
 // @ts-ignore
 import audio from './fanfare.mp3';
@@ -30,14 +31,14 @@ const useKeyPress = function (targetKey: string) {
             window.removeEventListener("keydown", downHandler);
             window.removeEventListener("keyup", upHandler);
         };
-    });
+    }, );
     return keyPressed;
 };
 
 const App: React.FC = () => {
+
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
-
 
     const [todos, setTodos] = useState<ITodo[]>([]);
     const [selected, setSelected] = useState<ITodo>();
@@ -48,16 +49,27 @@ const App: React.FC = () => {
     const [realTime, setTime] = useState<number>(0);
     const [nonZeroTime, setZero] = useState<number>(0);
 
-    const [lastIndex, setLastIndex] = useState<number>(1);
+    const [lastIndex, setLastIndex] = useState<number>(0);
     const [amountSubtract, setAmountSubtract] = useState<number>(0);
 
-    const [menuVisible, setMenuVisible] = useState(false);
-    const toggleMenu = () => {
-        setMenuVisible(!menuVisible);
+    const [meetingLenMenu, setMeetingLenMenu] = useState(false);
+    const [addTodoMenu, setAddTodoMenu] = useState(false);
+
+    const toggleMeetingLenMenu = () => {
+        setMeetingLenMenu(!meetingLenMenu);
+    }
+    const closeMenu = () => {
+        setMeetingLenMenu(false);
+        setAddTodoMenu(false);
+
+    }
+    const toggleAddTodoMenu = () => {
+        setAddTodoMenu(!addTodoMenu);
     }
 
+
     const timeCallback = (timerTime: number) => {
-        if (timerTime != 0 && timerTime != prevTime) {
+        if (timerTime !== 0 && timerTime !== prevTime) {
             setZero(timerTime)
         }
         setTime(timerTime);
@@ -69,28 +81,77 @@ const App: React.FC = () => {
         }
         return todoTime;
     }
+    const getNonCompressedTodoTime = (): number => {
+        let todoTime = 0;
+        for (let i = 0; i < todos.length; i++) {
+            todoTime += todos[i].nonCompressedTime;
+        }
+        return todoTime;
+    }
     const [todoTime, setTodoTime] = useState<number>(0);
+    const [nonCompressedtodoTime, setNonCompressedTodoTime] = useState<number>(0);
+    const [diff, setDiff] = useState<number>(0);
+    const [index, setIndex] = useState<number>(cursor+1);
+
     useEffect(() => {
         setTodoTime(getTodoTime())
+        setNonCompressedTodoTime(getNonCompressedTodoTime())
     }, [todos])
     const [meetingLen, setMeetingLen] = useState<number>(0);
+    const [tempMeeting, setTempMeeting] = useState<number>();
     const [origBonus, setOrigBonus] = useState<number>(0);
     useEffect(() => {
         if (meetingLen > todoTime) {
-            setOrigBonus(meetingLen - todoTime);
-        }
-        else{
+            setOrigBonus(meetingLen - nonCompressedtodoTime);
+            setDiff(0)
+        } else {
             setOrigBonus(0)
+            if(meetingLen < todoTime){
+                setDiff(todoTime-meetingLen)
+                }
         }
-    }, [todoTime, meetingLen])
+    }, [todoTime, meetingLen, index])
+    const compressTodos = (): void => {
+        if (todos[index] !== undefined) {
+                if(todos[index].time >= 2000) {
+                    todos[index].initTime -= 1000;
+                    todos[index].time -= 1000;
+                    setDiff(diff-1000)
+                }
+                setIndex(index+1);
+                if(index===todos.length-1){
+                    setIndex(cursor+1);
+                }
+            }
+            setTodoTime(getTodoTime);
+    }
+    useEffect(() => {
+        if(diff>0 && todoTime!==todos.length*1000){
+            compressTodos();}
+    }, [index,diff])
+
+    const resetTodos = (): void => {
+        for (let i = 0; i < todos.length; i++) {
+            todos[i].initTime = todos[i].nonCompressedTime;
+            todos[i].time = todos[i].nonCompressedTime;
+        }
+        setTodoTime(getTodoTime())
+    }
+    useEffect(() => {
+        setIndex(0)
+        resetTodos();
+    }, [meetingLen])
     useEffect(() => {
         setBonus(origBonus)
     }, [origBonus])
+
     const [prevTime, setPrevTime] = useState<number>(0);
     useEffect(() => {
+        // resetTodos()
         fetchTodos();
         fetchMeetingLen()
     }, [])
+
     const [bonusTime, setBonus] = useState<number>(0);
     useEffect(() => {
         if (selected !== undefined) {
@@ -107,7 +168,7 @@ const App: React.FC = () => {
                         let reducedSlot2 = cursor + lastIndex;
                         todos[reducedSlot2].time -= 100;
                         setAmountSubtract(amountSubtract + 100)
-                        if (amountSubtract == 1000) {
+                        if (amountSubtract === 1000) {
                             setLastIndex(lastIndex + 1);
                             setAmountSubtract(0)
                         }
@@ -165,7 +226,7 @@ const App: React.FC = () => {
             // if(cursor == -1){trumpetSound.play()}
             if (selected !== undefined) {
                 //if person takes less than set time
-                if (selected.overtime == 0 && nonZeroTime < (selected.time)) {
+                if (selected.overtime === 0 && nonZeroTime < (selected.time)) {
                     let difference = selected.time - nonZeroTime;
                     slotDecreased = isSlotDecreased()
                     if (slotDecreased > 0) {
@@ -242,9 +303,16 @@ const App: React.FC = () => {
     const onDragEnd = ({source, destination}: DropResult) => {
         // Make sure we have a valid destination
         if (destination === undefined || destination === null ||
-            destination.index < source.index && destination.index <= cursor) return null
+            (destination.index < source.index && destination.index <= cursor)) {
+            window.scrollTo(0, 0);
+            return null;
+        }
         // Make sure we're actually moving the item
-        if (destination.index === source.index) return null
+        if (destination.index === source.index)
+        {
+            window.scrollTo(0, 0);
+            return null;
+        }
         // Move the item within the list
         // Start by making a new list without the dragged item
         const newList = todos.filter((_: any, idx: number) => idx !== source.index)
@@ -252,12 +320,13 @@ const App: React.FC = () => {
         newList.splice(destination.index, 0, todos[source.index])
         // Update the list
         setTodos(newList)
+            window.scrollTo(0, 0)
     }
 
     const fetchTodos = (): void => {
         getTodos()
             .then(({data: {todos}}: ITodo[] | any) => setTodos(todos))
-            .catch((err: Error) => console.log(err))
+            .catch((err: Error) => console.log(err));
     }
 
     const fetchMeetingLen = (): void => {
@@ -266,21 +335,56 @@ const App: React.FC = () => {
             .catch((err: Error) => console.log(err));
     }
 
+    const updateMeetingLen = (meetingLen: number): void => {
+        postMeetingLen(meetingLen).then(response => {
+            console.log(response)
+        });
+        setMeetingLen(meetingLen * 1000)
+        setTempMeeting(undefined);
+        setMeetingLenMenu(false)
+    }
+
+
     const handleForm = (e: any) => {
         if (e.key === 'Enter') {
-            setMeetingLen(e.currentTarget.value * 1000);
-            postMeetingLen(meetingLen);
+            if(tempMeeting != undefined){
+            updateMeetingLen(tempMeeting);}
+            e.preventDefault();
         }
+    }
+    const handleFormOnSubmit = (e: any) => {
+        e.preventDefault();
+        if(tempMeeting != undefined){
+        updateMeetingLen(tempMeeting);}
+    }
+    const handleSaveTodo = (e: React.FormEvent, formData: ITodo): void => {
+        e.preventDefault()
+        addTodo(formData)
+            .then(({ status }) => {
+                if (status !== 201) {
+                    throw new Error('Error! Todo not saved')
+                }
+                // fetchTodos()
+            })
+            .catch((err) => console.log(err))
     }
 
     return (
-        <DragDropContext onDragEnd={onDragEnd}>
-            <div className="meetingLen" style={{display: !menuVisible ? 'none' : ''}}> Meeting Length:
-                <input className="inputMeetingLen" onKeyDown={handleForm} type='number' id='meetingLen'/> min
-                <button className="xOutMeetingLen" onClick={toggleMenu}>x</button>
-            </div>
             <main className='App' id="behindComponent">
-                <div className='test'>
+                <DragDropContext onDragEnd={onDragEnd}>
+                <form className="meetingLen" onSubmit={handleFormOnSubmit} style={{display: !meetingLenMenu ? 'none' : ''}}>
+                    <label> Meeting Length:
+                    <input className="inputMeetingLen" onKeyDown={handleForm}  onSubmit = {handleFormOnSubmit}
+                           type={meetingLenMenu?"number":"string"} defaultValue =""
+                           onChange = {(e:any) => setTempMeeting(e.target.value)} value = {tempMeeting || ""} id='meetingLen'/> min </label>
+                    <button className="buttonStyle" disabled = {tempMeeting == undefined} type = 'submit'>Submit</button>
+                    <button className="xOutMeetingLen" onClick={toggleMeetingLenMenu}>x</button>
+                </form>
+                <div className="meetingLen" style={{display: !addTodoMenu ? 'none' : ''}}>
+                    <AddTodo saveTodo={handleSaveTodo} />
+                    <button className="xOutMeetingLen" onClick={toggleAddTodoMenu}>x</button>
+                </div>
+                <div className='test' onClick={closeMenu}>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {
                             const style = {
@@ -316,12 +420,13 @@ const App: React.FC = () => {
                 <div className="topButton">
                     <div className="dropdown"><MdSettings size={26} color='rgb(200,200,200)'/>
                         <div className="dropdown-content">
-                            <a onClick={toggleMenu}>Meeting length</a>
+                            <a onClick={toggleMeetingLenMenu}>Meeting length</a>
+                            <a onClick={toggleAddTodoMenu}>Add Slot</a>
                         </div>
                     </div>
                 </div>
+                </DragDropContext>
             </main>
-        </DragDropContext>
     )
 }
 

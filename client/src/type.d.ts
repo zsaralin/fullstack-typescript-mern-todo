@@ -17,6 +17,7 @@ interface ITodo {
     description: string
     initTime: number
     time: number
+    nonCompressedTime: number
     overtime: number
     extra: number
 }

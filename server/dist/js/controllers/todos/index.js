@@ -16,28 +16,53 @@ exports.getLongestName = exports.deleteTodo = exports.updateTodo = exports.addTo
 const todo_1 = __importDefault(require("../../models/todo"));
 const fs_1 = __importDefault(require("fs"));
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\";
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        let temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
 const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const todos = [];
+        let namesList = [];
+        let todoList = [];
         for (const file of fs_1.default.readdirSync(pathFull)) {
-            const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
-            let timeNum = 5;
-            if (data[0] === 'm') {
-                timeNum = 10;
+            namesList.push(file.toString().substring(0, file.toString().length - 4));
+            todoList.push(file);
+        }
+        let interns = ['Srishti', 'Matthew', 'Vikram', 'Saralin', 'Damien', 'Tobias', 'Karthik', 'Michael'];
+        let fullTimers = ['Jo', 'Kendra', 'Qian', 'Bon', 'David'];
+        let finalWord = ['Fraser', 'Justin'];
+        shuffleArray(interns);
+        shuffleArray(fullTimers);
+        shuffleArray(finalWord);
+        let orderList = interns.concat(fullTimers, finalWord);
+        for (let i = 0; i < orderList.length; i++) {
+            if (namesList.includes(orderList[i])) {
+                let file = todoList[namesList.indexOf(orderList[i])];
+                const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
+                let timeNum = 5;
+                if (data[0] === 'm') {
+                    timeNum = 10;
+                }
+                if (data[0] === 'l') {
+                    timeNum = 15;
+                }
+                const todo = new todo_1.default({
+                    name: file.toString().substring(0, file.toString().length - 4),
+                    description: data.substring(2, data.length - 2),
+                    initTime: timeNum * 1000,
+                    time: timeNum * 1000,
+                    nonCompressedTime: timeNum * 1000,
+                    overtime: 0,
+                    extra: 0,
+                });
+                todos.push(todo);
+                yield todo.save();
             }
-            if (data[0] === 'l') {
-                timeNum = 15;
-            }
-            const todo = new todo_1.default({
-                name: file.toString().substring(2, file.toString().length - 4),
-                description: data.substring(2, data.length - 2),
-                initTime: timeNum * 1000,
-                time: timeNum * 1000,
-                overtime: 0,
-                extra: 0,
-            });
-            todos.push(todo);
-            yield todo.save();
         }
         res.status(200).json({ todos });
     }
@@ -61,24 +86,26 @@ const getLongestName = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getLongestName = getLongestName;
+function addTodoHelper(time) {
+    if (time === 5) {
+        return 's^';
+    }
+    else if (time === 10) {
+        return 'm^';
+    }
+    else {
+        return 'l^';
+    }
+}
 const addTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // try {
-    //         const body = req.body as Pick<ITodo, 'name' | 'description' | 'status'>
-    //
-    //         const todo: ITodo = new Todo({
-    //             name: body.name,
-    //             description: body.description,
-    //             status: body.status,
-    //         })
-    //
-    //         const newTodo: ITodo = await todo.save()
-    //         const allTodos: ITodo[] = await Todo.find()
-    //
-    //         res.status(201).json({message: 'Todo added', todo: newTodo, todos: allTodos})
-    //
-    // } catch (error) {
-    //     throw error
-    // }
+    try {
+        const body = req.body;
+        fs_1.default.writeFileSync(pathFull + '/' + body.name + '.txt', addTodoHelper(body.time) + body.description + '^0');
+        res.status(201).json({ message: 'Todo added' });
+    }
+    catch (error) {
+        throw error;
+    }
 });
 exports.addTodo = addTodo;
 const updateTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

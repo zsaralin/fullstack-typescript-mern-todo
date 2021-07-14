@@ -26,6 +26,10 @@ const todoSchema: Schema = new Schema({
         type: Number,
         required: true
     },
+    nonCompressedTime: {
+        type: Number,
+        required: true
+    },
 }, { timestamps: true })
 
 

@@ -146,5 +146,18 @@
     60%{--color2: rgb(255,0,200);}
     70%{--color2: rgb(255,0,190);}
     100%{--color2: rgb(255,0,180);}
+}
 
+.trashWrapper{
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.trashcan{
+    opacity: 0;
+    color:rgb(150,150,150);
+}
+.Card:hover .trashcan{
+    opacity: 1;
 }

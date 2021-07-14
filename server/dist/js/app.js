@@ -8,16 +8,47 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const cors_1 = __importDefault(require("cors"));
 const routes_1 = __importDefault(require("./routes"));
 const app = express_1.default();
+var Schema = mongoose_1.default.Schema;
 const PORT = process.env.PORT || 4000;
+var bodyParser = require('body-parser');
+var jsonParser = bodyParser.json();
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
+app.use(bodyParser.json());
 app.use(cors_1.default());
 app.use(routes_1.default);
-let meetingLen = 85;
-app.get('/meetingLen', function (req, res) {
-    res.status(200).json({ meetingLen });
+const numberSchema = new Schema({
+    integerOnly: {
+        type: Number,
+        default: 100,
+        // get: (v: number) => Math.round(v),
+    }
 });
-app.post('/postMeetingLen', function (req, res) {
-    meetingLen = req.body;
-    res.status(200).json({ meetingLen });
+const Number2 = mongoose_1.default.model('Number2', numberSchema);
+const doc = new Number2();
+// let meetingLen = doc.integerOnly.get();
+app.get('/meetingLen', function (req, res) {
+    // let num = doc.get();
+    try {
+        let meetingLen = doc.integerOnly;
+        res.status(200).json({ meetingLen });
+    }
+    catch (error) {
+        throw error;
+    }
+    // return num;
+});
+app.post('/postMeetingLen', urlencodedParser, function (req, res) {
+    try {
+        let meetingLen = req.body.meetingLen;
+        doc.integerOnly = meetingLen;
+        // doc.update({integerOnly:req.body.data})
+        // let something = 90;
+        res.status(200).json(meetingLen);
+    }
+    catch (error) {
+        throw error;
+    }
 });
 const uri = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.07m5b.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`;
 const options = { useNewUrlParser: true, useUnifiedTopology: true };
