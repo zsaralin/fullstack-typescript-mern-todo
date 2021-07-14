@@ -113,10 +113,10 @@ const App: React.FC = () => {
     }, [todoTime, meetingLen, index])
     const compressTodos = (): void => {
         if (todos[index] !== undefined) {
-                if(todos[index].time >= 2000) {
-                    todos[index].initTime -= 1000;
-                    todos[index].time -= 1000;
-                    setDiff(diff-1000)
+                if(todos[index].time >= 120) {
+                    todos[index].initTime -= 60;
+                    todos[index].time -= 60;
+                    setDiff(diff-60)
                 }
                 setIndex(index+1);
                 if(index===todos.length-1){
@@ -166,15 +166,15 @@ const App: React.FC = () => {
                 if (bonusTime < 100) {
                     if (isTimeLeft()) {
                         let reducedSlot2 = cursor + lastIndex;
-                        todos[reducedSlot2].time -= 100;
-                        setAmountSubtract(amountSubtract + 100)
-                        if (amountSubtract === 1000) {
+                        todos[reducedSlot2].time -= 1;
+                        setAmountSubtract(amountSubtract + 1)
+                        if (amountSubtract === 60) {
                             setLastIndex(lastIndex + 1);
                             setAmountSubtract(0)
                         }
                     }
-                } else if (bonusTime >= 100) {//decrease bonusTime
-                    setBonus(bonusTime - 100)
+                } else if (bonusTime >= 1) {//decrease bonusTime
+                    setBonus(bonusTime - 1)
                 }
             }
         }
@@ -201,7 +201,7 @@ const App: React.FC = () => {
     }
     const isTimeLeft = (): boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
-            if (todos[i].time > 1000) {
+            if (todos[i].time > 60) {
                 return true
             }
         }
@@ -224,7 +224,7 @@ const App: React.FC = () => {
         }
     }, [lastIndex])
     useEffect(() => {
-        if (cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time <= 1000 && isTimeLeft()) {
+        if (cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time <= 60 && isTimeLeft()) {
             setLastIndex(lastIndex + 1)
         }
     }, [lastIndex])
@@ -340,7 +340,7 @@ const App: React.FC = () => {
 
     const fetchMeetingLen = (): void => {
         getMeetingLen()
-            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 1000))
+            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 60))
             .catch((err: Error) => console.log(err));
     }
 
@@ -348,7 +348,7 @@ const App: React.FC = () => {
         postMeetingLen(meetingLen).then(response => {
             console.log(response)
         });
-        setMeetingLen(meetingLen * 1000)
+        setMeetingLen(meetingLen * 60)
         setTempMeeting(undefined);
         setMeetingLenMenu(false)
     }

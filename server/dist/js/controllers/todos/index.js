@@ -54,9 +54,9 @@ const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 const todo = new todo_1.default({
                     name: file.toString().substring(0, file.toString().length - 4),
                     description: data.substring(2, data.length - 2),
-                    initTime: timeNum * 1000,
-                    time: timeNum * 1000,
-                    nonCompressedTime: timeNum * 1000,
+                    initTime: timeNum * 60,
+                    time: timeNum * 60,
+                    nonCompressedTime: timeNum * 60,
                     overtime: 0,
                     extra: 0,
                 });
