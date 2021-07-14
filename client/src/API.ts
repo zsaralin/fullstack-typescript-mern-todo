@@ -64,3 +64,15 @@ export const postMeetingLen = async (meetingLen:number): Promise<void> => {
     throw new Error(error)
   }
 }
+export const deleteTodo = async (
+    _id: string
+): Promise<AxiosResponse<ApiDataType>> => {
+  try {
+    const deletedTodo: AxiosResponse<ApiDataType> = await axios.delete(
+        `${baseUrl}/delete-todo/${_id}`
+    )
+    return deletedTodo
+  } catch (error) {
+    throw new Error(error)
+  }
+}

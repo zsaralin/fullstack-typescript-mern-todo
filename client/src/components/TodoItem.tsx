@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react'
 import {Draggable} from 'react-beautiful-dnd'
-import {getLongestName,} from "../API";
+import {deleteTodo, getLongestName,} from "../API";
 import './TodoItem.css'
 import Timer from "./Timer";
 import Slider from "./Slider";
 import {FaRegTrashAlt} from "react-icons/fa";
 
-const Todo = (props: {
+const Todo = (props: { deleteTodo: (_id: string) => void
     percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number,
     callbackFromParent2(listInfo: number): void;
 }) => {
@@ -78,8 +78,8 @@ const Todo = (props: {
                                      width: 60 + 5 * longest + "px", backgroundColor: props.done ? color : '',
                                      background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
                                  }}>
-                                <button className="trashWrapper"
-                                ><FaRegTrashAlt className = "trashcan"  />
+                                <button className="trashWrapper" onClick={() => deleteTodo(props.todo._id)}
+                                ><FaRegTrashAlt className="trashcan"/>
                                 </button>
                                 {props.todo.name}
                             </div>
@@ -108,7 +108,7 @@ const Todo = (props: {
                                         </span> : props.active ? Math.ceil(reducedTime / 1000)
                                             : Math.ceil(props.todo.initTime / 1000)} min
                                 </div>
-                                    <Timer callbackFromParent={timeCallback} startTime={reducedTime}
+                                <Timer callbackFromParent={timeCallback} startTime={reducedTime}
                                        active={props.active}
                                        done={props.done}/>
                             </div>

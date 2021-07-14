@@ -3,7 +3,7 @@ import TodoItem from './components/TodoItem'
 import {MdSettings} from 'react-icons/md';
 import AddTodo from './components/AddTodo'
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-import {getMeetingLen, getTodos, postMeetingLen,addTodo } from './API'
+import {getMeetingLen, getTodos, postMeetingLen, addTodo, deleteTodo} from './API'
 import BonusItem from "./components/BonusItem";
 // @ts-ignore
 import audio from './fanfare.mp3';
@@ -189,7 +189,16 @@ const App: React.FC = () => {
         }
         return percent;
     }
-
+    const handleDeleteTodo = (_id: string): void => {
+        deleteTodo(_id)
+            .then(({ status, data }) => {
+                if (status !== 200) {
+                    throw new Error('Error! Todo not deleted')
+                }
+                setTodos(data.todos)
+            })
+            .catch((err) => console.log(err))
+    }
     const isTimeLeft = (): boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
             if (todos[i].time > 1000) {
@@ -399,6 +408,7 @@ const App: React.FC = () => {
                                         <TodoItem
                                             key={todo._id}
                                             todo={todo}
+                                            deleteTodo={handleDeleteTodo}
                                             index={index}
                                             active={index === cursor}
                                             done={index < cursor}
