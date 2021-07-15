@@ -20,11 +20,13 @@ const todoSchema: Schema = new Schema({
     },
     overtime: {
         type: Number,
-        required: true
+        required: true,
+        default: 0,
     },
     extra: {
         type: Number,
-        required: true
+        required: true,
+        default: 0,
     },
     nonCompressedTime: {
         type: Number,

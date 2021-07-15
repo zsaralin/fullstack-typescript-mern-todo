@@ -20,11 +20,13 @@ const todoSchema = new mongoose_1.Schema({
     },
     overtime: {
         type: Number,
-        required: true
+        required: true,
+        default: 0,
     },
     extra: {
         type: Number,
-        required: true
+        required: true,
+        default: 0,
     },
     nonCompressedTime: {
         type: Number,

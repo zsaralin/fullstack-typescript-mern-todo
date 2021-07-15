@@ -76,3 +76,14 @@ export const deleteTodo = async (
     throw new Error(error)
   }
 }
+
+export const getTodos2 = async (): Promise<AxiosResponse<ApiDataType>> => {
+  try {
+    const todos: AxiosResponse<ApiDataType> = await axios.get(
+        baseUrl + '/todos2'
+    )
+    return todos
+  } catch (error) {
+    throw new Error(error)
+  }
+}

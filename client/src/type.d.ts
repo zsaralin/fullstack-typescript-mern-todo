@@ -1,7 +1,5 @@
-type TodoProps = {
+interface TodoProps {
     todo: ITodo
-    active: boolean
-    done: boolean
 }
 
 

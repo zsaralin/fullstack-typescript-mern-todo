@@ -3,8 +3,10 @@ import TodoItem from './components/TodoItem'
 import {MdSettings} from 'react-icons/md';
 import AddTodo from './components/AddTodo'
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-import {getMeetingLen, getTodos, postMeetingLen, addTodo, deleteTodo} from './API'
+import {getMeetingLen, postMeetingLen, getTodos2, addTodo, deleteTodo} from './API'
 import BonusItem from "./components/BonusItem";
+import DateTime from './components/theDate';
+
 // @ts-ignore
 import audio from './fanfare.mp3';
 
@@ -333,7 +335,7 @@ const App: React.FC = () => {
     }
 
     const fetchTodos = (): void => {
-        getTodos()
+        getTodos2()
             .then(({data: {todos}}: ITodo[] | any) => setTodos(todos))
             .catch((err: Error) => console.log(err));
     }
@@ -369,11 +371,11 @@ const App: React.FC = () => {
     const handleSaveTodo = (e: React.FormEvent, formData: ITodo): void => {
         e.preventDefault()
         addTodo(formData)
-            .then(({ status }) => {
+            .then(({ status , data }) => {
                 if (status !== 201) {
                     throw new Error('Error! Todo not saved')
                 }
-                // fetchTodos()
+                setTodos(data.todos)
             })
             .catch((err) => console.log(err))
     }
@@ -393,8 +395,15 @@ const App: React.FC = () => {
                     <AddTodo saveTodo={handleSaveTodo} />
                     <button className="xOutMeetingLen" onClick={toggleAddTodoMenu}>x</button>
                 </div>
-                <div className='test' onClick={closeMenu}>
-                    <Droppable droppableId='col-1' isDropDisabled={false}>
+                    <div className='test' onClick={closeMenu}>
+                        <div style = {{display: 'flex', flexDirection: 'row'}}>
+                        <h1 style = {{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates Meeting </h1>
+                            <div className = "headerWrapper" style = {{alignContent:'right', textAlign: 'right'}}>
+                        <div style = {{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen/1000} min </div>
+                            <DateTime/>
+                                </div>
+                        </div>
+                        <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {
                             const style = {
                                 // height: (todoTime - ((bonusTime) / (todoTime+bonusTime) * 100))/(todoTime) + '%' ,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
 type Props = { 
-  saveTodo: (e: React.FormEvent, formData: ITodo | any) => void 
+  saveTodo: (e: React.FormEvent, formData: ITodo | any) => void
 }
 
 const AddTodo: React.FC<Props> = ({ saveTodo }) => {
@@ -33,7 +33,7 @@ const AddTodo: React.FC<Props> = ({ saveTodo }) => {
       setTime(e.currentTarget.valueAsNumber)
       setFormData({
         ...formData,
-        ["time"]: e.currentTarget.valueAsNumber,
+        "time": e.currentTarget.valueAsNumber,
       })
     }
   }
@@ -41,7 +41,7 @@ const AddTodo: React.FC<Props> = ({ saveTodo }) => {
     setTime(parseInt(e.target.value, 10));
     setFormData({
       ...formData,
-      ["time"]: parseInt(e.target.value, 10),
+      "time": parseInt(e.target.value, 10),
     })
   }
 
