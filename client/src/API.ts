@@ -20,9 +20,9 @@ export const addTodo = async (
     const todo: Omit<ITodo, '_id'> = {
       name: formData.name,
       description: formData.description,
-      time: formData.time,
-      initTime: formData.time,
-      nonCompressedTime: formData.time,
+      time: formData.time*1000,
+      initTime: formData.time*1000,
+      nonCompressedTime: formData.time*1000,
       overtime: 0,
       extra:0,
     }
@@ -30,17 +30,6 @@ export const addTodo = async (
         baseUrl + '/add-todo',
         todo
     )
-  } catch (error) {
-    throw new Error(error)
-  }
-}
-
-export const getLongestName = async (): Promise<number> => {
-  try {
-    const longest: number = await axios.get(
-        baseUrl + '/todos-long'
-    )
-    return longest
   } catch (error) {
     throw new Error(error)
   }
@@ -69,7 +58,7 @@ export const deleteTodo = async (
 ): Promise<AxiosResponse<ApiDataType>> => {
   try {
     const deletedTodo: AxiosResponse<ApiDataType> = await axios.delete(
-        `${baseUrl}/delete-todo/${_id}`
+        `${baseUrl}/delete-todo/${_id}`,
     )
     return deletedTodo
   } catch (error) {

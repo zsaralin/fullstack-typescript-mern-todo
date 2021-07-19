@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTodos2 = exports.getLongestName = exports.deleteTodo = exports.updateTodo = exports.addTodo = exports.getTodos = void 0;
+exports.getTodos2 = exports.deleteTodo = exports.updateTodo = exports.addTodo = exports.getTodos = void 0;
 const todo_1 = __importDefault(require("../../models/todo"));
 const fs_1 = __importDefault(require("fs"));
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\";
@@ -61,7 +61,7 @@ const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
             let todo = createTodo(data, file.toString());
             todos.push(todo);
-            yield todo.save();
+            // await todo.save()
         }
         for (let i = 0; i < orderList.length; i++) {
             if (namesList.includes(orderList[i])) {
@@ -69,7 +69,7 @@ const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
                 let todo = createTodo(data, file.toString());
                 todos.push(todo);
-                yield todo.save();
+                // await todo.save()
                 // todoList.splice(i,1)
             }
         }
@@ -85,7 +85,7 @@ function createTodo(data, fileName) {
     if (data[0] === 'm') {
         timeNum = 10;
     }
-    if (data[0] === 'l') {
+    else if (data[0] === 'l') {
         timeNum = 15;
     }
     return new todo_1.default({
@@ -97,32 +97,6 @@ function createTodo(data, fileName) {
         overtime: 0,
         extra: 0,
     });
-}
-const getLongestName = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let longest = 0;
-        for (const file of fs_1.default.readdirSync(pathFull)) {
-            if (file.toString().length > longest) {
-                longest = file.toString().length;
-            }
-        }
-        res.status(200).json({ longest });
-    }
-    catch (error) {
-        throw error;
-    }
-});
-exports.getLongestName = getLongestName;
-function addTodoHelper(time) {
-    if (time === 5) {
-        return 's^';
-    }
-    else if (time === 10) {
-        return 'm^';
-    }
-    else {
-        return 'l^';
-    }
 }
 const addTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

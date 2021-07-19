@@ -46,7 +46,7 @@ const getTodos = async (req: Request, res: Response): Promise<void> => {
             const data = fs.readFileSync(pathFull + '\\' + file).toString('utf8')
             let todo = createTodo(data, file.toString())
             todos.push(todo);
-            await todo.save()
+            // await todo.save()
         }
         for(let i=0;i<orderList.length;i++){
             if(namesList.includes(orderList[i])){
@@ -54,7 +54,7 @@ const getTodos = async (req: Request, res: Response): Promise<void> => {
                 const data = fs.readFileSync(pathFull + '\\' + file).toString('utf8')
                 let todo = createTodo(data, file.toString())
                 todos.push(todo);
-                await todo.save()
+                // await todo.save()
                 // todoList.splice(i,1)
             }}
         res.status(200).json({todos})
@@ -68,7 +68,7 @@ function createTodo(data: string, fileName: string): ITodo{
     if (data[0] === 'm') {
         timeNum = 10;
     }
-    if (data[0] === 'l') {
+    else if (data[0] === 'l') {
         timeNum = 15;
     }
     return new Todo({
@@ -81,31 +81,7 @@ function createTodo(data: string, fileName: string): ITodo{
         extra: 0,
     });
 }
-const getLongestName = async (req: Request, res: Response): Promise<void> => {
-    try {
-        let longest = 0;
-        for (const file of fs.readdirSync(pathFull)) {
-            if (file.toString().length > longest) {
-                longest = file.toString().length;
-            }
-        }
-        res.status(200).json({longest})
-    } catch (error) {
-        throw error
-    }
-}
 
-function addTodoHelper(time:number): string{
-    if(time === 5){
-        return 's^';
-    }
-    else if(time === 10){
-        return 'm^';
-    }
-    else{
-        return 'l^';
-    }
-}
 const addTodo = async (req: Request, res: Response): Promise<void> => {
     try {
         const body = req.body as Pick<ITodo, 'name' | 'description' | 'time'>
@@ -164,4 +140,4 @@ const deleteTodo = async (req: Request, res: Response): Promise<void> => {
 }
 
 
-export {getTodos, addTodo, updateTodo, deleteTodo, getLongestName, getTodos2}
+export {getTodos, addTodo, updateTodo, deleteTodo, getTodos2}

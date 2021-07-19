@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react'
 import {Draggable} from 'react-beautiful-dnd'
-import {deleteTodo, getLongestName,} from "../API";
+import {deleteTodo,} from "../API";
 import './TodoItem.css'
 import Timer from "./Timer";
 import Slider from "./Slider";
 import {FaRegTrashAlt} from "react-icons/fa";
 
 const Todo = (props: { deleteTodo: (_id: string) => void
-    percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number,
+    percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number, longestName :number,
     callbackFromParent2(listInfo: number): void;
 }) => {
     const [realTime, setTime] = useState<number>(0);
@@ -20,7 +20,6 @@ const Todo = (props: { deleteTodo: (_id: string) => void
     useEffect(() => {
         someFn()
     },)
-    const [longest, setLong] = useState<number>(0);
     const [color, setColor] = useState<string>('rgb(198,246,241)');
 
 
@@ -41,14 +40,7 @@ const Todo = (props: { deleteTodo: (_id: string) => void
             }
         }
     }, [realTime, props.active, props.bonusTime, props.todo.time])
-    useEffect(() => {
-        handleLongest()
-    }, [])
-    const handleLongest = (): void => {
-        getLongestName()
-            .then(({data: {longest}}: number | any) => setLong(longest))
-            .catch((err: Error) => console.log(err))
-    }
+
     let reducedTime = props.todo.time - props.todo.extra
     return (
         <Draggable draggableId={props.todo._id} index={props.index} isDragDisabled={props.done || props.active}>
@@ -75,7 +67,7 @@ const Todo = (props: { deleteTodo: (_id: string) => void
                             <div className='name'
                                  style={{
                                      textDecoration: props.done ? 'line-through' : 'none',
-                                     width: 60 + 5 * longest + "px", backgroundColor: props.done ? color : '',
+                                     width: 60 + 5 * props.longestName + "px", backgroundColor: props.done ? color : '',
                                      background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
                                  }}>
                                 <button className="trashWrapper" onClick={() => deleteTodo(props.todo._id)}

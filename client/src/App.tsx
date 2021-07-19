@@ -5,7 +5,7 @@ import AddTodo from './components/AddTodo'
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
 import {getMeetingLen, postMeetingLen, getTodos2, addTodo, deleteTodo} from './API'
 import BonusItem from "./components/BonusItem";
-import DateTime from './components/theDate';
+import DateComp from './components/theDate';
 
 // @ts-ignore
 import audio from './fanfare.mp3';
@@ -33,7 +33,7 @@ const useKeyPress = function (targetKey: string) {
             window.removeEventListener("keydown", downHandler);
             window.removeEventListener("keyup", upHandler);
         };
-    }, );
+    },);
     return keyPressed;
 };
 
@@ -90,14 +90,28 @@ const App: React.FC = () => {
         }
         return todoTime;
     }
+
+    function getLongestName() {
+        let longest = '';
+        for (let i = 0; i < todos.length; i++) {
+            if (todos[i].name.length >= longest.length) {
+                longest = todos[i].name;
+            }
+        }
+        return longest.length;
+    }
+
+    const [longestName, setLongestName] = useState<number>(0);
     const [todoTime, setTodoTime] = useState<number>(0);
     const [nonCompressedtodoTime, setNonCompressedTodoTime] = useState<number>(0);
     const [diff, setDiff] = useState<number>(0);
-    const [index, setIndex] = useState<number>(cursor+1);
+    const [index, setIndex] = useState<number>(cursor + 1);
 
     useEffect(() => {
         setTodoTime(getTodoTime())
         setNonCompressedTodoTime(getNonCompressedTodoTime())
+        setLongestName(getLongestName());
+
     }, [todos])
     const [meetingLen, setMeetingLen] = useState<number>(0);
     const [tempMeeting, setTempMeeting] = useState<number>();
@@ -108,29 +122,30 @@ const App: React.FC = () => {
             setDiff(0)
         } else {
             setOrigBonus(0)
-            if(meetingLen < todoTime){
-                setDiff(todoTime-meetingLen)
-                }
+            if (meetingLen < todoTime) {
+                setDiff(todoTime - meetingLen)
+            }
         }
     }, [todoTime, meetingLen, index])
     const compressTodos = (): void => {
         if (todos[index] !== undefined) {
-                if(todos[index].time >= 2000) {
-                    todos[index].initTime -= 1000;
-                    todos[index].time -= 1000;
-                    setDiff(diff-1000)
-                }
-                setIndex(index+1);
-                if(index===todos.length-1){
-                    setIndex(cursor+1);
-                }
+            if (todos[index].time >= 2000) {
+                todos[index].initTime -= 1000;
+                todos[index].time -= 1000;
+                setDiff(diff - 1000)
             }
-            setTodoTime(getTodoTime);
+            setIndex(index + 1);
+            if (index === todos.length - 1) {
+                setIndex(cursor + 1);
+            }
+        }
+        setTodoTime(getTodoTime);
     }
     useEffect(() => {
-        if(diff>0 && todoTime!==todos.length*1000){
-            compressTodos();}
-    }, [index,diff])
+        if (diff > 0 && todoTime !== todos.length * 1000) {
+            compressTodos();
+        }
+    }, [index, diff])
 
     const resetTodos = (): void => {
         for (let i = 0; i < todos.length; i++) {
@@ -150,9 +165,11 @@ const App: React.FC = () => {
     const [prevTime, setPrevTime] = useState<number>(0);
     useEffect(() => {
         // resetTodos()
-        fetchTodos();
         fetchMeetingLen()
     }, [])
+    useEffect(() => {
+        fetchTodos();
+    }, [todos.length])
 
     const [bonusTime, setBonus] = useState<number>(0);
     useEffect(() => {
@@ -193,11 +210,12 @@ const App: React.FC = () => {
     }
     const handleDeleteTodo = (_id: string): void => {
         deleteTodo(_id)
-            .then(({ status, data }) => {
+            .then(({status, data}) => {
                 if (status !== 200) {
                     throw new Error('Error! Todo not deleted')
+                } else {
+                    setTodos(data.todos);
                 }
-                setTodos(data.todos)
             })
             .catch((err) => console.log(err))
     }
@@ -234,7 +252,9 @@ const App: React.FC = () => {
         if (downPress) {
             setLastIndex(1);
             let trumpetSound = new Audio(audio);
-            if(cursor == -1){trumpetSound.play()}
+            if (cursor == -1) {
+                trumpetSound.play()
+            }
             if (selected !== undefined) {
                 //if person takes less than set time
                 if (selected.overtime === 0 && nonZeroTime < (selected.time)) {
@@ -319,8 +339,7 @@ const App: React.FC = () => {
             return null;
         }
         // Make sure we're actually moving the item
-        if (destination.index === source.index)
-        {
+        if (destination.index === source.index) {
             window.scrollTo(0, 0);
             return null;
         }
@@ -331,7 +350,7 @@ const App: React.FC = () => {
         newList.splice(destination.index, 0, todos[source.index])
         // Update the list
         setTodos(newList)
-            window.scrollTo(0, 0)
+        window.scrollTo(0, 0)
     }
 
     const fetchTodos = (): void => {
@@ -358,20 +377,22 @@ const App: React.FC = () => {
 
     const handleForm = (e: any) => {
         if (e.key === 'Enter') {
-            if(tempMeeting != undefined){
-            updateMeetingLen(tempMeeting);}
+            if (tempMeeting != undefined) {
+                updateMeetingLen(tempMeeting);
+            }
             e.preventDefault();
         }
     }
     const handleFormOnSubmit = (e: any) => {
         e.preventDefault();
-        if(tempMeeting != undefined){
-        updateMeetingLen(tempMeeting);}
+        if (tempMeeting != undefined) {
+            updateMeetingLen(tempMeeting);
+        }
     }
     const handleSaveTodo = (e: React.FormEvent, formData: ITodo): void => {
         e.preventDefault()
         addTodo(formData)
-            .then(({ status , data }) => {
+            .then(({status, data}) => {
                 if (status !== 201) {
                     throw new Error('Error! Todo not saved')
                 }
@@ -381,29 +402,32 @@ const App: React.FC = () => {
     }
 
     return (
-            <main className='App' id="behindComponent">
-                <DragDropContext onDragEnd={onDragEnd}>
-                <form className="meetingLen" onSubmit={handleFormOnSubmit} style={{display: !meetingLenMenu ? 'none' : ''}}>
+        <main className='App' id="behindComponent">
+            <DragDropContext onDragEnd={onDragEnd}>
+                <form className="meetingLen" onSubmit={handleFormOnSubmit}
+                      style={{display: !meetingLenMenu ? 'none' : ''}}>
                     <label> Meeting Length:
-                    <input className="inputMeetingLen" onKeyDown={handleForm}  onSubmit = {handleFormOnSubmit}
-                           type={meetingLenMenu?"number":"string"} defaultValue =""
-                           onChange = {(e:any) => setTempMeeting(e.target.value)} value = {tempMeeting || ""} id='meetingLen'/> min </label>
-                    <button className="buttonStyle" disabled = {tempMeeting == undefined} type = 'submit'>Submit</button>
+                        <input className="inputMeetingLen" onKeyDown={handleForm} onSubmit={handleFormOnSubmit}
+                               type={meetingLenMenu ? "number" : "string"} defaultValue=""
+                               onChange={(e: any) => setTempMeeting(e.target.value)} value={tempMeeting || ""}
+                               id='meetingLen'/> min </label>
+                    <button className="buttonStyle" disabled={tempMeeting == undefined} type='submit'>Submit</button>
                     <button className="xOutMeetingLen" onClick={toggleMeetingLenMenu}>x</button>
                 </form>
                 <div className="meetingLen" style={{display: !addTodoMenu ? 'none' : ''}}>
-                    <AddTodo saveTodo={handleSaveTodo} />
+                    <AddTodo saveTodo={handleSaveTodo}/>
                     <button className="xOutMeetingLen" onClick={toggleAddTodoMenu}>x</button>
                 </div>
-                    <div className='test' onClick={closeMenu}>
-                        <div style = {{display: 'flex', flexDirection: 'row'}}>
-                        <h1 style = {{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates Meeting </h1>
-                            <div className = "headerWrapper" style = {{alignContent:'right', textAlign: 'right'}}>
-                        <div style = {{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen/1000} min </div>
-                            <DateTime/>
-                                </div>
+                <div className='test' onClick={closeMenu}>
+                    <div style={{display: 'flex', flexDirection: 'row'}}>
+                        <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
+                            Meeting </h1>
+                        <div className="headerWrapper" style={{alignContent: 'right', textAlign: 'right'}}>
+                            <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 1000} min</div>
+                            <DateComp/>
                         </div>
-                        <Droppable droppableId='col-1' isDropDisabled={false}>
+                    </div>
+                    <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {
                             const style = {
                                 // height: (todoTime - ((bonusTime) / (todoTime+bonusTime) * 100))/(todoTime) + '%' ,
@@ -424,6 +448,7 @@ const App: React.FC = () => {
                                             callbackFromParent2={timeCallback}
                                             percent={getPercent(todo)}
                                             bonusTime={bonusTime}
+                                            longestName={longestName}
                                         />
                                     ))}
                                     {provided.placeholder}
@@ -444,8 +469,8 @@ const App: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                </DragDropContext>
-            </main>
+            </DragDropContext>
+        </main>
     )
 }
 

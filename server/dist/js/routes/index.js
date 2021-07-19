@@ -5,7 +5,6 @@ const todos_1 = require("../controllers/todos");
 const router = express_1.Router();
 router.get('/todos', todos_1.getTodos);
 router.get('/todos2', todos_1.getTodos2);
-router.get('/todos-long', todos_1.getLongestName);
 router.post('/add-todo', todos_1.addTodo);
 router.put('/edit-todo/:id', todos_1.updateTodo);
 router.delete('/delete-todo/:id', todos_1.deleteTodo);
