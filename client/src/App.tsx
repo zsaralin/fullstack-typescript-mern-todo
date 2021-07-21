@@ -6,7 +6,7 @@ import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
 import {getMeetingLen, postMeetingLen, getTodos2, addTodo, deleteTodo} from './API'
 import BonusItem from "./components/BonusItem";
 import DateComp from './components/theDate';
-
+import socketClient  from "socket.io-client";
 // @ts-ignore
 import audio from './fanfare.mp3';
 
@@ -36,9 +36,12 @@ const useKeyPress = function (targetKey: string) {
     },);
     return keyPressed;
 };
-
+const SERVER = "http://127.0.0.1:4000";
 const App: React.FC = () => {
-
+    var socket = socketClient (SERVER);
+    socket.on('connection', () => {
+        console.log(`I'm connected with the back-end`);
+    });
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
 

@@ -8,6 +8,10 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const cors_1 = __importDefault(require("cors"));
 const routes_1 = __importDefault(require("./routes"));
 const app = express_1.default();
+const socketIO = require("socket.io");
+var http = require('http');
+const server = http.createServer(app);
+const io = socketIO(server);
 var Schema = mongoose_1.default.Schema;
 const PORT = process.env.PORT || 4000;
 var bodyParser = require('body-parser');
@@ -27,6 +31,9 @@ const numberSchema = new Schema({
 const Number2 = mongoose_1.default.model('Number2', numberSchema);
 const doc = new Number2();
 // let meetingLen = doc.integerOnly.get();
+app.get('/', function (req, res) {
+    res.sendFile('C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\client\\public\\index.html');
+});
 app.get('/meetingLen', function (req, res) {
     // let num = doc.get();
     try {
@@ -55,7 +62,14 @@ const options = { useNewUrlParser: true, useUnifiedTopology: true };
 mongoose_1.default.set('useFindAndModify', false);
 mongoose_1.default
     .connect(uri, options)
-    .then(() => app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`)))
+    .then(() => server.listen(PORT, () => console.log(`Listening on port ${PORT}`)))
     .catch((error) => {
     throw error;
+});
+io.on('connection', function (socket) {
+    console.log('A user connected');
+    //Whenever someone disconnects this piece of code executed
+    socket.on('disconnect', function () {
+        console.log('A user disconnected');
+    });
 });

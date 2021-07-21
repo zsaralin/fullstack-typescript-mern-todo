@@ -1,8 +1,13 @@
 import express from 'express'
-import mongoose, {Model} from 'mongoose'
+import mongoose from 'mongoose'
 import cors from 'cors'
 import todoRoutes from './routes'
 const app=express()
+const socketIO = require("socket.io");
+var http = require('http');
+const server = http.createServer(app);
+const io = socketIO(server);
+
 var Schema = mongoose.Schema
 const PORT: string | number = process.env.PORT || 4000
 var bodyParser = require('body-parser')
@@ -24,6 +29,10 @@ const numberSchema = new Schema({
 const Number2: any = mongoose.model('Number2', numberSchema);
 const doc = new Number2();
 // let meetingLen = doc.integerOnly.get();
+app.get('/', function(req, res) {
+    res.sendFile('C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\client\\public\\index.html');
+});
+
 app.get('/meetingLen',function(req, res) {
     // let num = doc.get();
     try{
@@ -53,10 +62,15 @@ mongoose.set('useFindAndModify', false)
 mongoose
     .connect(uri, options)
     .then(() =>
-        app.listen(PORT, () =>
-            console.log(`Server running on http://localhost:${PORT}`)
-        )
-    )
+        server.listen(PORT, () => console.log(`Listening on port ${PORT}`)))
     .catch((error) => {
         throw error
     })
+
+io.on('connection', function(socket:any) {
+    console.log('A user connected');
+    //Whenever someone disconnects this piece of code executed
+    socket.on('disconnect', function () {
+        console.log('A user disconnected');
+    })
+});
