@@ -36,7 +36,7 @@ const useKeyPress = function (targetKey: string) {
     },);
     return keyPressed;
 };
-const SERVER = "http://127.0.0.1:4000";
+const SERVER = "'http://localhost:4000";
 const App: React.FC = () => {
     var socket = socketClient (SERVER);
     socket.on('connection', () => {
