@@ -23,40 +23,11 @@ function shuffleArray(array:any) {
 const getTodos = async (req: Request, res: Response): Promise<void> => {
     try {
         const todos: ITodo[] = [];
-
-        let namesList = [];
-        let todoList = [];
-        let otherList = [];
-        let interns = ['Daron','Srishti','Matthew','Vikram','Saralin', 'Damien','Tobias','Karthik','Michael']
-        let fullTimers = ['Jo','Kendra', 'Qian', 'Bon', 'David']
-        let finalWord = ['Fraser', 'Justin']
-        shuffleArray(interns); shuffleArray(fullTimers); shuffleArray(finalWord)
-        let orderList = interns.concat(fullTimers, finalWord);
-
-        for (const file of fs.readdirSync(pathFull)){
-            if(orderList.includes(file.toString().substring(0, file.toString().length - 4))){
-            namesList.push(file.toString().substring(0, file.toString().length - 4));
-            todoList.push(file)}
-            else{
-                otherList.push(file)
-            }
-        }
-        for(let i=0;i<otherList.length;i++){
-            let file = otherList[i]
+        for (const file of fs.readdirSync(pathFull)) {
             const data = fs.readFileSync(pathFull + '\\' + file).toString('utf8')
             let todo = createTodo(data, file.toString())
-            todos.push(todo);
-            // await todo.save()
-        }
-        for(let i=0;i<orderList.length;i++){
-            if(namesList.includes(orderList[i])){
-                let file = todoList[namesList.indexOf(orderList[i])]
-                const data = fs.readFileSync(pathFull + '\\' + file).toString('utf8')
-                let todo = createTodo(data, file.toString())
-                todos.push(todo);
-                // await todo.save()
-                // todoList.splice(i,1)
-            }}
+            todos.push(todo)
+            }
         res.status(200).json({todos})
     } catch (error) {
         throw error

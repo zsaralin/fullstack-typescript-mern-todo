@@ -80,7 +80,7 @@ const Todo = (props: {
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
-                            }}>{props.todo.description} overtime: {props.todo.overtime}
+                            }}>{props.todo.description}
                             </div>
                             <div className="time" style={{
                                 backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',

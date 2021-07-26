@@ -10,6 +10,14 @@ import DateComp from './components/theDate';
 // @ts-ignore
 import audio from './fanfare.mp3';
 
+function shuffleArray(array:any) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        let temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
 const useKeyPress = function (targetKey: string) {
     const [keyPressed, setKeyPressed] = useState(false);
 
@@ -111,7 +119,6 @@ const App: React.FC = () => {
         setTodoTime(getTodoTime())
         setNonCompressedTodoTime(getNonCompressedTodoTime())
         setLongestName(getLongestName());
-
     }, [todos])
     const [meetingLen, setMeetingLen] = useState<number>(0);
     const [tempMeeting, setTempMeeting] = useState<number>();
@@ -357,10 +364,39 @@ const App: React.FC = () => {
 
     const fetchTodos = (): void => {
         getTodos2()
-            .then(({data: {todos}}: ITodo[] | any) => setTodos(todos))
+            .then(({data: {todos}}: ITodo[] | any) =>
+                shuffleTodos(todos))
             .catch((err: Error) => console.log(err));
     }
+    function shuffleTodos(inputTodos: ITodo[]){
+        let namesList: string[] = [];
+        let finalList: ITodo[] = [];
+        let todoList: ITodo[] = [];
+        let otherList: ITodo[] = [];
+        let interns = ['Daron','Srishti','Matthew','Vikram','Saralin', 'Damien','Tobias','Karthik','Michael']
+        let fullTimers = ['Jo','Kendra', 'Qian', 'Bon', 'David']
+        let finalWord = ['Fraser', 'Justin']
+        shuffleArray(interns); shuffleArray(fullTimers); shuffleArray(finalWord)
+        let orderList = interns.concat(fullTimers, finalWord);
 
+        inputTodos.forEach(element => {
+            if (orderList.includes(element.name)) {
+                namesList.push(element.name);
+                todoList.push(element)
+            } else {
+                otherList.push(element)
+            }
+        });
+        otherList.forEach(element => {
+            finalList.push(element);
+        });
+        for(let i=0;i<orderList.length;i++){
+            if(namesList.includes(orderList[i])){
+                let file = todoList[namesList.indexOf(orderList[i])]
+                finalList.push(file);
+            }}
+        setTodos(finalList);
+    }
     const fetchMeetingLen = (): void => {
         getMeetingLen()
             .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 1000))
