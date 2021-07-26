@@ -43,6 +43,7 @@ const App: React.FC = () => {
     const upPress = useKeyPress("ArrowUp");
 
     const [todos, setTodos] = useState<ITodo[]>([]);
+
     const [selected, setSelected] = useState<ITodo>();
     const [before, setBefore] = useState<ITodo>();
 
@@ -63,7 +64,6 @@ const App: React.FC = () => {
     const closeMenu = () => {
         setMeetingLenMenu(false);
         setAddTodoMenu(false);
-
     }
     const toggleAddTodoMenu = () => {
         setAddTodoMenu(!addTodoMenu);
@@ -169,7 +169,7 @@ const App: React.FC = () => {
     }, [])
     useEffect(() => {
         fetchTodos();
-    }, [todos.length])
+    }, [])
 
     const [bonusTime, setBonus] = useState<number>(0);
     useEffect(() => {
@@ -208,15 +208,17 @@ const App: React.FC = () => {
         }
         return percent;
     }
-    const handleDeleteTodo = (_id: string): void => {
+    const handleDeleteTodo = (_id: string, index: number): void => {
         deleteTodo(_id)
-            .then(({status, data}) => {
+            .then(({status, }) => {
                 if (status !== 200) {
                     throw new Error('Error! Todo not deleted')
                 } else {
-                    setTodos(data.todos);
-                }
-            })
+                    let extraBonus = todos[index].time;
+                    todos.splice(index,1);
+                    setBonus(bonusTime+extraBonus);
+                    setOrigBonus(origBonus+extraBonus)
+                }})
             .catch((err) => console.log(err))
     }
     const isTimeLeft = (): boolean => {
@@ -252,7 +254,7 @@ const App: React.FC = () => {
         if (downPress) {
             setLastIndex(1);
             let trumpetSound = new Audio(audio);
-            if (cursor == -1) {
+            if (cursor === -1) {
                 trumpetSound.play()
             }
             if (selected !== undefined) {
@@ -396,7 +398,11 @@ const App: React.FC = () => {
                 if (status !== 201) {
                     throw new Error('Error! Todo not saved')
                 }
-                setTodos(data.todos)
+                if (data.todo) {
+                    todos.push(data.todo)
+                    setBonus(bonusTime - data.todo.time)
+                    setOrigBonus(origBonus-data.todo.time)
+                }
             })
             .catch((err) => console.log(err))
     }
@@ -441,7 +447,7 @@ const App: React.FC = () => {
                                         <TodoItem
                                             key={todo._id}
                                             todo={todo}
-                                            deleteTodo={handleDeleteTodo}
+                                            deleteTodoApp={handleDeleteTodo}
                                             index={index}
                                             active={index === cursor}
                                             done={index < cursor}

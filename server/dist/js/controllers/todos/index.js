@@ -107,6 +107,8 @@ const addTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             time: body.time,
             initTime: body.time,
             nonCompressedTime: body.time,
+            overtime: 0,
+            extra: 0,
         });
         // fs.writeFileSync(pathFull + '/'+ body.name + '.txt', addTodoHelper(body.time) + body.description + '^0')
         const newTodo = yield todo.save();

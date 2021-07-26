@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from 'react'
 import {Draggable} from 'react-beautiful-dnd'
-import {deleteTodo,} from "../API";
 import './TodoItem.css'
 import Timer from "./Timer";
 import Slider from "./Slider";
 import {FaRegTrashAlt} from "react-icons/fa";
 
-const Todo = (props: { deleteTodo: (_id: string) => void
+const Todo = (props: {
     percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number, longestName :number,
-    callbackFromParent2(listInfo: number): void;
+    callbackFromParent2(listInfo: number): void, deleteTodoApp: (_id: string, index:number) => void
 }) => {
     const [realTime, setTime] = useState<number>(0);
     const timeCallback = (timerTime: number) => {
@@ -19,7 +18,7 @@ const Todo = (props: { deleteTodo: (_id: string) => void
     }
     useEffect(() => {
         someFn()
-    },)
+    }, [realTime])
     const [color, setColor] = useState<string>('rgb(198,246,241)');
 
 
@@ -70,7 +69,9 @@ const Todo = (props: { deleteTodo: (_id: string) => void
                                      width: 60 + 5 * props.longestName + "px", backgroundColor: props.done ? color : '',
                                      background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
                                  }}>
-                                <button className="trashWrapper" onClick={() => deleteTodo(props.todo._id)}
+                                <button className="trashWrapper" disabled={props.active || props.done}
+                                        style = {{cursor:!props.active && !props.done?'pointer':'default' }}
+                                        onClick={() => props.deleteTodoApp(props.todo._id, props.index)}
                                 ><FaRegTrashAlt className="trashcan"/>
                                 </button>
                                 {props.todo.name}
@@ -79,7 +80,7 @@ const Todo = (props: { deleteTodo: (_id: string) => void
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
                                 background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
-                            }}>{props.todo.description}
+                            }}>{props.todo.description} overtime: {props.todo.overtime}
                             </div>
                             <div className="time" style={{
                                 backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',

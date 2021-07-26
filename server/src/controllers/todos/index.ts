@@ -91,6 +91,8 @@ const addTodo = async (req: Request, res: Response): Promise<void> => {
             time: body.time,
             initTime: body.time,
             nonCompressedTime: body.time,
+            overtime: 0,
+            extra: 0,
         })
         // fs.writeFileSync(pathFull + '/'+ body.name + '.txt', addTodoHelper(body.time) + body.description + '^0')
         const newTodo: ITodo = await todo.save()
