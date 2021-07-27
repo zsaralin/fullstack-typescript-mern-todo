@@ -3,7 +3,7 @@ import TodoItem from './components/TodoItem'
 import {MdSettings} from 'react-icons/md';
 import AddTodo from './components/AddTodo'
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-import {getMeetingLen, postMeetingLen, getTodos2, addTodo, deleteTodo} from './API'
+import {getMeetingLen, postMeetingLen, addTodo, deleteTodo} from './API'
 import BonusItem from "./components/BonusItem";
 import DateComp from './components/theDate';
 
@@ -361,13 +361,17 @@ const App: React.FC = () => {
         setTodos(newList)
         window.scrollTo(0, 0)
     }
-
-    const fetchTodos = (): void => {
-        getTodos2()
-            .then(({data: {todos}}: ITodo[] | any) =>
-                shuffleTodos(todos))
-            .catch((err: Error) => console.log(err));
+    const fetchTodos = async () => {
+        const response = await fetch('https://wuzsxfe473.execute-api.us-east-2.amazonaws.com/Dev/@connections')
+        const body = await response.json();
+        shuffleTodos(body)
     }
+    // const fetchTodos = (): void => {
+    //     getTodos2()
+    //         .then(({data: {todos}}: ITodo[] | any) =>
+    //             shuffleTodos(todos))
+    //         .catch((err: Error) => console.log(err));
+    // }
     function shuffleTodos(inputTodos: ITodo[]){
         let namesList: string[] = [];
         let finalList: ITodo[] = [];
