@@ -47,6 +47,16 @@ const useKeyPress = function (targetKey: string) {
 
 const App: React.FC = () => {
 
+    const socket = new WebSocket('wss://wuzsxfe473.execute-api.us-east-2.amazonaws.com/Dev')
+
+    socket.addEventListener('open',() =>{
+        console.log('WebSocket is connected')
+    })
+
+    socket.addEventListener('close' ,()=> console.log('WebSocket is closed'))
+
+    socket.addEventListener('error', (e: any) => console.error('WebSocket is in error', e))
+
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
 
