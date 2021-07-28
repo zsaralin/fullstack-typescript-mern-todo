@@ -109,7 +109,7 @@ const App: React.FC = () => {
         return longest.length;
     }
 
-    const [longestName, setLongestName] = useState<number>(0);
+    const [, setLongestName] = useState<number>(0);
     const [todoTime, setTodoTime] = useState<number>(0);
     const [nonCompressedtodoTime, setNonCompressedTodoTime] = useState<number>(0);
     const [diff, setDiff] = useState<number>(0);
@@ -205,7 +205,6 @@ const App: React.FC = () => {
             }
         }
     }, [realTime])
-
 
     const getPercent = (todo: ITodo): number => {
         let percent = (todo.time - todo.extra + todo.overtime);
@@ -490,7 +489,7 @@ const App: React.FC = () => {
                                             callbackFromParent2={timeCallback}
                                             percent={getPercent(todo)}
                                             bonusTime={bonusTime}
-                                            longestName={longestName}
+                                            longestName={getLongestName()}
                                         />
                                     ))}
                                     {provided.placeholder}

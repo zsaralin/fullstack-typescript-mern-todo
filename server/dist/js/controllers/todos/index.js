@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTodos2 = exports.deleteTodo = exports.updateTodo = exports.addTodo = exports.getTodos = void 0;
+exports.getTodos2 = exports.deleteTodo = exports.addTodo = exports.getTodos = void 0;
 const todo_1 = __importDefault(require("../../models/todo"));
 const fs_1 = __importDefault(require("fs"));
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\";
@@ -26,14 +26,6 @@ const getTodos2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getTodos2 = getTodos2;
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        let temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-}
 const getTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const todos = [];
@@ -89,22 +81,6 @@ const addTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.addTodo = addTodo;
-const updateTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { params: { id }, body, } = req;
-        const updateTodo = yield todo_1.default.findByIdAndUpdate({ _id: id }, body);
-        const allTodos = yield todo_1.default.find();
-        res.status(200).json({
-            message: 'Todo updated',
-            todo: updateTodo,
-            todos: allTodos,
-        });
-    }
-    catch (error) {
-        throw error;
-    }
-});
-exports.updateTodo = updateTodo;
 const deleteTodo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const deletedTodo = yield todo_1.default.findByIdAndRemove(req.params.id);

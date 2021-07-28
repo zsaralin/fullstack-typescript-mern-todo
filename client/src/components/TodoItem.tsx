@@ -66,7 +66,7 @@ const Todo = (props: {
                             <div className='name'
                                  style={{
                                      textDecoration: props.done ? 'line-through' : 'none',
-                                     width: 60 + 5 * props.longestName + "px", backgroundColor: props.done ? color : '',
+                                     width: 60 + 9 * props.longestName + "px", backgroundColor: props.done ? color : '',
                                      background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
                                  }}>
                                 <button className="trashWrapper" disabled={props.active || props.done}
