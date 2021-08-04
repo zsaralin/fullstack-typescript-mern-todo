@@ -59,9 +59,9 @@ const AddTodo: React.FC<Props> = ({ saveTodo }) => {
         <div style = {{marginLeft: '10px'}}>
         <label htmlFor='time'>Time: </label>
         <select style = {{backgroundColor:'rgba(200,200,200,.5)', marginRight: '2px'}} onChange={handleOption}>
-        {options.map(item => (
+        {options.map((item, i) => (
             <option
-                key={item.value}
+                key={i}
                 value={item.value}
             >
               {item.label}

@@ -5,9 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const cors_1 = __importDefault(require("cors"));
 const routes_1 = __importDefault(require("./routes"));
 const app = express_1.default();
+const cors = require("cors");
+app.use(cors());
 var Schema = mongoose_1.default.Schema;
 const PORT = process.env.PORT || 4000;
 var bodyParser = require('body-parser');
@@ -15,7 +16,7 @@ var jsonParser = bodyParser.json();
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.use(bodyParser.json());
-app.use(cors_1.default());
+app.use(cors());
 app.use(routes_1.default);
 const numberSchema = new Schema({
     integerOnly: {

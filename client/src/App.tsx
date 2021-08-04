@@ -3,7 +3,7 @@ import TodoItem from './components/TodoItem'
 import {MdSettings} from 'react-icons/md';
 import AddTodo from './components/AddTodo'
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-import {getMeetingLen, postMeetingLen, addTodo, deleteTodo} from './API'
+import { postMeetingLen } from './API'
 import BonusItem from "./components/BonusItem";
 import DateComp from './components/theDate';
 
@@ -45,17 +45,8 @@ const useKeyPress = function (targetKey: string) {
     return keyPressed;
 };
 
+
 const App: React.FC = () => {
-
-    const socket = new WebSocket('wss://wuzsxfe473.execute-api.us-east-2.amazonaws.com/Dev')
-
-    socket.addEventListener('open',() =>{
-        console.log('WebSocket is connected')
-    })
-
-    socket.addEventListener('close' ,()=> console.log('WebSocket is closed'))
-
-    socket.addEventListener('error', (e: any) => console.error('WebSocket is in error', e))
 
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
@@ -129,6 +120,7 @@ const App: React.FC = () => {
         setTodoTime(getTodoTime())
         setNonCompressedTodoTime(getNonCompressedTodoTime())
         setLongestName(getLongestName());
+        setMeetingLen(30*1000)
     }, [todos])
     const [meetingLen, setMeetingLen] = useState<number>(0);
     const [tempMeeting, setTempMeeting] = useState<number>();
@@ -182,7 +174,7 @@ const App: React.FC = () => {
     const [prevTime, setPrevTime] = useState<number>(0);
     useEffect(() => {
         // resetTodos()
-        fetchMeetingLen()
+        // fetchMeetingLen()
     }, [])
     useEffect(() => {
         fetchTodos();
@@ -225,18 +217,37 @@ const App: React.FC = () => {
         }
         return percent;
     }
-    const handleDeleteTodo = (_id: string, index: number): void => {
-        deleteTodo(_id)
-            .then(({status, }) => {
-                if (status !== 200) {
-                    throw new Error('Error! Todo not deleted')
-                } else {
-                    let extraBonus = todos[index].time;
-                    todos.splice(index,1);
-                    setBonus(bonusTime+extraBonus);
-                    setOrigBonus(origBonus+extraBonus)
-                }})
-            .catch((err) => console.log(err))
+    const handleDeleteTodo = (name: string, index: number): void => {
+        const myDataObject = { name: name };
+        fetch('https://84ac63tc25.execute-api.us-east-2.amazonaws.com/Dev',{
+            "method": "DELETE",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(myDataObject)
+        }).then(response => response.json())
+            .then(response => {
+                console.log(name);
+                console.log(response);
+                let extraBonus = todos[index].time;
+                todos.splice(index,1);
+                setBonus(bonusTime+extraBonus);
+                setOrigBonus(origBonus+extraBonus)
+            })
+            .catch(err => {
+                console.log(err);
+            });
+        // deleteTodo(_id)
+        //     .then(({status, }) => {
+        //         if (status !== 200) {
+        //             throw new Error('Error! Todo not deleted')
+        //         } else {
+        //             let extraBonus = todos[index].time;
+        //             todos.splice(index,1);
+        //             setBonus(bonusTime+extraBonus);
+        //             setOrigBonus(origBonus+extraBonus)
+        //         }})
+        //     .catch((err) => console.log(err))
     }
     const isTimeLeft = (): boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
@@ -372,9 +383,25 @@ const App: React.FC = () => {
         window.scrollTo(0, 0)
     }
     const fetchTodos = async () => {
-        const response = await fetch('https://wuzsxfe473.execute-api.us-east-2.amazonaws.com/Dev/@connections')
+        const response = await fetch('https://84ac63tc25.execute-api.us-east-2.amazonaws.com/Dev',{
+            "method": "GET",
+        })
         const body = await response.json();
-        shuffleTodos(body)
+        for(let i=0; i<body.length; i++) {
+            let todo: ITodo={
+                _id:  body[i].name,
+                name: body[i].name,
+                description: body[i].description,
+                initTime: body[i].time*1000,
+                time: body[i].time*1000,
+                nonCompressedTime: body[i].time*1000,
+                overtime: 0,
+                extra: 0,
+            };
+            todos.push(todo)
+        }
+        // setTodos(todos)
+        shuffleTodos(todos)
     }
     // const fetchTodos = (): void => {
     //     getTodos2()
@@ -393,7 +420,7 @@ const App: React.FC = () => {
         shuffleArray(interns); shuffleArray(fullTimers); shuffleArray(finalWord)
         let orderList = interns.concat(fullTimers, finalWord);
 
-        inputTodos.forEach(element => {
+        Array.from(inputTodos).forEach(element => {
             if (orderList.includes(element.name)) {
                 namesList.push(element.name);
                 todoList.push(element)
@@ -401,7 +428,7 @@ const App: React.FC = () => {
                 otherList.push(element)
             }
         });
-        otherList.forEach(element => {
+        Array.from(otherList).forEach(element => {
             finalList.push(element);
         });
         for(let i=0;i<orderList.length;i++){
@@ -411,11 +438,11 @@ const App: React.FC = () => {
             }}
         setTodos(finalList);
     }
-    const fetchMeetingLen = (): void => {
-        getMeetingLen()
-            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 1000))
-            .catch((err: Error) => console.log(err));
-    }
+    // const fetchMeetingLen = (): void => {
+    //     getMeetingLen()
+    //         .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 1000))
+    //         .catch((err: Error) => console.log(err));
+    // }
 
     const updateMeetingLen = (meetingLen: number): void => {
         postMeetingLen(meetingLen).then(response => {
@@ -443,15 +470,16 @@ const App: React.FC = () => {
     }
     const handleSaveTodo = (e: React.FormEvent, formData: ITodo): void => {
         e.preventDefault()
-        addTodo(formData)
-            .then(({status, data}) => {
+        fetch('https://84ac63tc25.execute-api.us-east-2.amazonaws.com/Dev',{
+            "method": "PUT"})
+            .then(({status}) => {
                 if (status !== 201) {
                     throw new Error('Error! Todo not saved')
                 }
-                if (data.todo) {
-                    todos.push(data.todo)
-                    setBonus(bonusTime - data.todo.time)
-                    setOrigBonus(origBonus-data.todo.time)
+                if (formData) {
+                    todos.push(formData)
+                    setBonus(bonusTime - formData.time)
+                    setOrigBonus(origBonus-formData.time)
                 }
             })
             .catch((err) => console.log(err))
@@ -464,7 +492,7 @@ const App: React.FC = () => {
                       style={{display: !meetingLenMenu ? 'none' : ''}}>
                     <label> Meeting Length:
                         <input className="inputMeetingLen" onKeyDown={handleForm} onSubmit={handleFormOnSubmit}
-                               type={meetingLenMenu ? "number" : "string"} defaultValue=""
+                               type={meetingLenMenu ? "number" : "string"}
                                onChange={(e: any) => setTempMeeting(e.target.value)} value={tempMeeting || ""}
                                id='meetingLen'/> min </label>
                     <button className="buttonStyle" disabled={tempMeeting == undefined} type='submit'>Submit</button>
@@ -476,7 +504,7 @@ const App: React.FC = () => {
                 </div>
                 <div className='test' onClick={closeMenu}>
                     <div style={{display: 'flex', flexDirection: 'row'}}>
-                        <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
+                        <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}> Research Project Updates
                             Meeting </h1>
                         <div className="headerWrapper" style={{alignContent: 'right', textAlign: 'right'}}>
                             <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 1000} min</div>

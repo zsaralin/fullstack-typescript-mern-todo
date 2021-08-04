@@ -9,6 +9,11 @@
     /*height: 100%;*/
     /*margin-top: 2%;*/
 }
+
+.crossedOut{
+    position: relative;
+}
+
 .Bonus-text{
     /*flex-grow: 1;*/
     display: flex;
@@ -62,4 +67,16 @@
     padding: 0 .5em 0 .5em;
     float: right;
     text-align: right;
+}
+.crossedOutBonus{
+    position: relative;
+}
+.crossedOutBonus:before {
+    border-bottom: 2px solid rgba(128,128,128,.5);
+    position: absolute;
+    left: -5px;
+    content: "";
+    width: 170%;
+    height:50%;
+    transform: rotate(-40deg);
 }

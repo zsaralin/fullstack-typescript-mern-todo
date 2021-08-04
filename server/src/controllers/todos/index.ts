@@ -12,14 +12,7 @@ const getTodos2 = async (req: Request, res: Response): Promise<void> => {
         throw error
     }
 }
-function shuffleArray(array:any) {
-    for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        let temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-}
+
 const getTodos = async (req: Request, res: Response): Promise<void> => {
     try {
         const todos: ITodo[] = [];

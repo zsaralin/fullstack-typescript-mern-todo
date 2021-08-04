@@ -17,6 +17,7 @@
         "body-parser": "^1.19.0",
         "bootstrap": "^5.0.1",
         "cli": "^1.0.1",
+        "cors": "^2.8.5",
         "joi": "^17.4.0",
         "react": "^16.13.1",
         "react-beautiful-dnd": "^13.1.0",

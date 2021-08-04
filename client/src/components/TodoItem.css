@@ -84,21 +84,29 @@
     position: relative;
 }
 .crossedOut:before {
+    /*position: absolute;*/
+    /*content: "";*/
+    /*left: 0;*/
+    /*top: 45%;*/
+    /*right: 0;*/
+    /*bottom: 2%;*/
+    /*border-top: 2px solid;*/
+    /*border-color: inherit;*/
+    /*opacity: 100%;*/
+    /*transform: rotate(-40deg);*/
+    /*-webkit-transform:rotate(-5deg);*/
+    /*-moz-transform:rotate(-5deg);*/
+    /*-ms-transform:rotate(-5deg);*/
+    /*-o-transform:rotate(-5deg);*/
+    /*transform:rotate(-30deg);*/
+    border-bottom: 2px solid rgba(128,128,128,.5);
     position: absolute;
+    left: -5px;
+    /*opacity: 70%;*/
     content: "";
-    left: 0;
-    top: 45%;
-    right: 0;
-    bottom: 2%;
-    border-top: 2px solid;
-    border-color: inherit;
-    opacity: 60%;
-
-    -webkit-transform:rotate(-5deg);
-    -moz-transform:rotate(-5deg);
-    -ms-transform:rotate(-5deg);
-    -o-transform:rotate(-5deg);
-    transform:rotate(-30deg);
+    width: 120%;
+    height:50%;
+    transform: rotate(-40deg);
 }
 .timer{
     /*height: 80%*/

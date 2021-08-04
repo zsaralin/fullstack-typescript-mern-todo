@@ -7,7 +7,7 @@ import {FaRegTrashAlt} from "react-icons/fa";
 
 const Todo = (props: {
     percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number, longestName :number,
-    callbackFromParent2(listInfo: number): void, deleteTodoApp: (_id: string, index:number) => void
+    callbackFromParent2(listInfo: number): void, deleteTodoApp: (name: string, index:number) => void
 }) => {
     const [realTime, setTime] = useState<number>(0);
     const timeCallback = (timerTime: number) => {
@@ -71,7 +71,7 @@ const Todo = (props: {
                                  }}>
                                 <button className="trashWrapper" disabled={props.active || props.done}
                                         style = {{cursor:!props.active && !props.done?'pointer':'default' }}
-                                        onClick={() => props.deleteTodoApp(props.todo._id, props.index)}
+                                        onClick={() => props.deleteTodoApp(props.todo.name, props.index)}
                                 ><FaRegTrashAlt className="trashcan"/>
                                 </button>
                                 {props.todo.name}

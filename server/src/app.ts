@@ -1,8 +1,11 @@
 import express from 'express'
 import mongoose, {Model} from 'mongoose'
-import cors from 'cors'
+
 import todoRoutes from './routes'
 const app=express()
+const cors = require("cors")
+
+app.use(cors())
 var Schema = mongoose.Schema
 const PORT: string | number = process.env.PORT || 4000
 var bodyParser = require('body-parser')
