@@ -218,13 +218,9 @@ const App: React.FC = () => {
         return percent;
     }
     const handleDeleteTodo = (name: string, index: number): void => {
-        const myDataObject = { name: name };
-        fetch('https://84ac63tc25.execute-api.us-east-2.amazonaws.com/Dev',{
+        // const myDataObject = { name: name };
+        fetch('https://84ac63tc25.execute-api.us-east-2.amazonaws.com/Dev/' + name,{
             "method": "DELETE",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(myDataObject)
         }).then(response => response.json())
             .then(response => {
                 console.log(name);
