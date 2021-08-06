@@ -6,9 +6,11 @@ import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
 import {getMeetingLen, postMeetingLen, getTodos2, addTodo, deleteTodo} from './API'
 import BonusItem from "./components/BonusItem";
 import DateComp from './components/theDate';
-
 // @ts-ignore
 import audio from './fanfare.mp3';
+
+const ws = new WebSocket("ws://localhost:8000");
+
 
 function shuffleArray(array:any) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -46,9 +48,12 @@ const useKeyPress = function (targetKey: string) {
 };
 
 const App: React.FC = () => {
-
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
+    ws.addEventListener('open', function() {
+        console.log("Connected to server");
+    });
+
 
     const [todos, setTodos] = useState<ITodo[]>([]);
 
@@ -76,7 +81,48 @@ const App: React.FC = () => {
     const toggleAddTodoMenu = () => {
         setAddTodoMenu(!addTodoMenu);
     }
+    function downPressFn(){
+        setLastIndex(1);
+        let trumpetSound = new Audio(audio);
+        if (cursor === -1) {
+            trumpetSound.play()
+        }
+        if (selected !== undefined) {
+            //if person takes less than set time
+            if (selected.overtime === 0 && nonZeroTime < (selected.time)) {
+                let difference = selected.time - nonZeroTime;
+                slotDecreased = isSlotDecreased()
+                if (slotDecreased > 0) {
+                    let subtract = Math.floor(difference / slotDecreased)
+                    //increase subsequent slots that are under time (until they are back to their set times)
+                    for (let i = cursor + 1; i < todos.length; i++) {
+                        if (todos[i].time < todos[i].initTime) {
+                            todos[i].time += subtract;
+                            difference -= subtract;
+                        }
+                    }
+                    for (let i = cursor + 1; i < todos.length; i++) {
+                        while (difference > 0 && todos[i].time < todos[i].initTime) {
+                            todos[i].time += 1;
+                            difference -= 1;
+                        }
+                    }
+                }
+                setBonus(bonusTime + difference);
+                selected.extra += selected.time - nonZeroTime
+                // selected.time = nonZeroTime;
+            }
+        }
 
+        if (cursor < todos.length) {
+            setCursor(prevState =>
+                prevState < todos.length ? prevState + 1 : prevState)
+        } else {
+            setCursor(todos.length + 1);
+        }
+        setBefore(todos[cursor])
+        setSelected(todos[cursor + 1]);
+    }
 
     const timeCallback = (timerTime: number) => {
         if (timerTime !== 0 && timerTime !== prevTime) {
@@ -258,46 +304,8 @@ const App: React.FC = () => {
     }, [lastIndex])
     useEffect(() => {
         if (downPress) {
-            setLastIndex(1);
-            let trumpetSound = new Audio(audio);
-            if (cursor === -1) {
-                trumpetSound.play()
-            }
-            if (selected !== undefined) {
-                //if person takes less than set time
-                if (selected.overtime === 0 && nonZeroTime < (selected.time)) {
-                    let difference = selected.time - nonZeroTime;
-                    slotDecreased = isSlotDecreased()
-                    if (slotDecreased > 0) {
-                        let subtract = Math.floor(difference / slotDecreased)
-                        //increase subsequent slots that are under time (until they are back to their set times)
-                        for (let i = cursor + 1; i < todos.length; i++) {
-                            if (todos[i].time < todos[i].initTime) {
-                                todos[i].time += subtract;
-                                difference -= subtract;
-                            }
-                        }
-                        for (let i = cursor + 1; i < todos.length; i++) {
-                            while (difference > 0 && todos[i].time < todos[i].initTime) {
-                                todos[i].time += 1;
-                                difference -= 1;
-                            }
-                        }
-                    }
-                    setBonus(bonusTime + difference);
-                    selected.extra += selected.time - nonZeroTime
-                    // selected.time = nonZeroTime;
-                }
-            }
-
-            if (cursor < todos.length) {
-                setCursor(prevState =>
-                    prevState < todos.length ? prevState + 1 : prevState)
-            } else {
-                setCursor(todos.length + 1);
-            }
-            setBefore(todos[cursor])
-            setSelected(todos[cursor + 1]);
+            ws.send("downPress")
+            downPressFn()
         }
     }, [downPress]);
 

@@ -66,8 +66,8 @@ const Todo = (props: {
                             <div className='name'
                                  style={{
                                      textDecoration: props.done ? 'line-through' : 'none',
-                                     width: 60 + 9 * props.longestName + "px", backgroundColor: props.done ? color : '',
-                                     background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
+                                     width: 60 + 9 * props.longestName + "px", backgroundColor: props.done ? color : !props.active? 'rgba(240, 240, 240,1)' : '',
+                                     // background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
                                  }}>
                                 <button className="trashWrapper" disabled={props.active || props.done}
                                         style = {{cursor:!props.active && !props.done?'pointer':'default' }}
@@ -78,13 +78,14 @@ const Todo = (props: {
                             </div>
                             <div className='description' style={{
                                 textDecoration: props.done ? 'line-through' : 'none',
-                                backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : '',
-                                background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
+                                backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active? 'rgb(230, 230, 230)' : '',
+                                // background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>{props.todo.description}
                             </div>
                             <div className="time" style={{
-                                backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
-                                background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
+                                backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active? 'rgb(230, 230, 230)' : '',
+                                // backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
+                                // background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="set-time">
                                     {Math.ceil(props.todo.time / 1000) < Math.ceil(props.todo.initTime / 1000) ?

@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const cors_1 = __importDefault(require("cors"));
 const routes_1 = __importDefault(require("./routes"));
+const ws_1 = __importDefault(require("ws"));
 const app = express_1.default();
 var Schema = mongoose_1.default.Schema;
 const PORT = process.env.PORT || 4000;
@@ -17,6 +18,37 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.use(bodyParser.json());
 app.use(cors_1.default());
 app.use(routes_1.default);
+const wss = new ws_1.default.Server({
+    port: 8000,
+    perMessageDeflate: {
+        zlibDeflateOptions: {
+            // See zlib defaults.
+            chunkSize: 1024,
+            memLevel: 7,
+            level: 3
+        },
+        zlibInflateOptions: {
+            chunkSize: 10 * 1024
+        },
+        // Other options settable:
+        clientNoContextTakeover: true,
+        serverNoContextTakeover: true,
+        serverMaxWindowBits: 10,
+        // Below options specified as default values.
+        concurrencyLimit: 10,
+        threshold: 1024 // Size (in bytes) below which messages
+        // should not be compressed.
+    }
+});
+wss.on('connection', function connection(ws) {
+    ws.on('downPress', function incoming() {
+        wss.clients.forEach(function each(client) {
+            if (client !== ws && client.readyState === ws_1.default.OPEN) {
+                client.send('downPress');
+            }
+        });
+    });
+});
 const numberSchema = new Schema({
     integerOnly: {
         type: Number,

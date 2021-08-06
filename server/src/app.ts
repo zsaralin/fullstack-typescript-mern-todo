@@ -2,6 +2,7 @@ import express from 'express'
 import mongoose, {Model} from 'mongoose'
 import cors from 'cors'
 import todoRoutes from './routes'
+import WebSocket, { Server } from "ws";
 const app=express()
 var Schema = mongoose.Schema
 const PORT: string | number = process.env.PORT || 4000
@@ -13,6 +14,39 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 app.use( bodyParser.json() );
 app.use(cors())
 app.use(todoRoutes)
+
+const wss = new WebSocket.Server({
+    port: 8000,
+    perMessageDeflate: {
+        zlibDeflateOptions: {
+            // See zlib defaults.
+            chunkSize: 1024,
+            memLevel: 7,
+            level: 3
+        },
+        zlibInflateOptions: {
+            chunkSize: 10 * 1024
+        },
+        // Other options settable:
+        clientNoContextTakeover: true, // Defaults to negotiated value.
+        serverNoContextTakeover: true, // Defaults to negotiated value.
+        serverMaxWindowBits: 10, // Defaults to negotiated value.
+        // Below options specified as default values.
+        concurrencyLimit: 10, // Limits zlib concurrency for perf.
+        threshold: 1024 // Size (in bytes) below which messages
+        // should not be compressed.
+    }
+});
+
+wss.on('connection', function connection(ws) {
+    ws.on('downPress', function incoming() {
+        wss.clients.forEach(function each(client) {
+            if (client !== ws && client.readyState === WebSocket.OPEN) {
+                client.send('downPress');
+            }
+        });
+    });
+});
 
 const numberSchema = new Schema({
     integerOnly: {
