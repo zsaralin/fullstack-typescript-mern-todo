@@ -9,16 +9,16 @@ const Todo = (props: {
     percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number, longestName :number,
     callbackFromParent2(listInfo: number): void, deleteTodoApp: (_id: string, index:number) => void
 }) => {
+
     const [realTime, setTime] = useState<number>(0);
     const timeCallback = (timerTime: number) => {
         setTime(timerTime);
     }
-    const someFn = () => {
-        props.callbackFromParent2(realTime);
-    }
+
     useEffect(() => {
-        someFn()
-    }, [realTime])
+        const sendTimeParent = props.callbackFromParent2
+        sendTimeParent(realTime);
+    }, [realTime, props.callbackFromParent2])
     const [color, setColor] = useState<string>('rgb(198,246,241)');
 
 
@@ -66,11 +66,12 @@ const Todo = (props: {
                             <div className='name'
                                  style={{
                                      textDecoration: props.done ? 'line-through' : 'none',
-                                     width: 60 + 9 * props.longestName + "px", backgroundColor: props.done ? color : !props.active? 'rgba(240, 240, 240,1)' : '',
+                                     width: 60 + 9 * props.longestName + "px",
+                                     backgroundColor: props.done ? color : !props.active ? 'rgba(240, 240, 240,1)' : '',
                                      // background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
                                  }}>
                                 <button className="trashWrapper" disabled={props.active || props.done}
-                                        style = {{cursor:!props.active && !props.done?'pointer':'default' }}
+                                        style={{cursor: !props.active && !props.done ? 'pointer' : 'default'}}
                                         onClick={() => props.deleteTodoApp(props.todo._id, props.index)}
                                 ><FaRegTrashAlt className="trashcan"/>
                                 </button>
@@ -78,12 +79,12 @@ const Todo = (props: {
                             </div>
                             <div className='description' style={{
                                 textDecoration: props.done ? 'line-through' : 'none',
-                                backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active? 'rgb(230, 230, 230)' : '',
+                                backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active ? 'rgb(230, 230, 230)' : '',
                                 // background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>{props.todo.description}
                             </div>
                             <div className="time" style={{
-                                backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active? 'rgb(230, 230, 230)' : '',
+                                backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active ? 'rgb(230, 230, 230)' : '',
                                 // backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
                                 // background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>

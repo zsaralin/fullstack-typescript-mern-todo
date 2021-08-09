@@ -50,11 +50,11 @@ const AddTodo: React.FC<Props> = ({ saveTodo }) => {
       <div style = {{display: 'flex', flexDirection:'row'}}>
         <div>
           <label htmlFor='name'>Name: </label>
-          <input className = 'inputMeetingLen' style = {{width: '150px'}} value = {name} onChange={handleInput} type='text' id='name' />
+          <input className = 'inputMeetingLen' style = {{width: '150px'}} value = {name || ''} onChange={handleInput} type='text' id='name' />
         </div>
         <div style = {{marginLeft: '10px', }}>
           <label htmlFor='description'>Description: </label>
-          <input className = 'inputMeetingLen' style = {{width: '400px'}} onChange={handleInput} value = {description} type='text' id='description' />
+          <input className = 'inputMeetingLen' style = {{width: '400px'}} onChange={handleInput} value = {description || ''} type='text' id='description' />
         </div>
         <div style = {{marginLeft: '10px'}}>
         <label htmlFor='time'>Time: </label>
