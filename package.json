@@ -3,5 +3,9 @@
     "axios": "^0.21.1",
     "react-beautiful-dnd": "^13.1.0",
     "ws": "^8.0.0"
+  },
+  "scripts": {
+    "start":  "node index.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
   }
 }
