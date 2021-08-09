@@ -48,12 +48,6 @@ const useKeyPress = function (targetKey: string) {
 };
 
 const App: React.FC = () => {
-    const downPress = useKeyPress("ArrowDown");
-    const upPress = useKeyPress("ArrowUp");
-    ws.addEventListener('open', function() {
-        console.log("Connected to server");
-    });
-
 
     const [todos, setTodos] = useState<ITodo[]>([]);
 
@@ -71,6 +65,43 @@ const App: React.FC = () => {
     const [meetingLenMenu, setMeetingLenMenu] = useState(false);
     const [addTodoMenu, setAddTodoMenu] = useState(false);
 
+    const downPress = useKeyPress("ArrowDown");
+    const upPress = useKeyPress("ArrowUp");
+    ws.addEventListener('open', function() {
+        console.log("Connected to server");
+
+            // else if(JSON.parse(event.data).name==='deleteTodo'){
+            //     const object = JSON.parse(event.data);
+            //     handleDeleteTodo(object._id, object.index)
+            // }
+            // else{
+            //     const object = JSON.parse(event.data);
+            //     deleteTodoMini(object.index)
+            // }
+            // else { //change meetingLen
+            //     setMeetingLen(event.data*1000)
+            // }
+
+    });
+    ws.onmessage= function (event) {
+        console.log('Message from server ', event.data);
+        if(event.data === 'downPress'){
+            downPressFn();}
+        else if(event.data === 'upPress'){
+            upPressFn();}
+        else if(JSON.parse(event.data).name === 'deleteTodo'){
+            const object = JSON.parse(event.data);
+            deleteTodoHelper(object.index)
+        }
+        else if(JSON.parse(event.data).name === 'addTodo'){
+            const object = JSON.parse(event.data);
+            addTodoHelper(object.newTodo)
+        }
+        else if(JSON.parse(event.data).name === 'meetingLen'){
+            const object = JSON.parse(event.data);
+            setMeetingLen(object.meetingLen*1000)
+        }
+    }
     const toggleMeetingLenMenu = () => {
         setMeetingLenMenu(!meetingLenMenu);
     }
@@ -84,8 +115,23 @@ const App: React.FC = () => {
     function downPressFn(){
         setLastIndex(1);
         let trumpetSound = new Audio(audio);
+        trumpetSound.muted = true;
         if (cursor === -1) {
-            trumpetSound.play()
+            const playPromise = trumpetSound.play();
+
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(_ => {
+                        // Automatic playback started!
+                        // Show playing UI.
+                        console.log("audio played auto");
+                    })
+                    .catch(error => {
+                        // Auto-play was prevented
+                        // Show paused UI.
+                        console.log(error);
+                    });
+            }
         }
         if (selected !== undefined) {
             //if person takes less than set time
@@ -124,6 +170,40 @@ const App: React.FC = () => {
         setSelected(todos[cursor + 1]);
     }
 
+    function upPressFn() {
+        setLastIndex(1)
+        setPrevTime(nonZeroTime);
+        if (cursor === 0) {
+            window.location.reload();
+        }
+        setBefore(todos[cursor - 2])
+        if (before !== undefined) {
+            //if slot before took less than designated time
+            if (before.extra > 0) {
+                let difference = before.extra;
+                before.extra = 0;
+                if (slotDecreased > 0) {
+                    let subtract = Math.floor(difference / slotDecreased)
+                    for (let i = cursor + 1; i < todos.length; i++) {
+                        todos[i].time -= subtract;
+                        difference -= subtract;
+                    }
+                    //increase subsequent slots that are under time (until they are back to their set times)
+                    for (let i = cursor + 1; i < todos.length; i++) {
+                        while (difference > 0 && todos[i].time < todos[i].initTime) {
+                            todos[i].time -= 1;
+                            difference -= 1;
+                        }
+                    }
+                } else {
+                    setBonus(bonusTime - difference);
+                }
+                // selected.time = nonZeroTime;
+            }
+        }
+        setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
+        setSelected(todos[cursor - 1]);
+    }
     const timeCallback = (timerTime: number) => {
         if (timerTime !== 0 && timerTime !== prevTime) {
             setZero(timerTime)
@@ -266,13 +346,21 @@ const App: React.FC = () => {
                 if (status !== 200) {
                     throw new Error('Error! Todo not deleted')
                 } else {
-                    let extraBonus = todos[index].time;
-                    todos.splice(index,1);
-                    setBonus(bonusTime+extraBonus);
-                    setOrigBonus(origBonus+extraBonus)
+                    console.log(index)
+                    var msg = {name: "deleteTodo", index:index}
+                    ws.send(JSON.stringify(msg))
+                    deleteTodoHelper(index)
                 }})
             .catch((err) => console.log(err))
     }
+
+    function deleteTodoHelper(index:number){
+        let extraBonus = todos[index].time;
+        todos.splice(index,1);
+        setBonus(bonusTime+extraBonus);
+        setOrigBonus(origBonus+extraBonus)
+    }
+
     const isTimeLeft = (): boolean => {
         for (let i = cursor + 1; i < todos.length; i++) {
             if (todos[i].time > 1000) {
@@ -304,48 +392,16 @@ const App: React.FC = () => {
     }, [lastIndex])
     useEffect(() => {
         if (downPress) {
-            ws.send("downPress")
+            ws.send('downPress')
             downPressFn()
         }
     }, [downPress]);
 
     useEffect(() => {
         if (upPress) {
-            setLastIndex(1)
-            setPrevTime(nonZeroTime);
-            if (cursor === 0) {
-                window.location.reload();
-            }
-            setBefore(todos[cursor - 2])
-            if (before !== undefined) {
-                //if slot before took less than designated time
-                if (before.extra > 0) {
-                    let difference = before.extra;
-                    before.extra = 0;
-                    if (slotDecreased > 0) {
-                        let subtract = Math.floor(difference / slotDecreased)
-                        for (let i = cursor + 1; i < todos.length; i++) {
-                            todos[i].time -= subtract;
-                            difference -= subtract;
-                        }
-                        //increase subsequent slots that are under time (until they are back to their set times)
-                        for (let i = cursor + 1; i < todos.length; i++) {
-                            while (difference > 0 && todos[i].time < todos[i].initTime) {
-                                todos[i].time -= 1;
-                                difference -= 1;
-                            }
-                        }
-                    } else {
-                        setBonus(bonusTime - difference);
-                    }
-                    // selected.time = nonZeroTime;
-                }
-            }
-            setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
-            setSelected(todos[cursor - 1]);
-        }
-    }, [upPress]);
-
+            ws.send('upPress')
+            upPressFn();
+    }}, [upPress]);
 
     const onDragEnd = ({source, destination}: DropResult) => {
         // Make sure we have a valid destination
@@ -404,33 +460,36 @@ const App: React.FC = () => {
             }}
         setTodos(finalList);
     }
-    const fetchMeetingLen = (): void => {
+    function fetchMeetingLen(){
         getMeetingLen()
             .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 1000))
             .catch((err: Error) => console.log(err));
     }
 
-    const updateMeetingLen = (meetingLen: number): void => {
-        postMeetingLen(meetingLen).then(response => {
-            console.log(response)
-        });
-        setMeetingLen(meetingLen * 1000)
-        setTempMeeting(undefined);
-        setMeetingLenMenu(false)
+    const updateMeetingLen = (meetingLen: number | undefined): void => {
+        if (meetingLen !== undefined) {
+            postMeetingLen(meetingLen).then(response => {
+                console.log(response)
+            });
+            setMeetingLen(meetingLen * 1000)
+            setTempMeeting(undefined);
+            setMeetingLenMenu(false)
+            var msg = {name:"meetingLen", meetingLen: meetingLen}
+            ws.send(JSON.stringify(msg))
+        }
     }
-
 
     const handleForm = (e: any) => {
         if (e.key === 'Enter') {
-            if (tempMeeting != undefined) {
+            // if (tempMeeting != undefined) {
                 updateMeetingLen(tempMeeting);
-            }
+            // }
             e.preventDefault();
         }
     }
     const handleFormOnSubmit = (e: any) => {
         e.preventDefault();
-        if (tempMeeting != undefined) {
+        if (tempMeeting !== undefined) {
             updateMeetingLen(tempMeeting);
         }
     }
@@ -442,14 +501,18 @@ const App: React.FC = () => {
                     throw new Error('Error! Todo not saved')
                 }
                 if (data.todo) {
-                    todos.push(data.todo)
-                    setBonus(bonusTime - data.todo.time)
-                    setOrigBonus(origBonus-data.todo.time)
+                    addTodoHelper(data.todo)
+                    var msg = {name: "addTodo", newTodo: data.todo}
+                    ws.send(JSON.stringify(msg))
                 }
             })
             .catch((err) => console.log(err))
     }
-
+    function addTodoHelper(todo: ITodo){
+        todos.push(todo)
+        setBonus(bonusTime - todo.time)
+        setOrigBonus(origBonus-todo.time)
+    }
     return (
         <main className='App' id="behindComponent">
             <DragDropContext onDragEnd={onDragEnd}>

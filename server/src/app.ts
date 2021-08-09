@@ -3,6 +3,7 @@ import mongoose, {Model} from 'mongoose'
 import cors from 'cors'
 import todoRoutes from './routes'
 import WebSocket, { Server } from "ws";
+
 const app=express()
 var Schema = mongoose.Schema
 const PORT: string | number = process.env.PORT || 4000
@@ -37,16 +38,39 @@ const wss = new WebSocket.Server({
         // should not be compressed.
     }
 });
-
 wss.on('connection', function connection(ws) {
-    ws.on('downPress', function incoming() {
+    ws.on('message', function incoming(message) {
         wss.clients.forEach(function each(client) {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-                client.send('downPress');
-            }
+                client.send(message.toString());}
         });
     });
 });
+// wss.on('connection', function connection(ws) {
+//     wss.on('message', function incoming(message) {
+//         console.log(JSON.stringify('ASDASDASD'))
+
+        // console.log('received: %s', message);
+        // ws.send(JSON.stringify(message));
+
+            // console.log(JSON.stringify(message))
+//     const msg = {
+//         type: "downPress",}
+//     // var msg ={type: 'downPress'}
+//     ws.send(JSON.stringify(msg));
+//         }
+// });
+// });
+//     ws.on('downPress', function incoming() {
+//         wss.clients.forEach(function each(client) {
+//             if (client !== ws && client.readyState === WebSocket.OPEN) {
+//                 var msg = {type: 'downPress'}
+//                 client.send(msg)
+//                     // 'downPress');
+//             }
+//         });
+//     });
+// });
 
 const numberSchema = new Schema({
     integerOnly: {
