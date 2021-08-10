@@ -549,10 +549,10 @@ const App: React.FC = () => {
                       style={{position: 'absolute', display: !meetingLenMenu ? 'none' : ''}}>
                     <label> Meeting Length:
                         <input className="inputMeetingLen" onKeyDown={handleForm} onSubmit={handleFormOnSubmit}
-                               type={meetingLenMenu ? "number" : "string"}
+                               type={meetingLenMenu ? "number" : "string"} defaultValue =""
                                onChange={(e: any) => setTempMeeting(e.target.value)} value={tempMeeting || ""}
                                id='meetingLen'/> min </label>
-                    <button className="buttonStyle" disabled={tempMeeting === undefined} type='submit'>Submit</button>
+                    <button className="buttonStyle" disabled={tempMeeting == undefined} type='submit'>Submit</button>
                     <button className="xOutMeetingLen" onClick={toggleMeetingLenMenu}>x</button>
                 </form>
                 <div className="meetingLenWrapper">

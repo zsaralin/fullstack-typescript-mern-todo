@@ -8,6 +8,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const cors_1 = __importDefault(require("cors"));
 const routes_1 = __importDefault(require("./routes"));
 const ws_1 = __importDefault(require("ws"));
+const path = require('path');
 const app = express_1.default();
 var Schema = mongoose_1.default.Schema;
 const PORT = process.env.PORT || 4000;
@@ -18,6 +19,14 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.use(bodyParser.json());
 app.use(cors_1.default());
 app.use(routes_1.default);
+// Serve static assets if in production
+if (process.env.NODE_ENV === 'production') {
+    // Set static folder
+    app.use(express_1.default.static('client/build'));
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    });
+}
 const wss = new ws_1.default.Server({
     port: 8000,
     perMessageDeflate: {
