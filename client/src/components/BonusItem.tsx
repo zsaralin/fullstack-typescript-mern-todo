@@ -15,7 +15,7 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
     },)
     const handleColor = (): void => {
         const diff = realTime-props.time
-        if(Math.abs(diff) <= 1){
+        if(Math.abs(diff) <= 1000){
             setColor('rgb(160,240,232)');
         }
         else if(diff > 4){

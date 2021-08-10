@@ -124,6 +124,7 @@ const App: React.FC = () => {
         let trumpetSound = new Audio(audio);
         trumpetSound.muted = true;
         if (cursor === -1) {
+            trumpetSound.muted=false;
             const playPromise = trumpetSound.play();
 
             if (playPromise !== undefined) {
@@ -545,14 +546,15 @@ const App: React.FC = () => {
     return (
         <main className='App' id="behindComponent">
             <DragDropContext onDragEnd={onDragEnd}>
-                <form className="meetingLen" onSubmit={handleFormOnSubmit}
-                      style={{position: 'absolute', display: !meetingLenMenu ? 'none' : ''}}>
+                <form className="meetingLen1" onSubmit={handleFormOnSubmit}
+                      style={{display: !meetingLenMenu ? 'none' : ''}}>
                     <label> Meeting Length:
                         <input className="inputMeetingLen" onKeyDown={handleForm} onSubmit={handleFormOnSubmit}
-                               type={meetingLenMenu ? "number" : "string"} defaultValue =""
+                               type={meetingLenMenu ? "number" : "string"}
                                onChange={(e: any) => setTempMeeting(e.target.value)} value={tempMeeting || ""}
-                               id='meetingLen'/> min </label>
-                    <button className="buttonStyle" disabled={tempMeeting == undefined} type='submit'>Submit</button>
+                               id='meetingLen'/> min
+                    </label>
+                    <button className="buttonStyle" disabled={tempMeeting === undefined} type='submit'>Submit</button>
                     <button className="xOutMeetingLen" onClick={toggleMeetingLenMenu}>x</button>
                 </form>
                 <div className="meetingLenWrapper">
