@@ -120,7 +120,7 @@ mongoose.set('useFindAndModify', false)
 mongoose
     .connect(uri, options)
     .then(() =>
-        app.listen(PORT, () =>
+        app.listen(process.env.PORT || 4000, () =>
             console.log(`Server running on http://localhost:${PORT}`)
         )
     )
