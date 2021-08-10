@@ -3,7 +3,6 @@ import mongoose, {Model} from 'mongoose'
 import cors from 'cors'
 import todoRoutes from './routes'
 import WebSocket, { Server } from "ws";
-const path = require('path');
 const app=express()
 var Schema = mongoose.Schema
 const PORT: string | number = process.env.PORT || 4000
@@ -15,15 +14,6 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 app.use( bodyParser.json() );
 app.use(cors())
 app.use(todoRoutes)
-// Serve static assets if in production
-if (process.env.NODE_ENV === 'production') {
-    // Set static folder
-    app.use(express.static('client/build'));
-
-    app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
-    });
-}
 
 const wss = new WebSocket.Server({
     port: 8000,

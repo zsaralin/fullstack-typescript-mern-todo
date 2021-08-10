@@ -6,6 +6,7 @@ import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
 import {addTodo, deleteTodo, getMeetingLen, getTodos2, postMeetingLen} from './API'
 import BonusItem from "./components/BonusItem";
 import DateComp from './components/theDate';
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 // @ts-ignore
 import audio from './fanfare.mp3';
 
@@ -544,38 +545,12 @@ const App: React.FC = () => {
         setOrigBonus(origBonus-todo.time)
     }
     return (
+        <Router>
         <main className='App' id="behindComponent">
+            <Switch>
+                <Route exact path = "/">
             <DragDropContext onDragEnd={onDragEnd}>
-                <form className="meetingLen1" onSubmit={handleFormOnSubmit}
-                      style={{display: !meetingLenMenu ? 'none' : ''}}>
-                    <label> Meeting Length:
-                        <input className="inputMeetingLen" onKeyDown={handleForm} onSubmit={handleFormOnSubmit}
-                               type={meetingLenMenu ? "number" : "string"}
-                               onChange={(e: any) => setTempMeeting(e.target.value)} value={tempMeeting || ""}
-                               id='meetingLen'/> min
-                    </label>
-                    <button className="buttonStyle" disabled={tempMeeting === undefined} type='submit'>Submit</button>
-                    <button className="xOutMeetingLen" onClick={toggleMeetingLenMenu}>x</button>
-                </form>
-                <div className="meetingLenWrapper">
-                <div className="meetingLen" style={{display: !addTodoMenu ? 'none' : ''}}>
-                    <AddTodo saveTodo={handleSaveTodo}/>
-                    <button className="xOutMeetingLen" onClick={toggleAddTodoMenu}>x</button>
-                </div>
-                    <div className='meetingLen'
-                    style={{width: '13%', opacity: !presenterWarning? 0:'100%', transition:
-                    !presenterWarning? 'opacity 1s':'opacity 1s'}}> Presenter already in meeting! </div>
-                    {/*<div className={!presenterWarning?'nameExistsBefore':'nameExistsAfter'} > Presenter already in meeting! </div>*/}
-                </div>
                 <div className='test' onClick={closeMenu}>
-                    <div style={{display: 'flex', flexDirection: 'row'}}>
-                        <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
-                            Meeting </h1>
-                        <div className="headerWrapper" style={{alignContent: 'right', textAlign: 'right'}}>
-                            <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 1000} min</div>
-                            <DateComp/>
-                        </div>
-                    </div>
                     <Droppable droppableId='col-1' isDropDisabled={false}>
                         {provided => {
                             const style = {
@@ -610,17 +585,89 @@ const App: React.FC = () => {
 
                     </Droppable>
                 </div>
-                <div className="topButton">
-                    <div className="dropdown"><MdSettings size={26} color='rgb(200,200,200)'/>
-                        <div className="dropdown-content">
-                            <div className = "option" onClick={toggleMeetingLenMenu}>Meeting length</div>
-                            <div className = "option" onClick={toggleAddTodoMenu}>Add Slot</div>
-                        </div>
-                    </div>
-                </div>
             </DragDropContext>
+                </Route>
+                <Route exact path = "/admin">
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <form className="meetingLen1" onSubmit={handleFormOnSubmit}
+                              style={{display: !meetingLenMenu ? 'none' : ''}}>
+                            <label> Meeting Length:
+                                <input className="inputMeetingLen" onKeyDown={handleForm} onSubmit={handleFormOnSubmit}
+                                       type={meetingLenMenu ? "number" : "string"}
+                                       onChange={(e: any) => setTempMeeting(e.target.value)} value={tempMeeting || ""}
+                                       id='meetingLen'/> min
+                            </label>
+                            <button className="buttonStyle" disabled={tempMeeting === undefined} type='submit'>Submit</button>
+                            <button className="xOutMeetingLen" onClick={toggleMeetingLenMenu}>x</button>
+                        </form>
+                        <div className="meetingLenWrapper">
+                            <div className="meetingLen" style={{display: !addTodoMenu ? 'none' : ''}}>
+                                <AddTodo saveTodo={handleSaveTodo}/>
+                                <button className="xOutMeetingLen" onClick={toggleAddTodoMenu}>x</button>
+                            </div>
+                            <div className='meetingLen'
+                                 style={{width: '13%', opacity: !presenterWarning? 0:'100%', transition:
+                                         !presenterWarning? 'opacity 1s':'opacity 1s'}}> Presenter already in meeting! </div>
+                            {/*<div className={!presenterWarning?'nameExistsBefore':'nameExistsAfter'} > Presenter already in meeting! </div>*/}
+                        </div>
+                        <div className='test' onClick={closeMenu}>
+                            <div style={{display: 'flex', flexDirection: 'row'}}>
+                                <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
+                                    Meeting </h1>
+                                <div className="headerWrapper" style={{alignContent: 'right', textAlign: 'right'}}>
+                                    <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 1000} min</div>
+                                    <DateComp/>
+                                </div>
+                            </div>
+                            <Droppable droppableId='col-1' isDropDisabled={false}>
+                                {provided => {
+                                    const style = {
+                                        // height: (todoTime - ((bonusTime) / (todoTime+bonusTime) * 100))/(todoTime) + '%' ,
+                                        color: 'black',
+                                        ...provided.droppableProps,
+                                    };
+                                    return (
+                                        <ul className="characters"
+                                            {...provided.droppableProps} ref={provided.innerRef} style={style}>
+                                            {todos.map((todo: ITodo, index) => (
+                                                <TodoItem
+                                                    key={todo._id}
+                                                    todo={todo}
+                                                    deleteTodoApp={handleDeleteTodo}
+                                                    index={index}
+                                                    active={index === cursor}
+                                                    done={index < cursor}
+                                                    callbackFromParent2={timeCallback}
+                                                    percent={getPercent(todo)}
+                                                    bonusTime={bonusTime}
+                                                    longestName={getLongestName()}
+                                                />
+                                            ))}
+                                            {provided.placeholder}
+                                            <BonusItem
+                                                origBonus={origBonus} time={bonusTime} active={cursor === todos.length}
+                                                done={cursor === todos.length + 1}
+                                                percent={(bonusTime) / (todoTime + bonusTime) * 100}/>
+                                        </ul>)
+                                }}
+
+                            </Droppable>
+                        </div>
+                        <div className="topButton">
+                            <div className="dropdown"><MdSettings size={26} color='rgb(200,200,200)'/>
+                                <div className="dropdown-content">
+                                    <div className = "option" onClick={toggleMeetingLenMenu}>Meeting length</div>
+                                    <div className = "option" onClick={toggleAddTodoMenu}>Add Slot</div>
+                                </div>
+                            </div>
+                        </div>
+                    </DragDropContext>
+                </Route>
+            </Switch>
         </main>
-    )
+        </Router>
+
+    );
 }
 
 export default App
