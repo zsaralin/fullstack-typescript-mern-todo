@@ -6,13 +6,13 @@ import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
 import {addTodo, deleteTodo, getMeetingLen, getTodos2, postMeetingLen} from './API'
 import BonusItem from "./components/BonusItem";
 import DateComp from './components/theDate';
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch, } from "react-router-dom";
 // @ts-ignore
 import audio from './fanfare.mp3';
 
 const ws = new WebSocket("ws://localhost:8000");
 
-
+// const history = useHistory()
 function shuffleArray(array:any) {
     for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
@@ -49,7 +49,6 @@ const useKeyPress = function (targetKey: string) {
 };
 
 const App: React.FC = () => {
-
     const [todos, setTodos] = useState<ITodo[]>([]);
 
     const [selected, setSelected] = useState<ITodo>();
@@ -72,22 +71,8 @@ const App: React.FC = () => {
     const upPress = useKeyPress("ArrowUp");
     ws.addEventListener('open', function() {
         console.log("Connected to server");
-
-            // else if(JSON.parse(event.data).name==='deleteTodo'){
-            //     const object = JSON.parse(event.data);
-            //     handleDeleteTodo(object._id, object.index)
-            // }
-            // else{
-            //     const object = JSON.parse(event.data);
-            //     deleteTodoMini(object.index)
-            // }
-            // else { //change meetingLen
-            //     setMeetingLen(event.data*1000)
-            // }
-
     });
-    ws.onmessage= function (event) {
-        console.log('Message from server ', event.data);
+    ws.onmessage=  (event) =>{
         if(event.data === 'downPress'){
             downPressFn();}
         else if(event.data === 'upPress'){
@@ -104,6 +89,10 @@ const App: React.FC = () => {
             const object = JSON.parse(event.data);
             setMeetingLen(object.meetingLen*1000)
         }
+        else if(JSON.parse(event.data).name === 'todosOrder'){
+            const object = JSON.parse(event.data);
+            setTodos(object.todos)
+        }
     }
     const toggleMeetingLenMenu = () => {
         setMeetingLenMenu(!meetingLenMenu);
@@ -119,6 +108,14 @@ const App: React.FC = () => {
     }
     const togglePresenterWarning = () => {
         setPresenterWarning(!presenterWarning);
+    }
+    function dropDownText(){
+        if((cursor === todos.length && bonusTime > 0)){
+            return 'Unable to add presenters during bonus time'
+        }
+        else{
+            return 'Presenter already in meeting!'
+        }
     }
     function downPressFn(){
         setLastIndex(1);
@@ -182,9 +179,6 @@ const App: React.FC = () => {
     function upPressFn() {
         setLastIndex(1)
         setPrevTime(nonZeroTime);
-        if (cursor === 0) {
-            window.location.reload();
-        }
         setBefore(todos[cursor - 2])
         if (before !== undefined) {
             //if slot before took less than designated time
@@ -250,6 +244,11 @@ const App: React.FC = () => {
     const [index, setIndex] = useState<number>(cursor + 1);
 
 
+
+    const [meetingLen, setMeetingLen] = useState<number>(0);
+    const [tempMeeting, setTempMeeting] = useState<number>();
+    const [origBonus, setOrigBonus] = useState<number>(0);
+    const [bonusTime, setBonus] = useState<number>(0);
     useEffect(() => {
         let todoTime = 0;
         for (let i = 0; i < todos.length; i++) {
@@ -257,19 +256,17 @@ const App: React.FC = () => {
         }
         setNonCompressedTodoTime(todoTime);
     }, [todos])
-    const [meetingLen, setMeetingLen] = useState<number>(0);
-    const [tempMeeting, setTempMeeting] = useState<number>();
-    const [origBonus, setOrigBonus] = useState<number>(0);
     useEffect(() => {
         if (meetingLen > todoTime) {
-            setOrigBonus(meetingLen - nonCompressedtodoTime);
-            setDiff(0)
+                setOrigBonus(meetingLen - getTodoTime());
+                setDiff(0)
         } else {
             setOrigBonus(0)
             if (meetingLen < todoTime) {
                 setDiff(todoTime - meetingLen)
             }
         }
+
     }, [todoTime, meetingLen, index, nonCompressedtodoTime])
     function compressTodos() {
         if (todos[index] !== undefined) {
@@ -298,7 +295,7 @@ const App: React.FC = () => {
         }
         setTodoTime(getTodoTime())
     }
-    function getTodoTime(){
+    const getTodoTime=()=> {
         let todoTime = 0;
         for (let i = 0; i < todos.length; i++) {
             todoTime += todos[i].time + todos[i].overtime - todos[i].extra;
@@ -309,13 +306,11 @@ const App: React.FC = () => {
         setIndex(0)
         resetTodos();
     }, [meetingLen])
-    useEffect(() => {
-        setBonus(origBonus)
-    }, [origBonus])
+
     useEffect(() => {
         const todoTime = getTodoTime();
         setTodoTime(todoTime)
-    }, [todos, getTodoTime])
+    }, [todos])
     const [prevTime, setPrevTime] = useState<number>(0);
     useEffect(() => {
         // resetTodos()
@@ -324,8 +319,9 @@ const App: React.FC = () => {
     useEffect(() => {
         fetchTodos();
     }, [])
-
-    const [bonusTime, setBonus] = useState<number>(0);
+    useEffect(() => {
+        setBonus(origBonus)
+    }, [origBonus])
     useEffect(() => {
         if (selected !== undefined) {
             //if person goes overtime
@@ -373,15 +369,18 @@ const App: React.FC = () => {
                 }})
             .catch((err) => console.log(err))
     }
-
-    function deleteTodoHelper(index:number){
-        let extraBonus = todos[index].time;
+    const deleteTodoHelper=(index:number)=>{
+        // let extraBonus = todos[index].time;
         todos.splice(index,1);
-        setBonus(bonusTime+extraBonus);
-        setOrigBonus(origBonus+extraBonus)
+        // setBonus(bonusTime+extraBonus);
+        // setOrigBonus(origBonus+extraBonus)
+        setTodos(todos)
+        resetTodos()
+        var msg = {name:"todosOrder", todos: todos}
+        ws.send(JSON.stringify(msg))
     }
 
-    function isTimeLeft(){
+    const isTimeLeft=()=>{
         for (let i = cursor + 1; i < todos.length; i++) {
             if (todos[i].time > 1000) {
                 return true
@@ -418,13 +417,13 @@ const App: React.FC = () => {
         }
     }, [lastIndex, cursor, todos])
     useEffect(() => {
-        if (downPress) {
+        if (downPress && window.location.pathname === '/admin') {
             ws.send('downPress')
         }
     }, [downPress]);
 
     useEffect(() => {
-        if (upPress) {
+        if (upPress && window.location.pathname === '/admin') {
             ws.send('upPress')
     }}, [upPress]);
 
@@ -447,6 +446,8 @@ const App: React.FC = () => {
         newList.splice(destination.index, 0, todos[source.index])
         // Update the list
         setTodos(newList)
+        var msg = {name:"todosOrder", todos: newList}
+        ws.send(JSON.stringify(msg))
         window.scrollTo(0, 0)
     }
 
@@ -462,7 +463,7 @@ const App: React.FC = () => {
         let todoList: ITodo[] = [];
         let otherList: ITodo[] = [];
         let interns = ['Daron','Srishti','Matthew','Vikram','Saralin', 'Damien','Tobias','Karthik','Michael']
-        let fullTimers = ['Jo','Kendra', 'Qian', 'Bon', 'David']
+        let fullTimers = ['Jo','Kendra', 'Qian', 'Bon', 'David', 'Frederik']
         let finalWord = ['Fraser', 'Justin']
         shuffleArray(interns); shuffleArray(fullTimers); shuffleArray(finalWord)
         let orderList = interns.concat(fullTimers, finalWord);
@@ -484,6 +485,8 @@ const App: React.FC = () => {
                 finalList.push(file);
             }}
         setTodos(finalList);
+        var msg = {name:"todosOrder", todos: finalList}
+        ws.send(JSON.stringify(msg))
     }
     function fetchMeetingLen(){
         getMeetingLen()
@@ -527,7 +530,7 @@ const App: React.FC = () => {
                 }
                 if (data.todo) {
                     let result = todos.map(a => a.name);
-                    if(!result.includes(data.todo.name)){
+                    if(!result.includes(data.todo.name) && !(cursor === todos.length && bonusTime>0)){
                         var msg = {name: "addTodo", newTodo: data.todo}
                         ws.send(JSON.stringify(msg))
                     }
@@ -539,18 +542,21 @@ const App: React.FC = () => {
             })
             .catch((err) => console.log(err))
     }
-    function addTodoHelper(todo: ITodo){
+    const addTodoHelper = (todo: ITodo) => {
         todos.push(todo)
-        setBonus(bonusTime - todo.time)
-        setOrigBonus(origBonus-todo.time)
+        // setBonus(bonusTime - todo.time)
+        // setOrigBonus(origBonus-todo.time)
+        setTodos(todos)
+        var msg = {name:"todosOrder", todos: todos}
+        ws.send(JSON.stringify(msg))
     }
     return (
         <Router>
         <main className='App' id="behindComponent">
             <Switch>
                 <Route exact path = "/">
-            <DragDropContext onDragEnd={onDragEnd}>
-                <div className='test' style = {{marginRight: '3.2%'}} onClick={closeMenu}>
+            <DragDropContext onDragEnd={onDragEnd} >
+                <div className='test' style = {{marginRight: '3.2%'}} >
                     <div style={{display: 'flex', flexDirection: 'row'}}>
                         <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
                             Meeting </h1>
@@ -571,6 +577,7 @@ const App: React.FC = () => {
                                     {...provided.droppableProps} ref={provided.innerRef} style={style}>
                                     {todos.map((todo: ITodo, index) => (
                                         <TodoItem
+                                            admin={false}
                                             key={todo._id}
                                             todo={todo}
                                             deleteTodoApp={handleDeleteTodo}
@@ -615,8 +622,7 @@ const App: React.FC = () => {
                             </div>
                             <div className='meetingLen'
                                  style={{width: '13%', opacity: !presenterWarning? 0:'100%', transition:
-                                         !presenterWarning? 'opacity 1s':'opacity 1s'}}> Presenter already in meeting! </div>
-                            {/*<div className={!presenterWarning?'nameExistsBefore':'nameExistsAfter'} > Presenter already in meeting! </div>*/}
+                                         !presenterWarning? 'opacity 5s':'opacity 1s'}}> {dropDownText()}</div>
                         </div>
                         <div className='test' onClick={closeMenu}>
                             <div style={{display: 'flex', flexDirection: 'row'}}>
@@ -639,6 +645,7 @@ const App: React.FC = () => {
                                             {...provided.droppableProps} ref={provided.innerRef} style={style}>
                                             {todos.map((todo: ITodo, index) => (
                                                 <TodoItem
+                                                    admin={true}
                                                     key={todo._id}
                                                     todo={todo}
                                                     deleteTodoApp={handleDeleteTodo}

@@ -6,7 +6,7 @@ import Slider from "./Slider";
 import {FaRegTrashAlt} from "react-icons/fa";
 
 const Todo = (props: {
-    percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number, longestName :number,
+    admin: boolean, percent: number, todo: ITodo, active: boolean, done: boolean, index: number, bonusTime: number, longestName :number,
     callbackFromParent2(listInfo: number): void, deleteTodoApp: (_id: string, index:number) => void
 }) => {
 
@@ -42,7 +42,7 @@ const Todo = (props: {
 
     let reducedTime = props.todo.time - props.todo.extra
     return (
-        <Draggable draggableId={props.todo._id} index={props.index} isDragDisabled={props.done || props.active}>
+        <Draggable draggableId={props.todo._id} index={props.index} isDragDisabled={props.done || props.active|| !props.admin}>
             {provided => {
                 const style = {
                     height: props.percent + '%',
@@ -68,10 +68,11 @@ const Todo = (props: {
                                      textDecoration: props.done ? 'line-through' : 'none',
                                      width: 60 + 9 * props.longestName + "px",
                                      backgroundColor: props.done ? color : !props.active ? 'rgba(240, 240, 240,1)' : '',
+                                     textIndent: !props.admin?'17.5%':'',
                                      // background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
                                  }}>
                                 <button className="trashWrapper" disabled={props.active || props.done}
-                                        style={{cursor: !props.active && !props.done ? 'pointer' : 'default'}}
+                                        style={{display: !props.admin? 'none':'',cursor: !props.active && !props.done ? 'pointer' : 'default'}}
                                         onClick={() => props.deleteTodoApp(props.todo._id, props.index)}
                                 ><FaRegTrashAlt className="trashcan"/>
                                 </button>
