@@ -550,8 +550,16 @@ const App: React.FC = () => {
             <Switch>
                 <Route exact path = "/">
             <DragDropContext onDragEnd={onDragEnd}>
-                <div className='test' onClick={closeMenu}>
-                    <Droppable droppableId='col-1' isDropDisabled={false}>
+                <div className='test' style = {{marginRight: '3.2%'}} onClick={closeMenu}>
+                    <div style={{display: 'flex', flexDirection: 'row'}}>
+                        <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
+                            Meeting </h1>
+                        <div className="headerWrapper" style={{alignContent: 'right', textAlign: 'right'}}>
+                            <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 1000} min</div>
+                            <DateComp/>
+                        </div>
+                    </div>
+                    <Droppable droppableId='col-1' isDropDisabled={true}>
                         {provided => {
                             const style = {
                                 // height: (todoTime - ((bonusTime) / (todoTime+bonusTime) * 100))/(todoTime) + '%' ,
