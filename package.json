@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@types/react-router-dom": "^5.1.8",
+    "aws-sdk": "^2.967.0",
     "axios": "^0.21.1",
     "react-beautiful-dnd": "^13.1.0",
     "react-router-dom": "^5.2.0",
