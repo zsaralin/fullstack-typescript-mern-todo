@@ -43,7 +43,12 @@ const wss = new ws_1.default.Server({
 wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
         wss.clients.forEach(function each(client) {
-            if (client.readyState === ws_1.default.OPEN) {
+            if (message.toString() === 'refresh') {
+                if (client !== ws && client.readyState === ws_1.default.OPEN) {
+                    client.send(message.toString());
+                }
+            }
+            else if (client.readyState === ws_1.default.OPEN) {
                 client.send(message.toString());
             }
         });

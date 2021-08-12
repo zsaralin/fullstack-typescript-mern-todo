@@ -40,7 +40,11 @@ const wss = new WebSocket.Server({
 wss.on('connection', function connection(ws) {
     ws.on('message', function incoming(message) {
         wss.clients.forEach(function each(client) {
-            if (client.readyState === WebSocket.OPEN) {
+            if(message.toString()==='refresh'){
+                if(client!==ws && client.readyState === WebSocket.OPEN){
+                    client.send(message.toString());}
+                }
+            else if (client.readyState === WebSocket.OPEN) {
                 client.send(message.toString());}
         });
     });

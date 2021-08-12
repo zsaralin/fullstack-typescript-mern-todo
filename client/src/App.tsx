@@ -77,6 +77,9 @@ const App: React.FC = () => {
             downPressFn();}
         else if(event.data === 'upPress'){
             upPressFn();}
+        else if(event.data === 'refresh'){
+            window.location.reload();
+        }
         else if(JSON.parse(event.data).name === 'deleteTodo'){
             const object = JSON.parse(event.data);
             deleteTodoHelper(object.index)
@@ -369,6 +372,13 @@ const App: React.FC = () => {
                 }})
             .catch((err) => console.log(err))
     }
+    useEffect(() => {
+        window.onbeforeunload = () => {
+            if (window.location.pathname === '/admin') {
+                ws.send('refresh')
+            }
+        }
+    })
     const deleteTodoHelper=(index:number)=>{
         // let extraBonus = todos[index].time;
         todos.splice(index,1);
