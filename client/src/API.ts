@@ -20,9 +20,9 @@ export const addTodo = async (
     const todo: Omit<ITodo, '_id'> = {
       name: formData.name,
       description: formData.description,
-      time: formData.time*1000,
-      initTime: formData.time*1000,
-      nonCompressedTime: formData.time*1000,
+      time: formData.time,
+      initTime: formData.time,
+      nonCompressedTime: formData.time,
       overtime: 0,
       extra:0,
     }

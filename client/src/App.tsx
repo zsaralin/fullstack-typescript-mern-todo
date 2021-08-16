@@ -494,6 +494,11 @@ const App: React.FC = () => {
                 let file = todoList[namesList.indexOf(orderList[i])]
                 finalList.push(file);
             }}
+        for(let i=0;i<finalList.length;i++){
+            finalList[i].time = finalList[i].time*1000;
+            finalList[i].initTime = finalList[i].initTime*1000;
+            finalList[i].nonCompressedTime = finalList[i].nonCompressedTime*1000;
+        }
         setTodos(finalList);
         var msg = {name:"todosOrder", todos: finalList}
         ws.send(JSON.stringify(msg))
@@ -553,6 +558,10 @@ const App: React.FC = () => {
             .catch((err) => console.log(err))
     }
     const addTodoHelper = (todo: ITodo) => {
+        todo.time = todo.time*1000;
+        todo.nonCompressedTime = todo.nonCompressedTime*1000;
+        todo.initTime = todo.initTime*1000;
+
         todos.push(todo)
         // setBonus(bonusTime - todo.time)
         // setOrigBonus(origBonus-todo.time)
