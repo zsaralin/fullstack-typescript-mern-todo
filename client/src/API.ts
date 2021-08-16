@@ -2,22 +2,23 @@ import axios, {AxiosResponse} from 'axios'
 
 const baseUrl: string = 'http://localhost:4000'
 
-export const getTodos = async (): Promise<AxiosResponse<ApiDataType>> => {
+//get presenters
+export const getPres = async (): Promise<AxiosResponse<ApiDataType>> => {
   try {
-    const todos: AxiosResponse<ApiDataType> = await axios.get(
-      baseUrl + '/todos'
+    const pres: AxiosResponse<ApiDataType> = await axios.get(
+      baseUrl + '/pres'
     )
-    return todos
+    return pres
   } catch (error) {
     throw new Error(error)
   }
 }
 
-export const addTodo = async (
-    formData: ITodo
+export const addPres = async (
+    formData: IPresenter
 ): Promise<AxiosResponse<ApiDataType>> => {
   try {
-    const todo: Omit<ITodo, '_id'> = {
+    const presenter: Omit<IPresenter, '_id'> = {
       name: formData.name,
       description: formData.description,
       time: formData.time,
@@ -27,8 +28,8 @@ export const addTodo = async (
       extra:0,
     }
     return await axios.post(
-        baseUrl + '/add-todo',
-        todo
+        baseUrl + '/add-pres',
+        presenter
     )
   } catch (error) {
     throw new Error(error)
@@ -38,7 +39,7 @@ export const addTodo = async (
 export const getMeetingLen = async (): Promise<AxiosResponse<ApiDataType>> => {
   try {
     return await axios.get(
-        baseUrl + '/meetingLen'
+        baseUrl + '/meeting-len'
     )
   } catch (error) {
     throw new Error(error)
@@ -47,31 +48,31 @@ export const getMeetingLen = async (): Promise<AxiosResponse<ApiDataType>> => {
 export const postMeetingLen = async (meetingLen:number): Promise<void> => {
   try {
     return await axios.post(
-        baseUrl + '/postMeetingLen', {meetingLen:meetingLen},
+        baseUrl + '/post-meeting-len', {meetingLen:meetingLen},
     )
   } catch (error) {
     throw new Error(error)
   }
 }
-export const deleteTodo = async (
+export const deletePres = async (
     _id: string
 ): Promise<AxiosResponse<ApiDataType>> => {
   try {
-    const deletedTodo: AxiosResponse<ApiDataType> = await axios.delete(
-        `${baseUrl}/delete-todo/${_id}`,
+    const deletedPres: AxiosResponse<ApiDataType> = await axios.delete(
+        `${baseUrl}/delete-pres/${_id}`,
     )
-    return deletedTodo
+    return deletedPres
   } catch (error) {
     throw new Error(error)
   }
 }
 
-export const getTodos2 = async (): Promise<AxiosResponse<ApiDataType>> => {
+export const getPres2 = async (): Promise<AxiosResponse<ApiDataType>> => {
   try {
-    const todos: AxiosResponse<ApiDataType> = await axios.get(
-        baseUrl + '/todos2'
+    const pres: AxiosResponse<ApiDataType> = await axios.get(
+        baseUrl + '/get-pres-2'
     )
-    return todos
+    return pres
   } catch (error) {
     throw new Error(error)
   }

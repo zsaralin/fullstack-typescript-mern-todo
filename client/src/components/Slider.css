@@ -1,10 +1,10 @@
-.slider{
-    display:block;
+.slider {
+    display: block;
     position: absolute;
     width: 101%;
-    bottom:0;
+    bottom: 0;
     left: -1%;
-    height:6px;
+    height: 6px;
     background: rgba(60, 60, 60, .6);
     animation-timing-function: linear;
     animation-name: slidein;
@@ -12,7 +12,7 @@
 
 @keyframes slidein {
     from {
-        bottom: 98%;
+        bottom: 99%;
     }
     to {
         bottom: 0;

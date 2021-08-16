@@ -1,13 +1,14 @@
 import React, {useState} from 'react'
-import './BonusItem.css'
+import './Bonus.css'
 import Timer from "./Timer";
 import Slider from "./Slider";
 
-function BonusItem(props: { origBonus: number, time: number, active: boolean, done: boolean, percent: number }) {
+function Bonus(props: { origBonus: number, time: number, active: boolean, done: boolean, percent: number }) {
     const [realTime, setTime] = useState<number>(0);
     const origBonus = Math.ceil(props.origBonus/1000)
     const time = Math.ceil(props.time/1000)
 
+    //set time using time from Timer class
     const myCallback = (time: number) => {
         setTime(time);
     }
@@ -65,4 +66,4 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
 }
 
 
-export default BonusItem
+export default Bonus

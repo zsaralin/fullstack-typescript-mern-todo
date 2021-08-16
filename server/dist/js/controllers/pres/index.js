@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getPres2 = exports.deletePres = exports.addPres = exports.getPres = void 0;
-const todo_1 = __importDefault(require("../../models/todo"));
+const pres_1 = __importDefault(require("../../models/pres"));
 const fs_1 = __importDefault(require("fs"));
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\";
 const getPres2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const pres = yield todo_1.default.find();
+        const pres = yield pres_1.default.find();
         res.status(200).json({ pres });
     }
     catch (error) {
@@ -49,7 +49,7 @@ function createPres(data, fileName) {
     else if (data[0] === 'l') {
         timeNum = 15;
     }
-    return new todo_1.default({
+    return new pres_1.default({
         name: fileName.substring(0, fileName.length - 4),
         description: data.substring(2, data.length - 2),
         initTime: timeNum * 1000,
@@ -62,7 +62,7 @@ function createPres(data, fileName) {
 const addPres = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const body = req.body;
-        const pres = new todo_1.default({
+        const pres = new pres_1.default({
             name: body.name,
             description: body.description,
             time: body.time,
@@ -73,8 +73,8 @@ const addPres = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         // fs.writeFileSync(pathFull + '/'+ body.name + '.txt', addTodoHelper(body.time) + body.description + '^0')
         const newPres = yield pres.save();
-        const allPres = yield todo_1.default.find();
-        res.status(201).json({ message: 'Todo added', presenter: newPres, pres: allPres });
+        const allPres = yield pres_1.default.find();
+        res.status(201).json({ message: 'Presenter added', presenter: newPres, pres: allPres });
     }
     catch (error) {
         throw error;
@@ -83,12 +83,12 @@ const addPres = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.addPres = addPres;
 const deletePres = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const deletedPres = yield todo_1.default.findByIdAndRemove(req.params.id);
-        const allTodos = yield todo_1.default.find();
+        const deletedPres = yield pres_1.default.findByIdAndRemove(req.params.id);
+        const allPres = yield pres_1.default.find();
         res.status(200).json({
-            message: 'Todo deleted',
-            todo: deletedPres,
-            todos: allTodos,
+            message: 'Presenter deleted',
+            presenter: deletedPres,
+            pres: allPres,
         });
     }
     catch (error) {

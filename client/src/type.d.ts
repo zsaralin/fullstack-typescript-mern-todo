@@ -1,10 +1,10 @@
 type ApiDataType = {
     message: string
-    todos: ITodo[]
-    todo?: ITodo
+    pres: IPresenter[]
+    presenter?: IPresenter
   }
 
-interface ITodo {
+interface IPresenter {
     _id: string
     name: string
     description: string

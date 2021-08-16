@@ -1,7 +1,7 @@
-import { ITodo } from './../types/todo';
+import { IPresenter } from '../types/pres';
 import { model, Schema } from 'mongoose'
 
-const todoSchema: Schema = new Schema({
+const presSchema: Schema = new Schema({
     name: {
         type: String,
         required: true
@@ -33,4 +33,4 @@ const todoSchema: Schema = new Schema({
 }, )
 
 
-export default model<ITodo>('Todo', todoSchema)
+export default model<IPresenter>('Pres', presSchema)

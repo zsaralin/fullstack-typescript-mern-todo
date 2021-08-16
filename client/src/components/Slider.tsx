@@ -1,9 +1,9 @@
-import { GoTriangleRight } from 'react-icons/go';
+import {GoTriangleRight} from 'react-icons/go';
 import {IconContext} from "react-icons";
 import React from 'react'
 import './Slider.css'
 
-function Slider(props: { start: boolean, time: number}) {
+function Slider(props: { start: boolean, time: number }) {
     return (
         <div className="slider" style={{
             visibility: props.start ? 'visible' : 'hidden',

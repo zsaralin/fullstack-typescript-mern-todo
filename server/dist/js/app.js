@@ -12,7 +12,6 @@ const app = express_1.default();
 var Schema = mongoose_1.default.Schema;
 const PORT = process.env.PORT || 4000;
 var bodyParser = require('body-parser');
-var jsonParser = bodyParser.json();
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.use(bodyParser.json());
@@ -54,40 +53,16 @@ wss.on('connection', function connection(ws) {
         });
     });
 });
-// wss.on('connection', function connection(ws) {
-//     wss.on('message', function incoming(message) {
-//         console.log(JSON.stringify('ASDASDASD'))
-// console.log('received: %s', message);
-// ws.send(JSON.stringify(message));
-// console.log(JSON.stringify(message))
-//     const msg = {
-//         type: "downPress",}
-//     // var msg ={type: 'downPress'}
-//     ws.send(JSON.stringify(msg));
-//         }
-// });
-// });
-//     ws.on('downPress', function incoming() {
-//         wss.clients.forEach(function each(client) {
-//             if (client !== ws && client.readyState === WebSocket.OPEN) {
-//                 var msg = {type: 'downPress'}
-//                 client.send(msg)
-//                     // 'downPress');
-//             }
-//         });
-//     });
-// });
 const numberSchema = new Schema({
     integerOnly: {
         type: Number,
         default: 100,
-        // get: (v: number) => Math.round(v),
     }
 });
-const Number2 = mongoose_1.default.model('Number2', numberSchema);
-const doc = new Number2();
+const MeetingLen = mongoose_1.default.model('MeetingLen', numberSchema);
+const doc = new MeetingLen();
 // let meetingLen = doc.integerOnly.get();
-app.get('/meetingLen', function (req, res) {
+app.get('/meeting-len', function (req, res) {
     // let num = doc.get();
     try {
         let meetingLen = doc.integerOnly;
@@ -98,7 +73,7 @@ app.get('/meetingLen', function (req, res) {
     }
     // return num;
 });
-app.post('/postMeetingLen', urlencodedParser, function (req, res) {
+app.post('/post-meeting-len', urlencodedParser, function (req, res) {
     try {
         let meetingLen = req.body.meetingLen;
         doc.integerOnly = meetingLen;

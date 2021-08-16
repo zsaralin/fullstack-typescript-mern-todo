@@ -1,33 +1,33 @@
 import {Request, Response} from 'express'
-import {ITodo} from './../../types/todo'
-import Todo from '../../models/todo'
+import {IPresenter} from '../../types/pres'
+import Pres from '../../models/pres'
 import fs from 'fs';
 
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\"
-const getTodos2 = async (req: Request, res: Response): Promise<void> => {
+const getPres2 = async (req: Request, res: Response): Promise<void> => {
     try {
-        const todos: ITodo[] = await Todo.find()
-        res.status(200).json({ todos })
+        const pres: IPresenter[] = await Pres.find()
+        res.status(200).json({ pres })
     } catch (error) {
         throw error
     }
 }
 
-const getTodos = async (req: Request, res: Response): Promise<void> => {
+const getPres = async (req: Request, res: Response): Promise<void> => {
     try {
-        const todos: ITodo[] = [];
+        const pres: IPresenter[] = [];
         for (const file of fs.readdirSync(pathFull)) {
             const data = fs.readFileSync(pathFull + '\\' + file).toString('utf8')
-            let todo = createTodo(data, file.toString())
-            todos.push(todo)
+            let presenter = createPres(data, file.toString())
+            pres.push(presenter)
             }
-        res.status(200).json({todos})
+        res.status(200).json({pres})
     } catch (error) {
         throw error
     }
 }
 
-function createTodo(data: string, fileName: string): ITodo{
+function createPres(data: string, fileName: string): IPresenter{
     let timeNum = 5;
     if (data[0] === 'm') {
         timeNum = 10;
@@ -35,7 +35,7 @@ function createTodo(data: string, fileName: string): ITodo{
     else if (data[0] === 'l') {
         timeNum = 15;
     }
-    return new Todo({
+    return new Pres({
         name: fileName.substring(0, fileName.length - 4),
         description: data.substring(2, data.length - 2),
         initTime: timeNum * 1000,
@@ -46,10 +46,10 @@ function createTodo(data: string, fileName: string): ITodo{
     });
 }
 
-const addTodo = async (req: Request, res: Response): Promise<void> => {
+const addPres = async (req: Request, res: Response): Promise<void> => {
     try {
-        const body = req.body as Pick<ITodo, 'name' | 'description' | 'time'>
-        const todo: ITodo = new Todo({
+        const body = req.body as Pick<IPresenter, 'name' | 'description' | 'time'>
+        const pres: IPresenter = new Pres({
             name: body.name,
             description: body.description,
             time: body.time,
@@ -59,28 +59,28 @@ const addTodo = async (req: Request, res: Response): Promise<void> => {
             extra: 0,
         })
         // fs.writeFileSync(pathFull + '/'+ body.name + '.txt', addTodoHelper(body.time) + body.description + '^0')
-        const newTodo: ITodo = await todo.save()
-        const allTodos: ITodo[] = await Todo.find()
-        res.status(201).json({message: 'Todo added', todo: newTodo, todos: allTodos})
+        const newPres: IPresenter = await pres.save()
+        const allPres: IPresenter[] = await Pres.find()
+        res.status(201).json({message: 'Presenter added', presenter: newPres, pres: allPres})
     } catch (error) {
         throw error
     }
 }
 
-const deleteTodo = async (req: Request, res: Response): Promise<void> => {
+const deletePres = async (req: Request, res: Response): Promise<void> => {
     try {
-        const deletedTodo: ITodo | null = await Todo.findByIdAndRemove(
+        const deletedPres: IPresenter | null = await Pres.findByIdAndRemove(
             req.params.id
         )
-        const allTodos: ITodo[] = await Todo.find()
+        const allPres: IPresenter[] = await Pres.find()
         res.status(200).json({
-            message: 'Todo deleted',
-            todo: deletedTodo,
-            todos: allTodos,
+            message: 'Presenter deleted',
+            presenter: deletedPres,
+            pres: allPres,
         })
     } catch (error) {
         throw error
     }
 }
 
-export {getTodos, addTodo, deleteTodo, getTodos2}
+export {getPres, addPres, deletePres, getPres2}

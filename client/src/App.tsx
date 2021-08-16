@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import TodoItem from './components/TodoItem'
+import Presenter from './components/Presenter'
 import {MdSettings} from 'react-icons/md';
-import AddTodo from './components/AddTodo'
+import AddPres from './components/AddPres'
 import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
-import {addTodo, deleteTodo, getMeetingLen, getTodos2, postMeetingLen} from './API'
-import BonusItem from "./components/BonusItem";
+import {addPres, deletePres, getMeetingLen, getPres2, postMeetingLen} from './API'
+import Bonus from "./components/Bonus";
 import DateComp from './components/theDate';
 import {BrowserRouter as Router, Route, Switch, } from "react-router-dom";
 // @ts-ignore
@@ -49,10 +49,10 @@ const useKeyPress = function (targetKey: string) {
 };
 
 const App: React.FC = () => {
-    const [todos, setTodos] = useState<ITodo[]>([]);
+    const [pres, setPres] = useState<IPresenter[]>([]);
 
-    const [selected, setSelected] = useState<ITodo>();
-    const [before, setBefore] = useState<ITodo>();
+    const [selected, setSelected] = useState<IPresenter>();
+    const [before, setBefore] = useState<IPresenter>();
 
     const [cursor, setCursor] = useState<number>(-1);
 
@@ -65,7 +65,7 @@ const App: React.FC = () => {
     const [meetingLenMenu, setMeetingLenMenu] = useState(false);
     const [presenterWarning, setPresenterWarning] = useState(false);
 
-    const [addTodoMenu, setAddTodoMenu] = useState(false);
+    const [addPresMenu, setAddPresMenu] = useState(false);
 
     const downPress = useKeyPress("ArrowDown");
     const upPress = useKeyPress("ArrowUp");
@@ -80,40 +80,40 @@ const App: React.FC = () => {
         else if(event.data === 'refresh'){
             window.location.reload();
         }
-        else if(JSON.parse(event.data).name === 'deleteTodo'){
+        else if(JSON.parse(event.data).name === 'deletePres'){
             const object = JSON.parse(event.data);
-            deleteTodoHelper(object.index)
+            deletePresHelper(object.index)
         }
-        else if(JSON.parse(event.data).name === 'addTodo'){
+        else if(JSON.parse(event.data).name === 'addPres'){
             const object = JSON.parse(event.data);
-            addTodoHelper(object.newTodo)
+            addPresHelper(object.newPres)
         }
         else if(JSON.parse(event.data).name === 'meetingLen'){
             const object = JSON.parse(event.data);
             setMeetingLen(object.meetingLen*1000)
         }
-        else if(JSON.parse(event.data).name === 'todosOrder'){
+        else if(JSON.parse(event.data).name === 'presOrder'){
             const object = JSON.parse(event.data);
-            setTodos(object.todos)
+            setPres(object.pres)
         }
     }
     const toggleMeetingLenMenu = () => {
         setMeetingLenMenu(!meetingLenMenu);
-        if(addTodoMenu){setAddTodoMenu(false)}
+        if(addPresMenu){setAddPresMenu(false)}
     }
     const closeMenu = () => {
         setMeetingLenMenu(false);
-        setAddTodoMenu(false);
+        setAddPresMenu(false);
     }
-    const toggleAddTodoMenu = () => {
-        setAddTodoMenu(!addTodoMenu);
+    const toggleAddPresMenu = () => {
+        setAddPresMenu(!addPresMenu);
         if(meetingLenMenu){setMeetingLenMenu(false)}
     }
     const togglePresenterWarning = () => {
         setPresenterWarning(!presenterWarning);
     }
     function dropDownText(){
-        if((cursor === todos.length && bonusTime > 0)){
+        if((cursor === pres.length && bonusTime > 0)){
             return 'Unable to add presenters during bonus time'
         }
         else{
@@ -146,19 +146,20 @@ const App: React.FC = () => {
             //if person takes less than set time
             if (selected.overtime === 0 && nonZeroTime < (selected.time)) {
                 let difference = selected.time - nonZeroTime;
+                console.log('difference' + nonZeroTime)
                 slotDecreased = isSlotDecreased()
                 if (slotDecreased > 0) {
                     let subtract = Math.floor(difference / slotDecreased)
                     //increase subsequent slots that are under time (until they are back to their set times)
-                    for (let i = cursor + 1; i < todos.length; i++) {
-                        if (todos[i].time < todos[i].initTime) {
-                            todos[i].time += subtract;
+                    for (let i = cursor + 1; i < pres.length; i++) {
+                        if (pres[i].time < pres[i].initTime) {
+                            pres[i].time += subtract;
                             difference -= subtract;
                         }
                     }
-                    for (let i = cursor + 1; i < todos.length; i++) {
-                        while (difference > 0 && todos[i].time < todos[i].initTime) {
-                            todos[i].time += 1;
+                    for (let i = cursor + 1; i < pres.length; i++) {
+                        while (difference > 0 && pres[i].time < pres[i].initTime) {
+                            pres[i].time += 1;
                             difference -= 1;
                         }
                     }
@@ -169,20 +170,20 @@ const App: React.FC = () => {
             }
         }
 
-        if (cursor < todos.length) {
+        if (cursor < pres.length) {
             setCursor(prevState =>
-                prevState < todos.length ? prevState + 1 : prevState)
+                prevState < pres.length ? prevState + 1 : prevState)
         } else {
-            setCursor(todos.length + 1);
+            setCursor(pres.length + 1);
         }
-        setBefore(todos[cursor])
-        setSelected(todos[cursor + 1]);
+        setBefore(pres[cursor])
+        setSelected(pres[cursor + 1]);
     }
 
     function upPressFn() {
         setLastIndex(1)
         setPrevTime(nonZeroTime);
-        setBefore(todos[cursor - 2])
+        setBefore(pres[cursor - 2])
         if (before !== undefined) {
             //if slot before took less than designated time
             if (before.extra > 0) {
@@ -190,14 +191,14 @@ const App: React.FC = () => {
                 before.extra = 0;
                 if (slotDecreased > 0) {
                     let subtract = Math.floor(difference / slotDecreased)
-                    for (let i = cursor + 1; i < todos.length; i++) {
-                        todos[i].time -= subtract;
+                    for (let i = cursor + 1; i < pres.length; i++) {
+                        pres[i].time -= subtract;
                         difference -= subtract;
                     }
                     //increase subsequent slots that are under time (until they are back to their set times)
-                    for (let i = cursor + 1; i < todos.length; i++) {
-                        while (difference > 0 && todos[i].time < todos[i].initTime) {
-                            todos[i].time -= 1;
+                    for (let i = cursor + 1; i < pres.length; i++) {
+                        while (difference > 0 && pres[i].time < pres[i].initTime) {
+                            pres[i].time -= 1;
                             difference -= 1;
                         }
                     }
@@ -207,7 +208,7 @@ const App: React.FC = () => {
             }
         }
         setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
-        setSelected(todos[cursor - 1]);
+        setSelected(pres[cursor - 1]);
     }
     const timeCallback = (timerTime: number) => {
         if (timerTime !== 0 && timerTime !== prevTime) {
@@ -218,16 +219,16 @@ const App: React.FC = () => {
 
     function getLongestName() {
         let longest = '';
-        for (let i = 0; i < todos.length; i++) {
-            if (todos[i].name.length >= longest.length) {
-                longest = todos[i].name;
+        for (let i = 0; i < pres.length; i++) {
+            if (pres[i].name.length >= longest.length) {
+                longest = pres[i].name;
             }
         }
         return longest.length;
     }
 
-    const [todoTime, setTodoTime ] = useState<number>(0);
-    const [nonCompressedtodoTime, setNonCompressedTodoTime] = useState<number>(0);
+    const [presTime, setPresTime ] = useState<number>(0);
+    const [nonCompressedPresTime, setNonCompressedPresTime] = useState<number>(0);
     const [diff, setDiff] = useState<number>(0);
     const [index, setIndex] = useState<number>(cursor + 1);
 
@@ -238,74 +239,73 @@ const App: React.FC = () => {
     const [origBonus, setOrigBonus] = useState<number>(0);
     const [bonusTime, setBonus] = useState<number>(0);
     useEffect(() => {
-        let todoTime = 0;
-        for (let i = 0; i < todos.length; i++) {
-            todoTime += todos[i].nonCompressedTime;
+        let presTime = 0;
+        for (let i = 0; i < pres.length; i++) {
+            presTime += pres[i].nonCompressedTime;
         }
-        setNonCompressedTodoTime(todoTime);
-    }, [todos])
+        setNonCompressedPresTime(presTime);
+    }, [pres])
     useEffect(() => {
-        if (meetingLen > todoTime) {
-                setOrigBonus(meetingLen - getTodoTime());
+        if (meetingLen > presTime) {
+                setOrigBonus(meetingLen - getPresTime());
                 setDiff(0)
         } else {
             setOrigBonus(0)
-            if (meetingLen < todoTime) {
-                setDiff(todoTime - meetingLen)
+            if (meetingLen < presTime) {
+                setDiff(presTime - meetingLen)
             }
         }
 
-    }, [todoTime, meetingLen, index, nonCompressedtodoTime])
-    function compressTodos() {
-        if (todos[index] !== undefined) {
-            if (todos[index].time >= 2000) {
-                todos[index].initTime -= 1000;
-                todos[index].time -= 1000;
+    }, [presTime, meetingLen, index, nonCompressedPresTime])
+    function compressPres() {
+        if (pres[index] !== undefined) {
+            if (pres[index].time >= 2000) {
+                pres[index].initTime -= 1000;
+                pres[index].time -= 1000;
                 setDiff(diff - 1000)
             }
             setIndex(index + 1);
-            if (index === todos.length - 1) {
+            if (index === pres.length - 1) {
                 setIndex(cursor + 1);
             }
         }
-        setTodoTime(getTodoTime());
+        setPresTime(getPresTime());
     }
     useEffect(() => {
-        if (diff > 0 && todoTime !== todos.length * 1000) {
-            compressTodos();
+        if (diff > 0 && presTime !== pres.length * 1000) {
+            compressPres();
         }
     }, [index, diff])
 
-    function resetTodos() {
-        for (let i = 0; i < todos.length; i++) {
-            todos[i].initTime = todos[i].nonCompressedTime;
-            todos[i].time = todos[i].nonCompressedTime;
+    function resetPres() {
+        for (let i = 0; i < pres.length; i++) {
+            pres[i].initTime = pres[i].nonCompressedTime;
+            pres[i].time = pres[i].nonCompressedTime;
         }
-        setTodoTime(getTodoTime())
+        setPresTime(getPresTime())
     }
-    const getTodoTime=()=> {
-        let todoTime = 0;
-        for (let i = 0; i < todos.length; i++) {
-            todoTime += todos[i].time + todos[i].overtime - todos[i].extra;
+    const getPresTime=()=> {
+        let presTime = 0;
+        for (let i = 0; i < pres.length; i++) {
+            presTime += pres[i].time + pres[i].overtime - pres[i].extra;
         }
-        return todoTime;
+        return presTime;
     }
     useEffect(() => {
         setIndex(0)
-        resetTodos();
+        resetPres();
     }, [meetingLen])
 
     useEffect(() => {
-        const todoTime = getTodoTime();
-        setTodoTime(todoTime)
-    }, [todos])
+        const presTime = getPresTime();
+        setPresTime(presTime)
+    }, [pres])
     const [prevTime, setPrevTime] = useState<number>(0);
     useEffect(() => {
-        // resetTodos()
         fetchMeetingLen()
     }, [])
     useEffect(() => {
-        fetchTodos();
+        fetchPres();
     }, [])
     useEffect(() => {
         setBonus(origBonus)
@@ -313,7 +313,7 @@ const App: React.FC = () => {
     useEffect(() => {
         if (selected !== undefined) {
             //if person goes overtime
-            if (realTime > Math.round(selected.time - selected.extra) && !(cursor === todos.length - 1 && bonusTime <= 0)) {
+            if (realTime > Math.round(selected.time - selected.extra) && !(cursor === pres.length - 1 && bonusTime <= 0)) {
                 //increase selected.overtime so their box increases in size
                 //only increase box when there is bonusTime or other people's time left to take from
                 if (isTimeLeft() || bonusTime > 0) {
@@ -323,7 +323,7 @@ const App: React.FC = () => {
                 if (bonusTime < 100) {
                     if (isTimeLeft()) {
                         let reducedSlot2 = cursor + lastIndex;
-                        todos[reducedSlot2].time -= 100;
+                        pres[reducedSlot2].time -= 100;
                         setAmountSubtract(amountSubtract + 100)
                         if (amountSubtract === 1000) {
                             setLastIndex(lastIndex + 1);
@@ -337,22 +337,22 @@ const App: React.FC = () => {
         }
     }, [realTime])
 
-    const getPercent = (todo: ITodo): number => {
-        let percent = (todo.time - todo.extra + todo.overtime);
-        percent = percent / (todoTime + bonusTime) * 100
+    const getPercent = (presenter: IPresenter): number => {
+        let percent = (presenter.time - presenter.extra + presenter.overtime);
+        percent = percent / (presTime + bonusTime) * 100
         if (percent < 6.5) {
             return (6.5);
         }
         return percent;
     }
-    const handleDeleteTodo = (_id: string, index: number): void => {
-        deleteTodo(_id)
+    const handleDeletePres = (_id: string, index: number): void => {
+        deletePres(_id)
             .then(({status, }) => {
                 if (status !== 200) {
-                    throw new Error('Error! Todo not deleted')
+                    throw new Error('Error! Presenter not deleted')
                 } else {
                     console.log(index)
-                    var msg = {name: "deleteTodo", index:index}
+                    var msg = {name: "deletePres", index:index}
                     ws.send(JSON.stringify(msg))
                 }})
             .catch((err) => console.log(err))
@@ -364,20 +364,17 @@ const App: React.FC = () => {
             }
         }
     })
-    const deleteTodoHelper=(index:number)=>{
-        // let extraBonus = todos[index].time;
-        todos.splice(index,1);
-        // setBonus(bonusTime+extraBonus);
-        // setOrigBonus(origBonus+extraBonus)
-        setTodos(todos)
-        resetTodos()
-        var msg = {name:"todosOrder", todos: todos}
+    const deletePresHelper=(index:number)=>{
+        pres.splice(index,1);
+        setPres(pres)
+        resetPres()
+        var msg = {name:"presOrder", pres: pres}
         ws.send(JSON.stringify(msg))
     }
 
     const isTimeLeft=()=>{
-        for (let i = cursor + 1; i < todos.length; i++) {
-            if (todos[i].time > 1000) {
+        for (let i = cursor + 1; i < pres.length; i++) {
+            if (pres[i].time > 1000) {
                 return true
             }
         }
@@ -386,19 +383,19 @@ const App: React.FC = () => {
 
     const isSlotDecreased = (): number => {
         let numDecreased = 0;
-        for (let i = cursor + 1; i < todos.length; i++) {
-            if (todos[i].initTime > todos[i].time) {
-                numDecreased += todos[i].initTime - todos[i].time;
+        for (let i = cursor + 1; i < pres.length; i++) {
+            if (pres[i].initTime > pres[i].time) {
+                numDecreased += pres[i].initTime - pres[i].time;
             }
         }
         return numDecreased;
     }
     let slotDecreased = isSlotDecreased();
     useEffect(() => {
-        if (cursor + lastIndex >= todos.length && isTimeLeft()) {
+        if (cursor + lastIndex >= pres.length && isTimeLeft()) {
             setLastIndex(1);
         }
-    }, [lastIndex, cursor, todos])
+    }, [lastIndex, cursor, pres])
     useEffect(() => {
         if (presenterWarning){
             setTimeout(()=>{
@@ -407,10 +404,10 @@ const App: React.FC = () => {
             }
     }, [presenterWarning])
     useEffect(() => {
-        if (cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time <= 1000 && isTimeLeft()) {
+        if (cursor >= 0 && (cursor + lastIndex) < pres.length && pres[cursor + lastIndex].time <= 1000 && isTimeLeft()) {
             setLastIndex(lastIndex + 1)
         }
-    }, [lastIndex, cursor, todos])
+    }, [lastIndex, cursor, pres])
     useEffect(() => {
         if (downPress && window.location.pathname === '/admin') {
             ws.send('downPress')
@@ -436,37 +433,37 @@ const App: React.FC = () => {
         }
         // Move the item within the list
         // Start by making a new list without the dragged item
-        const newList = todos.filter((_: any, idx: number) => idx !== source.index)
+        const newList = pres.filter((_: any, idx: number) => idx !== source.index)
         // Then insert the item at the right location
-        newList.splice(destination.index, 0, todos[source.index])
+        newList.splice(destination.index, 0, pres[source.index])
         // Update the list
-        setTodos(newList)
-        var msg = {name:"todosOrder", todos: newList}
+        setPres(newList)
+        var msg = {name:"presOrder", pres: newList}
         ws.send(JSON.stringify(msg))
         window.scrollTo(0, 0)
     }
 
-    const fetchTodos = (): void => {
-        getTodos2()
-            .then(({data: {todos}}: ITodo[] | any) =>
-                shuffleTodos(todos))
+    const fetchPres = (): void => {
+        getPres2()
+            .then(({data: {pres}}: IPresenter[] | any) =>
+                shufflePres(pres))
             .catch((err: Error) => console.log(err));
     }
-    function shuffleTodos(inputTodos: ITodo[]){
+    function shufflePres(inputPres: IPresenter[]){
         let namesList: string[] = [];
-        let finalList: ITodo[] = [];
-        let todoList: ITodo[] = [];
-        let otherList: ITodo[] = [];
+        let finalList: IPresenter[] = [];
+        let presList: IPresenter[] = [];
+        let otherList: IPresenter[] = [];
         let interns = ['Daron','Srishti','Matthew','Vikram','Saralin', 'Damien','Tobias','Karthik','Michael']
         let fullTimers = ['Jo','Kendra', 'Qian', 'Bon', 'David', 'Frederik']
         let finalWord = ['Fraser', 'Justin']
         shuffleArray(interns); shuffleArray(fullTimers); shuffleArray(finalWord)
         let orderList = interns.concat(fullTimers, finalWord);
 
-        inputTodos.forEach(element => {
+        inputPres.forEach(element => {
             if (orderList.includes(element.name)) {
                 namesList.push(element.name);
-                todoList.push(element)
+                presList.push(element)
             } else {
                 otherList.push(element)
             }
@@ -476,7 +473,7 @@ const App: React.FC = () => {
         });
         for(let i=0;i<orderList.length;i++){
             if(namesList.includes(orderList[i])){
-                let file = todoList[namesList.indexOf(orderList[i])]
+                let file = presList[namesList.indexOf(orderList[i])]
                 finalList.push(file);
             }}
         for(let i=0;i<finalList.length;i++){
@@ -484,8 +481,8 @@ const App: React.FC = () => {
             finalList[i].initTime = finalList[i].initTime*1000;
             finalList[i].nonCompressedTime = finalList[i].nonCompressedTime*1000;
         }
-        setTodos(finalList);
-        var msg = {name:"todosOrder", todos: finalList}
+        setPres(finalList);
+        var msg = {name:"presOrder", pres: finalList}
         ws.send(JSON.stringify(msg))
     }
     function fetchMeetingLen(){
@@ -521,17 +518,17 @@ const App: React.FC = () => {
             updateMeetingLen(tempMeeting);
         }
     }
-    const handleSaveTodo = (e: React.FormEvent, formData: ITodo): void => {
+    const handleSavePres = (e: React.FormEvent, formData: IPresenter): void => {
         e.preventDefault()
-        addTodo(formData)
+        addPres(formData)
             .then(({status, data}) => {
                 if (status !== 201) {
-                    throw new Error('Error! Todo not saved')
+                    throw new Error('Error! Presenter not saved')
                 }
-                if (data.todo) {
-                    let result = todos.map(a => a.name);
-                    if(!result.includes(data.todo.name) && !(cursor === todos.length && bonusTime>0)){
-                        var msg = {name: "addTodo", newTodo: data.todo}
+                if (data.presenter) {
+                    let result = pres.map(a => a.name);
+                    if(!result.includes(data.presenter.name) && !(cursor === pres.length && bonusTime>0)){
+                        var msg = {name: "addPres", newPres: data.presenter}
                         ws.send(JSON.stringify(msg))
                     }
                     else{
@@ -542,16 +539,14 @@ const App: React.FC = () => {
             })
             .catch((err) => console.log(err))
     }
-    const addTodoHelper = (todo: ITodo) => {
-        todo.time = todo.time*1000;
-        todo.nonCompressedTime = todo.nonCompressedTime*1000;
-        todo.initTime = todo.initTime*1000;
+    const addPresHelper = (newPres: IPresenter) => {
+        newPres.time = newPres.time*1000;
+        newPres.nonCompressedTime = newPres.nonCompressedTime*1000;
+        newPres.initTime = newPres.initTime*1000;
 
-        todos.push(todo)
-        // setBonus(bonusTime - todo.time)
-        // setOrigBonus(origBonus-todo.time)
-        setTodos(todos)
-        var msg = {name:"todosOrder", todos: todos}
+        pres.push(newPres)
+        setPres(pres)
+        var msg = {name:"presOrder", pres: pres}
         ws.send(JSON.stringify(msg))
     }
     return (
@@ -572,33 +567,32 @@ const App: React.FC = () => {
                     <Droppable droppableId='col-1' isDropDisabled={true}>
                         {provided => {
                             const style = {
-                                // height: (todoTime - ((bonusTime) / (todoTime+bonusTime) * 100))/(todoTime) + '%' ,
                                 color: 'black',
                                 ...provided.droppableProps,
                             };
                             return (
                                 <ul className="characters"
                                     {...provided.droppableProps} ref={provided.innerRef} style={style}>
-                                    {todos.map((todo: ITodo, index) => (
-                                        <TodoItem
+                                    {pres.map((presenter: IPresenter, index) => (
+                                        <Presenter
                                             admin={false}
-                                            key={todo._id}
-                                            todo={todo}
-                                            deleteTodoApp={handleDeleteTodo}
+                                            key={presenter._id}
+                                            presenter={presenter}
+                                            deletePresApp={handleDeletePres}
                                             index={index}
                                             active={index === cursor}
                                             done={index < cursor}
-                                            callbackFromParent2={timeCallback}
-                                            percent={getPercent(todo)}
+                                            callbackFromParent={timeCallback}
+                                            percent={getPercent(presenter)}
                                             bonusTime={bonusTime}
                                             longestName={getLongestName()}
                                         />
                                     ))}
                                     {provided.placeholder}
-                                    <BonusItem
-                                        origBonus={origBonus} time={bonusTime} active={cursor === todos.length}
-                                        done={cursor === todos.length + 1}
-                                        percent={(bonusTime) / (todoTime + bonusTime) * 100}/>
+                                    <Bonus
+                                        origBonus={origBonus} time={bonusTime} active={cursor === pres.length}
+                                        done={cursor === pres.length + 1}
+                                        percent={(bonusTime) / (presTime + bonusTime) * 100}/>
                                 </ul>)
                         }}
 
@@ -620,9 +614,9 @@ const App: React.FC = () => {
                             <button className="xOutMeetingLen" onClick={toggleMeetingLenMenu}>x</button>
                         </form>
                         <div className="meetingLenWrapper">
-                            <div className="meetingLen" style={{display: !addTodoMenu ? 'none' : ''}}>
-                                <AddTodo saveTodo={handleSaveTodo}/>
-                                <button className="xOutMeetingLen" onClick={toggleAddTodoMenu}>x</button>
+                            <div className="meetingLen" style={{display: !addPresMenu ? 'none' : ''}}>
+                                <AddPres savePres={handleSavePres}/>
+                                <button className="xOutMeetingLen" onClick={toggleAddPresMenu}>x</button>
                             </div>
                             <div className='meetingLen'
                                  style={{width: '13%', opacity: !presenterWarning? 0:'100%', transition:
@@ -640,33 +634,32 @@ const App: React.FC = () => {
                             <Droppable droppableId='col-1' isDropDisabled={false}>
                                 {provided => {
                                     const style = {
-                                        // height: (todoTime - ((bonusTime) / (todoTime+bonusTime) * 100))/(todoTime) + '%' ,
                                         color: 'black',
                                         ...provided.droppableProps,
                                     };
                                     return (
                                         <ul className="characters"
                                             {...provided.droppableProps} ref={provided.innerRef} style={style}>
-                                            {todos.map((todo: ITodo, index) => (
-                                                <TodoItem
+                                            {pres.map((presenter: IPresenter, index) => (
+                                                <Presenter
                                                     admin={true}
-                                                    key={todo._id}
-                                                    todo={todo}
-                                                    deleteTodoApp={handleDeleteTodo}
+                                                    key={presenter._id}
+                                                    presenter={presenter}
+                                                    deletePresApp={handleDeletePres}
                                                     index={index}
                                                     active={index === cursor}
                                                     done={index < cursor}
-                                                    callbackFromParent2={timeCallback}
-                                                    percent={getPercent(todo)}
+                                                    callbackFromParent={timeCallback}
+                                                    percent={getPercent(presenter)}
                                                     bonusTime={bonusTime}
                                                     longestName={getLongestName()}
                                                 />
                                             ))}
                                             {provided.placeholder}
-                                            <BonusItem
-                                                origBonus={origBonus} time={bonusTime} active={cursor === todos.length}
-                                                done={cursor === todos.length + 1}
-                                                percent={(bonusTime) / (todoTime + bonusTime) * 100}/>
+                                            <Bonus
+                                                origBonus={origBonus} time={bonusTime} active={cursor === pres.length}
+                                                done={cursor === pres.length + 1}
+                                                percent={(bonusTime) / (presTime + bonusTime) * 100}/>
                                         </ul>)
                                 }}
 
@@ -676,7 +669,7 @@ const App: React.FC = () => {
                             <div className="dropdown"><MdSettings size={26} color='rgb(200,200,200)'/>
                                 <div className="dropdown-content">
                                     <div className = "option" onClick={toggleMeetingLenMenu}>Meeting length</div>
-                                    <div className = "option" onClick={toggleAddTodoMenu}>Add Slot</div>
+                                    <div className = "option" onClick={toggleAddPresMenu}>Add Presenter</div>
                                 </div>
                             </div>
                         </div>

@@ -1,70 +1,33 @@
-
-.Card{
-    /*flex-direction: column;*/
-    /*flex: 1 1;*/
-    /*height: auto;*/
+.card{
     position: relative;
     margin-bottom: .3%;
-    /*flex:6;*/
-    /*background: linear-gradient(to left, rgba(230, 230, 230, 1) 50%, turquoise 60%) right;*/
-    /*position: relative;*/
-    /*justify-content: space-between;*/
-    /*align-items: stretch;*/
-    /*justify-content: stretch;*/
-    /*background-size: 215%;*/
-    /*flex: 1 1;*/
-    /*flex: auto;*/
-    /*flex: 1 1 auto;*/
-    /*flex-grow: 3;*/
-    /*flex: 2;*/
-    /*height: 100%;*/
-    /*background-color: red;*/
-    /*height: 20%;*/
-    /*background-color: green;*/
-    /*min-height: 7vh;*/
-    /*display: flex;*/
-
 }
 
-.Card--text {
+.cardWrap {
     display: flex;
     height: 100%;
-    animation-name: forwardAnim;
     animation-timing-function: linear;
     animation-fill-mode: forwards;
-    /*overflow: hidden;*/
-    /*flex: 1 1;*/
+}
+.cardForward {
+    animation-name: forwardAnim;
     background: linear-gradient(to left, rgba(215, 215, 215, 1) 45%, turquoise 55%) right;
     background-size: 200% ;
-
 }
-
-.Card--reverse{
-    display: flex;
+.cardReverse{
     animation-name: backwardAnim;
-    animation-timing-function: linear;
-    animation-fill-mode: forwards;
-    /*overflow: hidden;*/
-    height: 100%;
     background: linear-gradient(to right, turquoise 45%, magenta 55%) left;
     background-size: 220%;
 }
 
-.Card--reverse2{
-    display: flex;
+.cardReverseNoBonus{
     animation-name: backwardAnim, changeColor;
-    animation-timing-function: linear;
-    animation-fill-mode: forwards;
-    /*overflow: hidden;*/
-    height: 100%;
     background: linear-gradient(to right, turquoise 45%,var(--color2)  55%) left;
     background-size: 220%;
 }
 
-
 .name{
     padding: 0 .5em 0 .5em;
-    /*height: auto;*/
     font-weight: bold;
     background: rgba(270, 270, 270, .5) ;
     height: auto;
@@ -76,49 +39,22 @@
     height: auto;
 }
 
-.set-time{
+.setTime{
     font-size: 14px;
     font-weight: bold;
 }
-.crossedOut{
-    position: relative;
-}
-.crossedOut:before {
-    position: absolute;
-    content: "";
-    left: 0;
-    top: 45%;
-    right: 0;
-    bottom: 2%;
-    border-top: 2px solid;
-    border-color: inherit;
-    opacity: 60%;
-
-    -webkit-transform:rotate(-5deg);
-    -moz-transform:rotate(-5deg);
-    -ms-transform:rotate(-5deg);
-    -o-transform:rotate(-5deg);
-    transform:rotate(-30deg);
-}
-.timer{
-    /*height: 80%*/
-}
 
 .time{
-    /*height: auto;*/
     padding: 0 .5em 0 .5em;
     text-align: right;
-    /*height:100%*/
 }
 
-
-.Card--button button {
+.cardButton button {
     background: #f5f6f7;
     padding: 0.4rem 1rem;
     border-radius: 20px;
     cursor: pointer;
 }
-
 
 @keyframes forwardAnim {
     from {

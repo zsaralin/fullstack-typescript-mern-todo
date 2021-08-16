@@ -8,6 +8,9 @@ const Timer = (props:{ active: boolean, done: boolean,
 
     useEffect(() => {
         let myInterval: any = null;
+
+        //send time from Timer to other components
+        props.callbackFromParent(seconds);
         if (props.active) {
             myInterval = setInterval(() => {
                 setSeconds((seconds) => seconds + 100);
@@ -20,8 +23,8 @@ const Timer = (props:{ active: boolean, done: boolean,
     return (
         <div className="timer" style={{fontSize: "10px", marginTop: '-2%'}}>
             {props.active || props.done ? <div>
-                    {Math.floor(seconds /1000)} min </div> :
-                <div> - min </div>
+                    {Math.floor(seconds /1000)} min </div> : //timer is active
+                <div> - min </div> //timer is inactive (presenter is not presenting)
             }
         </div>
     )
