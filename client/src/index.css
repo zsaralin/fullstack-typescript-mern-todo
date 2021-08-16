@@ -134,29 +134,3 @@ body {
     position: absolute;
     right: 3%;
 }
-
-
-.crossedOut{
-    position: relative;
-    opacity: 30%;
-    margin: 6px;
-}
-.crossedOut:before {
-    position: absolute;
-    content: "";
-    left: 0;
-    top: 30%;
-    right: 0;
-    bottom: 0;
-    height: 85%;
-    width: 200%;
-    border-top: .12em solid;
-    border-color: inherit;
-    opacity: 60%;
-
-    -webkit-transform:rotate(-5deg);
-    -moz-transform:rotate(-5deg);
-    -ms-transform:rotate(-5deg);
-    -o-transform:rotate(-5deg);
-    transform:rotate(-40deg);
-}

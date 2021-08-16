@@ -30,13 +30,11 @@
     padding: 0 .5em 0 .5em;
     font-weight: bold;
     background: rgba(270, 270, 270, .5) ;
-    height: auto;
 }
 
 .description {
     padding: 0 .5em 0.5em;
     flex: 1 1;
-    height: auto;
 }
 
 .setTime{
@@ -47,13 +45,6 @@
 .time{
     padding: 0 .5em 0 .5em;
     text-align: right;
-}
-
-.cardButton button {
-    background: #f5f6f7;
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
-    cursor: pointer;
 }
 
 @keyframes forwardAnim {
@@ -72,6 +63,7 @@
         background-position: 100%;
     }
 }
+
 @keyframes changeColor{
     0%{--color2: magenta;}
     10%{--color2: rgb(255,0,250)}
@@ -84,16 +76,4 @@
     100%{--color2: rgb(255,0,180);}
 }
 
-.trashWrapper{
-    border: none;
-    background: none;
-    cursor: pointer;
-    margin-right: 10px;
-}
-.trashcan{
-    opacity: 0;
-    color:rgb(150,150,150);
-}
-.Card:hover .trashcan{
-    opacity: 1;
-}
+

@@ -1,0 +1,13 @@
+.trashWrapper{
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.trashcan{
+    opacity: 0;
+    color:rgb(150,150,150);
+}
+.card:hover .trashcan {
+    opacity: 1;
+}

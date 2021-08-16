@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
-import './Bonus.css'
+import './cssFiles/Bonus.css'
 import Timer from "./Timer";
 import Slider from "./Slider";
+import './cssFiles/DiagonalCrossOut.css'
 
 function Bonus(props: { origBonus: number, time: number, active: boolean, done: boolean, percent: number }) {
     const [realTime, setTime] = useState<number>(0);

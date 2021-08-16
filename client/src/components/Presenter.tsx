@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import {Draggable} from 'react-beautiful-dnd'
-import './Presenter.css'
+
+import './cssFiles/Presenter.css';
+import './cssFiles/Trashcan.css';
+import './cssFiles/DiagonalCrossOut.css'
+
 import Timer from "./Timer";
 import Slider from "./Slider";
 import {FaRegTrashAlt} from "react-icons/fa";
@@ -9,12 +13,18 @@ const Presenter = (props: {
     presenter: IPresenter, percent: number,
     active: boolean, done: boolean, admin: boolean,
     index: number, bonusTime: number, longestName: number,
-    callbackFromParent(listInfo: number): void,
+    callbackFromParent(parentTime: number): void,
     deletePresApp: (_id: string, index: number) => void
 }) => {
     const [realTime, setTime] = useState<number>(0);
     let reducedTime = props.presenter.time - props.presenter.extra
 
+    //display constants
+    let disReducedTime = Math.ceil(reducedTime / 1000);
+    let disTime = Math.ceil(props.presenter.time / 1000);
+    let disInitTime = Math.ceil(props.presenter.initTime / 1000);
+
+    let MAX_NAME_WIDTH = 90 + 6 * props.longestName;
     //set time using time from Timer class
     const timeCallback = (timerTime: number) => {
         setTime(timerTime);
@@ -49,30 +59,30 @@ const Presenter = (props: {
                    isDragDisabled={props.done || props.active || !props.admin}>
             {provided => {
                 const style = {
-                    height: props.percent + '%',
-                    // color: props.done ? 'grey' : '',
-                    ...provided.draggableProps.style,
-
+                    height: props.percent + '%', ...provided.draggableProps.style,
                 };
                 return (
                     <div className="card" ref={provided.innerRef}
                          {...provided.draggableProps}
                          {...provided.dragHandleProps} style={style}>
-                        <Slider start={props.active} time={(realTime < reducedTime) ?
-                            reducedTime : 0}/>
+                        <Slider start={props.active}
+                                time={(realTime < reducedTime) ? reducedTime : 0}/>
                         <div
                             className={(realTime < props.presenter.time) ? "cardForward cardWrap" : props.bonusTime > 0 ?
                                 "cardReverse cardWrap" : "cardReverseNoBonus cardWrap"}
                             style={{
+                                //gradient is paused when presenter is not active
                                 animationPlayState: props.active ? 'running' : 'paused',
+                                //presenter gradient, transition to darker pink (when cutting into other presenters' time)
                                 animationDuration: reducedTime + 'ms, .5s',
                             }}>
                             <div className='name'
                                  style={{
                                      textDecoration: props.done ? 'line-through' : 'none',
-                                     width: 60 + 9 * props.longestName + "px",
+                                     //ensure same width for name section of all presenters
+                                     width: MAX_NAME_WIDTH + "px",
                                      backgroundColor: props.done ? getColor() : !props.active ? 'rgba(240, 240, 240,1)' : '',
-                                     textIndent: !props.admin ? '17.5%' : '',
+                                     textIndent: !props.admin ? '17.5%' : '', //create index where trashcan usually is
                                  }}>
                                 <button className="trashWrapper" disabled={props.active || props.done}
                                         style={{
@@ -93,18 +103,15 @@ const Presenter = (props: {
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="setTime">
-                                    {Math.ceil(props.presenter.time / 1000) > Math.ceil(props.presenter.initTime / 1000) ?
+                                    {disTime > disInitTime ? //time is greater than initial time
                                         <span style={{display: 'inline'}}>
-                                        <span className="crossedOut"
-                                        >
-                                            {Math.ceil(props.presenter.initTime / 1000)}</span>
-                                            <span> {Math.ceil(props.presenter.time / 1000)}</span>
-                                        </span> : props.active ? Math.ceil(reducedTime / 1000)
-                                            : Math.ceil(props.presenter.initTime / 1000)} min
+                                        <span className="crossedOut">
+                                            {disInitTime}</span>
+                                            <span> {disTime}</span>
+                                        </span> : props.active ? disReducedTime
+                                            : disInitTime} min
                                 </div>
-                                <Timer callbackFromParent={timeCallback}
-                                       active={props.active}
-                                       done={props.done}/>
+                                <Timer callbackFromParent={timeCallback} active={props.active} done={props.done}/>
                             </div>
                         </div>
                     </div>
