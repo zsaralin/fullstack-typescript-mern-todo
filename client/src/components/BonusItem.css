@@ -7,6 +7,9 @@
     animation-fill-mode: forwards;
     display: flex;
     animation-timing-function: linear;
+    color: grey;
+    font-weight: bold;
+    padding: 0 .5em 0 .5em;
 }
 .bonusForward{
     background: linear-gradient(to left, rgba(245, 245, 245, .5) 40%, rgb(160,240,232) 55%) right;
@@ -14,8 +17,8 @@
     background-size: 215%;
 }
 .bonusReverse {
-    animation-name: backwardAnim;
     background: linear-gradient(to right, rgb(160,240,232) 42%, rgb(255,125,255) 55%) left;
+    animation-name: backwardAnim;
     background-size: 300%;
 }
 @keyframes forwardAnim {
@@ -37,19 +40,14 @@
 
 .bonus{
     flex-grow: 1;
-    padding: 0 .5em 0 .5em;
-    color: grey;
     text-align: center;
-    font-weight: bold;
 }
 .setBonus{
     font-size: 14px;
     font-weight: bold;
 }
 .bonusTime{
-    padding: 0 .5em 0 .5em;
     float: right;
     text-align: right;
     overflow: hidden;
-    color: grey;
 }

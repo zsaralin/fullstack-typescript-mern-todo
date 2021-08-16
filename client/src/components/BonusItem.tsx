@@ -5,6 +5,8 @@ import Slider from "./Slider";
 
 function BonusItem(props: { origBonus: number, time: number, active: boolean, done: boolean, percent: number }) {
     const [realTime, setTime] = useState<number>(0);
+    const origBonus = Math.ceil(props.origBonus/1000)
+    const time = Math.ceil(props.time/1000)
 
     const myCallback = (time: number) => {
         setTime(time);
@@ -22,6 +24,7 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
         }
     }
 
+    //returns background color of bonus time
     function backgroundColor(){
         if(props.done){
             return getColor();
@@ -29,6 +32,7 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
             return 'rgb(245, 245, 245)'
         }
     }
+
 
     return (
         <div className="bottomPanel" style={{
@@ -42,22 +46,16 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
                      background: backgroundColor(),
                      textDecoration: props.done ? 'grey line-through' : 'none',
                  }}>
-                <div className="bonus" style={{
-                    // background: !props.active && !props.done ? 'rgb(245, 245, 245)' : '',
-                }}>Bonus Time
-                </div>
+                <div className="bonus">Bonus Time</div>
                 <div className="bonusTime" style={{
                     display: props.percent < 6.25 ? 'none' : '',
-                    textDecoration: props.done ? 'grey line-through' : 'none',
-                    // background: !props.active && !props.done ? 'rgb(245, 245, 245)' : '',
-                }}>
+                    textDecoration: props.done ? 'grey line-through' : 'none'}}>
                     <div className="setBonus">
-                        {Math.ceil(props.origBonus / 1000) !== Math.ceil(props.time / 1000) ?
+                        {origBonus !== time ?
                             <span style={{display: 'inline'}}>
-                                        <span className="crossedOut">
-                                            {Math.ceil(props.origBonus / 1000)}</span>
-                                            <span> {Math.ceil(props.time / 1000)}</span>
-                                        </span> : Math.ceil(props.origBonus / 1000)} min
+                                        <span className="crossedOut"> {origBonus}</span>
+                                            <span> {time}</span>
+                                        </span> : origBonus} min
                         <Timer callbackFromParent={myCallback} active={props.active} done={props.done}/>
                     </div>
                 </div>

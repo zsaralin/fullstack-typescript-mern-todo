@@ -8,11 +8,9 @@ const Timer = (props:{ active: boolean, done: boolean,
 
     useEffect(() => {
         let myInterval: any = null;
-        props.callbackFromParent(seconds);
         if (props.active) {
             myInterval = setInterval(() => {
                 setSeconds((seconds) => seconds + 100);
-                // props.callbackFromParent(time);
             }, 80);
         }
         return () => {
@@ -28,6 +26,5 @@ const Timer = (props:{ active: boolean, done: boolean,
         </div>
     )
 }
-
 
 export default Timer;
