@@ -6,8 +6,6 @@ export interface ITodo extends Document {
     time: number
     initTime: number
     nonCompressedTime: number
-    // status: boolean
-    // index: number
     overtime: number
     extra: number
 }

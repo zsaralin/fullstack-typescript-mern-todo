@@ -19,26 +19,25 @@ const Todo = (props: {
         const sendTimeParent = props.callbackFromParent2
         sendTimeParent(realTime);
     }, [realTime, props.callbackFromParent2])
-    const [color, setColor] = useState<string>('rgb(198,246,241)');
 
-
-    useEffect(() => {
-        if (props.active) {
-            const diff = realTime - props.todo.time
-            if (realTime <= props.todo.time + 1000) {
-                setColor('rgb(198,246,241)');
-            } else if (props.bonusTime > 0) {
-                if (diff > 4) {
-                    setColor('rgb(254,188,254)');
-                }
-                if (diff > 1) {
-                    setColor('rgb(255,202,255)');
-                }
-            } else if (props.bonusTime < 1) {
-                setColor('rgb(252,190,236)');
+    //returns color to indicate how much of the designated time was used
+    function getColor(){
+        const diff = realTime-props.todo.time
+        //less than or equal to designated time + 1 minute
+        if (realTime <= props.todo.time + 1000) {
+            return 'rgb(198,246,241)';
+        } else if (props.bonusTime > 0) {
+            if (diff > 4) { //overtime
+                return 'rgb(254,188,254)';
             }
+            if (diff > 1) { //slightly overtime
+                return 'rgb(255,202,255)';
+            }
+            //overtime and no more bonus time (cutting into people's time)
+        } else if (props.bonusTime < 1) {
+            return 'rgb(252,190,236)';
         }
-    }, [realTime, props.active, props.bonusTime, props.todo.time])
+    }
 
     let reducedTime = props.todo.time - props.todo.extra
     return (
@@ -67,9 +66,8 @@ const Todo = (props: {
                                  style={{
                                      textDecoration: props.done ? 'line-through' : 'none',
                                      width: 60 + 9 * props.longestName + "px",
-                                     backgroundColor: props.done ? color : !props.active ? 'rgba(240, 240, 240,1)' : '',
+                                     backgroundColor: props.done ? getColor() : !props.active ? 'rgba(240, 240, 240,1)' : '',
                                      textIndent: !props.admin?'17.5%':'',
-                                     // background: !props.active && !props.done ? 'rgba(240, 240, 240,1)' : '',
                                  }}>
                                 <button className="trashWrapper" disabled={props.active || props.done}
                                         style={{display: !props.admin? 'none':'',cursor: !props.active && !props.done ? 'pointer' : 'default'}}
@@ -81,30 +79,22 @@ const Todo = (props: {
                             <div className='description' style={{
                                 textDecoration: props.done ? 'line-through' : 'none',
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active ? 'rgb(230, 230, 230)' : '',
-                                // background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>{props.todo.description}
                             </div>
                             <div className="time" style={{
                                 backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active ? 'rgb(230, 230, 230)' : '',
-                                // backgroundColor: props.done && !props.active ? 'rgba(240, 240, 240, 1)' : '',
-                                // background: !props.active && !props.done ? 'rgb(230, 230, 230)' : '',
                             }}>
                                 <div className="set-time">
                                     {Math.ceil(props.todo.time / 1000) < Math.ceil(props.todo.initTime / 1000) ?
                                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
-                                              style={{
-                                                  color: 'grey',
-                                                  opacity: '70%',
-                                                  display: 'inline',
-                                                  marginRight: '4px'
-                                              }}>
+                                        >
                                             {Math.ceil(props.todo.initTime / 1000)}</span>
                                             <span> {Math.ceil(props.todo.time / 1000)}</span>
                                         </span> : props.active ? Math.ceil(reducedTime / 1000)
                                             : Math.ceil(props.todo.initTime / 1000)} min
                                 </div>
-                                <Timer callbackFromParent={timeCallback} startTime={reducedTime}
+                                <Timer callbackFromParent={timeCallback}
                                        active={props.active}
                                        done={props.done}/>
                             </div>

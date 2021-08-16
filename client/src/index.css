@@ -3,9 +3,7 @@
 * {
     margin: 0;
     padding: 0;
-    /*box-sizing: border-box;*/
 }
-/*html{height:95vh}*/
 h1{
     color: gray;
     margin-right: 0;
@@ -16,28 +14,14 @@ body {
     -moz-osx-font-smoothing: grayscale;
     font-size: 20px;
     overflow: hidden;
-    /*height: 96vh;*/
 }
 
 .App {
     display: flex;
-    /*height: 90vh;*/
     height: auto;
-
-    /*align-items: stretch;*/
     flex-direction: row;
-    /*flex :1 1 0;*/
-    /*position: relative;*/
-    /*display: flex;*/
-    /*height: 100vh;*/
-    /*max-width: 95%;*/
-    /*max-height: 100%;*/
-    /*margin: auto;*/
-    /*display: flex;*/
-    /*align-items: center;*/
-    /*flex-direction: column;*/
-    /*flex-grow: 1;*/
 }
+
 .test{
     display: flex;
     margin-left: 3%;
@@ -49,29 +33,20 @@ body {
 
 .characters {
     display: flex;
-    /*margin-left: 2%;*/
     flex-direction: column;
     flex: 1 1;
     height: 100%;
-    /*background-color: red;*/
 }
 
 .topButton{
     position: relative;
     margin: .7% .7% 0 .7%;
     height: 26px;
-    /*background: lightgrey;*/
     background: rgba(240, 240, 240, 1);
     border: solid 2px lightgrey;
 }
 .dropdown {
-    /*left: 96.9%;*/
-    /*width: 30px;*/
     cursor: pointer;
-    /*background-color:  rgb(270, 270, 270);*/
-
-    /*border-color: grey;*/
-    /*border-width: 2px;*/
 }
 
 .dropdown-content {
@@ -107,9 +82,8 @@ body {
     flex-flow: column wrap;
     position: absolute;
     width: 100%;
-    /*color: gray;*/
-    /*padding: 5px 9px;*/
 }
+
 .meetingLen1{
     display: flex;
     flex-flow: row wrap;
@@ -159,4 +133,10 @@ body {
     padding: .1% .2% .1% .2%;
     position: absolute;
     right: 3%;
+}
+.crossedOut{
+    color: grey;
+    opacity: 70%;
+    display: inline;
+    margin-right: 4px;
 }

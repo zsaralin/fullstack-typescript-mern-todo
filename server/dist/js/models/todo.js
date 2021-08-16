@@ -30,5 +30,5 @@ const todoSchema = new mongoose_1.Schema({
         type: Number,
         required: true
     },
-}, { timestamps: true });
+});
 exports.default = mongoose_1.model('Todo', todoSchema);

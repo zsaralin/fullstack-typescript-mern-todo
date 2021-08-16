@@ -1,8 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 
-//startTime used for styling (not actually needed since timer keeps going forever)
-const Timer = (props:{ active: boolean, done: boolean, startTime: number
+const Timer = (props:{ active: boolean, done: boolean,
     callbackFromParent(listInfo: number): void;
 }) => {
     const [seconds, setSeconds] = useState(0);

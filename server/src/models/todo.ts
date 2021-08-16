@@ -30,7 +30,7 @@ const todoSchema: Schema = new Schema({
         type: Number,
         required: true
     },
-}, { timestamps: true })
+}, )
 
 
 export default model<ITodo>('Todo', todoSchema)
