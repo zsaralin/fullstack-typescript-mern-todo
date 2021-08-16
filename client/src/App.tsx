@@ -90,7 +90,7 @@ const App: React.FC = () => {
         }
         else if(JSON.parse(event.data).name === 'meetingLen'){
             const object = JSON.parse(event.data);
-            setMeetingLen(object.meetingLen*1000)
+            setMeetingLen(object.meetingLen*60)
         }
         else if(JSON.parse(event.data).name === 'todosOrder'){
             const object = JSON.parse(event.data);
@@ -273,10 +273,10 @@ const App: React.FC = () => {
     }, [todoTime, meetingLen, index, nonCompressedtodoTime])
     function compressTodos() {
         if (todos[index] !== undefined) {
-            if (todos[index].time >= 2000) {
-                todos[index].initTime -= 1000;
-                todos[index].time -= 1000;
-                setDiff(diff - 1000)
+            if (todos[index].time >= 120) {
+                todos[index].initTime -= 60;
+                todos[index].time -= 60;
+                setDiff(diff - 60)
             }
             setIndex(index + 1);
             if (index === todos.length - 1) {
@@ -286,7 +286,7 @@ const App: React.FC = () => {
         setTodoTime(getTodoTime());
     }
     useEffect(() => {
-        if (diff > 0 && todoTime !== todos.length * 1000) {
+        if (diff > 0 && todoTime !== todos.length * 60) {
             compressTodos();
         }
     }, [index, diff])
@@ -335,18 +335,18 @@ const App: React.FC = () => {
                     selected.overtime = (realTime - Math.round(selected.time - selected.extra));
                 }
                 //decrease other slots if bonusTime == 0
-                if (bonusTime < 100) {
+                if (bonusTime < 1) {
                     if (isTimeLeft()) {
                         let reducedSlot2 = cursor + lastIndex;
-                        todos[reducedSlot2].time -= 100;
-                        setAmountSubtract(amountSubtract + 100)
-                        if (amountSubtract === 1000) {
+                        todos[reducedSlot2].time -= 1;
+                        setAmountSubtract(amountSubtract + 1)
+                        if (amountSubtract === 60) {
                             setLastIndex(lastIndex + 1);
                             setAmountSubtract(0)
                         }
                     }
-                } else if (bonusTime >= 100) {//decrease bonusTime
-                    setBonus(bonusTime - 100)
+                } else if (bonusTime >= 1) {//decrease bonusTime
+                    setBonus(bonusTime - 1)
                 }
             }
         }
@@ -392,7 +392,7 @@ const App: React.FC = () => {
 
     const isTimeLeft=()=>{
         for (let i = cursor + 1; i < todos.length; i++) {
-            if (todos[i].time > 1000) {
+            if (todos[i].time > 60) {
                 return true
             }
         }
@@ -422,7 +422,7 @@ const App: React.FC = () => {
             }
     }, [presenterWarning])
     useEffect(() => {
-        if (cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time <= 1000 && isTimeLeft()) {
+        if (cursor >= 0 && (cursor + lastIndex) < todos.length && todos[cursor + lastIndex].time <= 60 && isTimeLeft()) {
             setLastIndex(lastIndex + 1)
         }
     }, [lastIndex, cursor, todos])
@@ -495,9 +495,9 @@ const App: React.FC = () => {
                 finalList.push(file);
             }}
         for(let i=0;i<finalList.length;i++){
-            finalList[i].time = finalList[i].time*1000;
-            finalList[i].initTime = finalList[i].initTime*1000;
-            finalList[i].nonCompressedTime = finalList[i].nonCompressedTime*1000;
+            finalList[i].time = finalList[i].time*60;
+            finalList[i].initTime = finalList[i].initTime*60;
+            finalList[i].nonCompressedTime = finalList[i].nonCompressedTime*60;
         }
         setTodos(finalList);
         var msg = {name:"todosOrder", todos: finalList}
@@ -505,7 +505,7 @@ const App: React.FC = () => {
     }
     function fetchMeetingLen(){
         getMeetingLen()
-            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 1000))
+            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 60))
             .catch((err: Error) => console.log(err));
     }
 
@@ -514,7 +514,7 @@ const App: React.FC = () => {
             postMeetingLen(meetingLen).then(response => {
                 console.log(response)
             });
-            setMeetingLen(meetingLen * 1000)
+            setMeetingLen(meetingLen * 60)
             setTempMeeting(undefined);
             setMeetingLenMenu(false)
             var msg = {name:"meetingLen", meetingLen: meetingLen}
@@ -558,9 +558,9 @@ const App: React.FC = () => {
             .catch((err) => console.log(err))
     }
     const addTodoHelper = (todo: ITodo) => {
-        todo.time = todo.time*1000;
-        todo.nonCompressedTime = todo.nonCompressedTime*1000;
-        todo.initTime = todo.initTime*1000;
+        todo.time = todo.time*60;
+        todo.nonCompressedTime = todo.nonCompressedTime*60;
+        todo.initTime = todo.initTime*60;
 
         todos.push(todo)
         // setBonus(bonusTime - todo.time)
@@ -580,7 +580,7 @@ const App: React.FC = () => {
                         <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
                             Meeting </h1>
                         <div className="headerWrapper" style={{alignContent: 'right', textAlign: 'right'}}>
-                            <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 1000} min</div>
+                            <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 60} min</div>
                             <DateComp/>
                         </div>
                     </div>
@@ -648,7 +648,7 @@ const App: React.FC = () => {
                                 <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
                                     Meeting </h1>
                                 <div className="headerWrapper" style={{alignContent: 'right', textAlign: 'right'}}>
-                                    <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 1000} min</div>
+                                    <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 60} min</div>
                                     <DateComp/>
                                 </div>
                             </div>

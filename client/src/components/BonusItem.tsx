@@ -15,7 +15,7 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
     },)
     const handleColor = (): void => {
         const diff = realTime-props.time
-        if(Math.abs(diff) <= 1000){
+        if(Math.abs(diff) <= 60){
             setColor('rgb(160,240,232)');
         }
         else if(diff > 4){
@@ -32,7 +32,7 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
             <Slider start={props.active} time = {props.time}/>
             <div className={(realTime<props.time) ? "Bonus-text": "Bonus-reverse"}
                  style = {{
-                     animationDuration: props.time+'ms',
+                     animationDuration: props.time+'s',
                      // height: props.percent+'%',
                      height: '100%',
                      animationPlayState: props.active? 'running':'paused',
@@ -46,13 +46,13 @@ function BonusItem(props: { origBonus: number, time: number, active: boolean, do
                     color: "grey", textDecoration: props.done? 'grey line-through':'none',
                     background: !props.active && !props.done? 'rgb(245, 245, 245)': '',}}>
                 <div className="set-bonus">
-                    {Math.ceil(props.origBonus/1000) !== Math.ceil(props.time/1000)  ?
+                    {Math.ceil(props.origBonus/60) !== Math.ceil(props.time/60)  ?
                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut"
                                               style={{color: 'grey', opacity: '70%',display: 'inline', marginRight: '4px'}}>
-                                            {Math.ceil(props.origBonus/1000)}</span>
-                                            <span> {Math.ceil(props.time/1000)}</span>
-                                        </span>:Math.ceil(props.origBonus/1000)} min
+                                            {Math.ceil(props.origBonus/60)}</span>
+                                            <span> {Math.ceil(props.time/60)}</span>
+                                        </span>:Math.ceil(props.origBonus/60)} min
                 <Timer callbackFromParent={myCallback} active = {props.active} done = {props.done}
                 startTime = {props.time}/>
             </div>
