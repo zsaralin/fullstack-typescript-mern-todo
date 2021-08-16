@@ -204,7 +204,6 @@ const App: React.FC = () => {
                 } else {
                     setBonus(bonusTime - difference);
                 }
-                // selected.time = nonZeroTime;
             }
         }
         setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
@@ -216,20 +215,6 @@ const App: React.FC = () => {
         }
         setTime(timerTime);
     }
-    // const getTodoTime = (): number => {
-    //     let todoTime = 0;
-    //     for (let i = 0; i < todos.length; i++) {
-    //         todoTime += todos[i].time + todos[i].overtime - todos[i].extra;
-    //     }
-    //     return todoTime;
-    // }
-    // const getNonCompressedTodoTime = (): number => {
-    //     let todoTime = 0;
-    //     for (let i = 0; i < todos.length; i++) {
-    //         todoTime += todos[i].nonCompressedTime;
-    //     }
-    //     return todoTime;
-    // }
 
     function getLongestName() {
         let longest = '';
