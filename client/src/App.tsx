@@ -10,6 +10,7 @@ import {BrowserRouter as Router, Route, Switch,} from "react-router-dom";
 
 // @ts-ignore
 import audio from './fanfare.mp3';
+
 let trumpetSound = new Audio(audio);
 trumpetSound.muted = true;
 
@@ -112,6 +113,31 @@ const App: React.FC = () => {
             setPres(object.pres)
         }
     }
+    //drag and drop presenters
+    const onDragEnd = ({source, destination}: DropResult) => {
+        // Make sure we have a valid destination
+        if (destination === undefined || destination === null ||
+            (destination.index < source.index && destination.index <= cursor)) {
+            window.scrollTo(0, 0);
+            return null;
+        }
+        // Make sure we're actually moving the item
+        if (destination.index === source.index) {
+            window.scrollTo(0, 0);
+            return null;
+        }
+        // Move the item within the list
+        // Start by making a new list without the dragged item
+        const newList = pres.filter((_: any, idx: number) => idx !== source.index)
+        // Then insert the item at the right location
+        newList.splice(destination.index, 0, pres[source.index])
+        // Update the list
+        setPres(newList)
+        //send new order to all clients
+        const msg = {name: "presOrder", pres: newList}
+        ws.send(JSON.stringify(msg))
+        window.scrollTo(0, 0)
+    }
     const toggleMeetingLenMenu = () => {
         setMeetingLenMenu(!meetingLenMenu);
         if (addPresMenu) {
@@ -141,6 +167,7 @@ const App: React.FC = () => {
         }
         return longest.length;
     }
+
     //returns special case text for addPres functionality
     function dropDownText() {
         if ((cursor === pres.length && bonusTime > 0)) {
@@ -151,17 +178,17 @@ const App: React.FC = () => {
     }
 
     function playTrumpetSound() {
-            trumpetSound.muted = false;
-            const playPromise = trumpetSound.play();
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(_ => {
-                        console.log("audio played auto");
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-            }
+        trumpetSound.muted = false;
+        const playPromise = trumpetSound.play();
+        if (playPromise !== undefined) {
+            playPromise
+                .then(_ => {
+                    console.log("audio played auto");
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
     }
 
     //if pres takes less than set time
@@ -169,7 +196,7 @@ const App: React.FC = () => {
         if (selected !== undefined) {
             if (selected.overtime === 0 && realTime < selected.time) {
                 let difference = selected.time - realTime;
-                let presDecreased = numDecreased();
+                let presDecreased = getTimeLost();
                 //if other pres are under time
                 if (presDecreased > 0) {
                     let subtract = Math.floor(difference / presDecreased)
@@ -187,22 +214,22 @@ const App: React.FC = () => {
                         }
                     }
                 }
-                    setBonus(bonusTime + difference);
+                setBonus(bonusTime + difference);
 
                 selected.extra += selected.time - realTime
             }
         }
     }
 
-    function beforeUnderTime(){
+    function beforeUnderTime() {
         if (before !== undefined) {
             //if slot before took less than designated time
             if (before.extra > 0) {
                 let difference = before.extra;
-                let presDecreased = numDecreased();
+                let timeLost = getTimeLost();
                 before.extra = 0;
-                if (presDecreased > 0) {
-                    let subtract = Math.floor(difference / presDecreased)
+                if (timeLost > 0) {
+                    let subtract = Math.floor(difference / timeLost)
                     for (let i = cursor + 1; i < pres.length; i++) {
                         pres[i].time -= subtract;
                         difference -= subtract;
@@ -221,101 +248,7 @@ const App: React.FC = () => {
         }
     }
 
-    function downPressFn() {
-        //play sound only when meeting starts (cursor = -1 --> cursor = 0)
-        if (cursor === -1) {
-            playTrumpetSound();
-        }
-        setLastIndex(1);
-        presUnderTime();
-        if (cursor < pres.length) {
-            setCursor(prevState =>
-                prevState < pres.length ? prevState + 1 : prevState)
-        } else {
-            setCursor(pres.length + 1);
-        }
-        setBefore(pres[cursor])
-        setSelected(pres[cursor + 1]);
-    }
-
-    function upPressFn() {
-        setLastIndex(1);
-        beforeUnderTime();
-        setBefore(pres[cursor - 2]);
-        setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
-        setSelected(pres[cursor - 1]);
-    }
-
-    //set time of each presenter back to original non compressed time
-    function resetPres() {
-        for (let i = 0; i < pres.length; i++) {
-            pres[i].initTime = pres[i].nonCompressedTime;
-            pres[i].time = pres[i].nonCompressedTime;
-        }
-        setTotTime(getTotTime())
-    }
-
-    //returns total (compressed) time of presenters
-    const getTotTime = () => {
-        let totTime = 0;
-        for (let i = 0; i < pres.length; i++) {
-            totTime += pres[i].time + pres[i].overtime - pres[i].extra;
-        }
-        return totTime;
-    }
-
-    //get time from presenter
-    const timeCallback = (presenterTime: number) => {
-        setTime(presenterTime);
-    }
-
-    //compress time of presenters if meetingLen< total time of presenters
-    function compressPres() {
-        if (pres[compressIndex] !== undefined) {
-            if (pres[compressIndex].time > 1000) {
-                pres[compressIndex].initTime -= 1000;
-                pres[compressIndex].time -= 1000;
-                setDiff(diff - 1000)
-            }
-            setCompressIndex(compressIndex + 1);
-            if (compressIndex === pres.length - 1) {
-                setCompressIndex(cursor + 1);
-            }
-        }
-        setTotTime(getTotTime());
-    }
-
-    useEffect(() => { //get meeting length and presenters at start
-        fetchPres();
-        fetchMeetingLen()
-    }, [])
-    useEffect(() => { //when delete/add pres, get and set new total time
-        setTotTime(getTotTime())
-    }, [pres])
-    useEffect(() => {
-        if (meetingLen > totTime) {
-            setOrigBonus(meetingLen - totTime);
-            setDiff(0)
-        } else {
-            setOrigBonus(0)
-            if (meetingLen < totTime) {
-                setDiff(totTime - meetingLen)
-            }
-        }
-    }, [totTime, meetingLen])
-    useEffect(() => {
-        if (diff > 0 && totTime !== pres.length * 1000) {
-            compressPres();
-        }
-    }, [compressIndex, diff])
-    useEffect(() => {
-        setCompressIndex(0) //if need be, compress pres time beginning with the first pres
-        resetPres(); //reset pres times when meeting len changes
-    }, [meetingLen])
-    useEffect(() => { //set bonusTime when origBonus changes
-        setBonus(origBonus)
-    }, [origBonus])
-    useEffect(() => {
+    function presOvertime() {
         if (selected !== undefined) {
             //if person goes overtime
             if (realTime > Math.round(selected.time - selected.extra) && !(cursor === pres.length - 1 && bonusTime <= 0)) {
@@ -340,44 +273,76 @@ const App: React.FC = () => {
                 }
             }
         }
-    }, [realTime])
-
-    const getPercent = (presenter: IPresenter): number => {
-        let percent = (presenter.time - presenter.extra + presenter.overtime);
-        percent = percent / (totTime + bonusTime) * 100
-        if (percent < 6.5) {
-            return (6.5);
+    }
+    //when down key is pressed
+    function downPressFn() {
+        //play sound only when meeting starts (cursor = -1 --> cursor = 0)
+        if (cursor === -1) {
+            playTrumpetSound();
         }
-        return percent;
+        setLastIndex(1);
+        presUnderTime();
+        if (cursor < pres.length) {
+            setCursor(prevState =>
+                prevState < pres.length ? prevState + 1 : prevState)
+        } else {
+            setCursor(pres.length + 1);
+        }
+        setBefore(pres[cursor])
+        setSelected(pres[cursor + 1]);
     }
-    const handleDeletePres = (_id: string, index: number): void => {
-        deletePres(_id)
-            .then(({status,}) => {
-                if (status !== 200) {
-                    throw new Error('Error! Presenter not deleted')
-                } else {
-                    console.log(index)
-                    var msg = {name: "deletePres", index: index}
-                    ws.send(JSON.stringify(msg))
-                }
-            })
-            .catch((err) => console.log(err))
+    //when up key is pressed
+    function upPressFn() {
+        setLastIndex(1);
+        beforeUnderTime();
+        setBefore(pres[cursor - 2]);
+        setCursor(prevState => (prevState > 0 ? prevState - 1 : prevState));
+        setSelected(pres[cursor - 1]);
     }
-    useEffect(() => {
-        window.onbeforeunload = () => {
-            if (window.location.pathname === '/admin') {
-                ws.send('refresh')
+
+    //set time of each presenter back to original non compressed time
+    function resetPres() {
+        for (let i = 0; i < pres.length; i++) {
+            pres[i].initTime = pres[i].nonCompressedTime;
+            pres[i].time = pres[i].nonCompressedTime;
+        }
+        setTotTime(getTotTime())
+    }
+
+    //get time from presenter
+    const timeCallback = (presenterTime: number) => {
+        setTime(presenterTime);
+    }
+
+    // function getCompressIndex(){
+    //
+    // }
+
+    //compress time of presenters if meetingLen< total time of presenters
+    function compressPres() {
+        if (pres[compressIndex] !== undefined) {
+            if (pres[compressIndex].time > 1000) {
+                pres[compressIndex].initTime -= 1000;
+                pres[compressIndex].time -= 1000;
+                setDiff(diff - 1000)
+            }
+            setCompressIndex(compressIndex + 1);
+            if (compressIndex === pres.length - 1) {
+                setCompressIndex(cursor + 1);
             }
         }
-    })
-    const deletePresHelper = (index: number) => {
-        pres.splice(index, 1);
-        setPres(pres)
-        resetPres()
-        var msg = {name: "presOrder", pres: pres}
-        ws.send(JSON.stringify(msg))
+        setTotTime(getTotTime());
     }
 
+    //returns total (compressed) time of presenters
+    const getTotTime = () => {
+        let totTime = 0;
+        for (let i = 0; i < pres.length; i++) {
+            totTime += pres[i].time + pres[i].overtime - pres[i].extra;
+        }
+        return totTime;
+    }
+    //returns true if any presenter has time > 1 minute
     const isTimeLeft = () => {
         for (let i = cursor + 1; i < pres.length; i++) {
             if (pres[i].time > 1000) {
@@ -386,33 +351,104 @@ const App: React.FC = () => {
         }
         return false;
     }
-
-    const numDecreased = (): number => {
-        let numDecreased = 0;
+    //returns total time lost for all presenters (from people going overtime)
+    const getTimeLost = (): number => {
+        let timeLost = 0;
         for (let i = cursor + 1; i < pres.length; i++) {
             if (pres[i].initTime > pres[i].time) {
-                numDecreased += pres[i].initTime - pres[i].time;
+                timeLost += pres[i].initTime - pres[i].time;
             }
         }
-        return numDecreased;
+        return timeLost;
     }
+
+    useEffect(() => { //get meeting length and presenters at start
+        fetchMeetingLen()
+    }, [])
+    useEffect(() => { //get meeting length and presenters at start
+        fetchPres();
+    }, [])
+    useEffect(() => { //when delete/add pres, get and set new total time
+        setTotTime(getTotTime())
+    }, [pres])
+    useEffect(() => {
+        if (meetingLen > totTime) { //set bonus time
+            setOrigBonus(meetingLen - totTime);
+            setDiff(0)
+        } else {
+            setOrigBonus(0) //set diff to trigger compressPres
+            if (meetingLen < totTime) {
+                setDiff(totTime - meetingLen)
+            }
+        }
+    }, [totTime, meetingLen])
+    useEffect(() => {
+        if (diff > 0 && totTime !== pres.length * 1000) {
+            compressPres();
+        }
+    }, [compressIndex, diff])
+    useEffect(() => {
+        setCompressIndex(0) //reset start index for compress pres
+        resetPres(); //reset pres times when meeting len changes
+    }, [meetingLen])
+    useEffect(() => { //set bonusTime when origBonus changes
+        setBonus(origBonus)
+    }, [origBonus])
+    useEffect(() => {
+        presOvertime() //
+    }, [realTime])
+    useEffect(() => { //refresh all clients if admin refreshes
+        window.onbeforeunload = () => {
+            if (window.location.pathname === '/admin') {
+                ws.send('refresh')
+            }
+        }
+    })
+
+    //returns height (in percent) of presenter's slot
+    const getHeight = (presenter: IPresenter): number => {
+        let height = (presenter.time - presenter.extra + presenter.overtime);
+        height = height / (totTime + bonusTime) * 100
+        if (height < 6.5) {
+            return (6.5); //minimum height
+        }
+        return height;
+    }
+
+    //delete pres in database
+    const handleDeletePres = (_id: string, index: number): void => {
+        deletePres(_id)
+            .then(({status,}) => {
+                if (status !== 200) {
+                    throw new Error('Error! Presenter not deleted')
+                } else {
+                    //send index of deleted pres to all clients
+                    const msg = {name: "deletePres", index: index};
+                    ws.send(JSON.stringify(msg))
+                }
+            })
+            .catch((err) => console.log(err))
+    }
+    //delete pres in frontend
+    const deletePresHelper = (index: number) => {
+        pres.splice(index, 1);
+        setPres(pres)
+        resetPres()
+        //ensure same order of presenters after pres is deleted
+        const msg = {name: "presOrder", pres: pres}
+        ws.send(JSON.stringify(msg))
+    }
+
     useEffect(() => {
         if (cursor + lastIndex >= pres.length && isTimeLeft()) {
             setLastIndex(1);
         }
-    }, [lastIndex, cursor, pres])
-    useEffect(() => {
-        if (presenterWarning) {
-            setTimeout(() => {
-                togglePresenterWarning();
-            }, 1000)
-        }
-    }, [presenterWarning])
+    }, [lastIndex, cursor, pres.length])
     useEffect(() => {
         if (cursor >= 0 && (cursor + lastIndex) < pres.length && pres[cursor + lastIndex].time <= 1000 && isTimeLeft()) {
             setLastIndex(lastIndex + 1)
         }
-    }, [lastIndex, cursor, pres])
+    }, [lastIndex, cursor, pres.length])
     useEffect(() => {
         if (downPress && window.location.pathname === '/admin') {
             ws.send('downPress')
@@ -424,30 +460,6 @@ const App: React.FC = () => {
             ws.send('upPress')
         }
     }, [upPress]);
-
-    const onDragEnd = ({source, destination}: DropResult) => {
-        // Make sure we have a valid destination
-        if (destination === undefined || destination === null ||
-            (destination.index < source.index && destination.index <= cursor)) {
-            window.scrollTo(0, 0);
-            return null;
-        }
-        // Make sure we're actually moving the item
-        if (destination.index === source.index) {
-            window.scrollTo(0, 0);
-            return null;
-        }
-        // Move the item within the list
-        // Start by making a new list without the dragged item
-        const newList = pres.filter((_: any, idx: number) => idx !== source.index)
-        // Then insert the item at the right location
-        newList.splice(destination.index, 0, pres[source.index])
-        // Update the list
-        setPres(newList)
-        var msg = {name: "presOrder", pres: newList}
-        ws.send(JSON.stringify(msg))
-        window.scrollTo(0, 0)
-    }
 
     const fetchPres = (): void => {
         getPresDatabase()
@@ -531,34 +543,40 @@ const App: React.FC = () => {
     }
     const handleSavePres = (e: React.FormEvent, formData: IPresenter): void => {
         e.preventDefault()
-        addPres(formData)
-            .then(({status, data}) => {
-                if (status !== 201) {
-                    throw new Error('Error! Presenter not saved')
-                }
-                if (data.presenter) {
-                    let result = pres.map(a => a.name);
-                    if (!result.includes(data.presenter.name) && !(cursor === pres.length && bonusTime > 0)) {
-                        var msg = {name: "addPres", newPres: data.presenter}
-                        ws.send(JSON.stringify(msg))
-                    } else {
-                        togglePresenterWarning()
+        let result = pres.map(a => a.name);
+        if (!result.includes(formData.name) && !(cursor === pres.length && bonusTime > 0)) {
+            addPres(formData)
+                .then(({status, data}) => {
+                    if (status !== 201) {
+                        throw new Error('Error! Presenter not saved')
                     }
-                }
-
-            })
-            .catch((err) => console.log(err))
+                    if (data.presenter) {
+                        const msg = {name: "addPres", newPres: data.presenter}
+                        ws.send(JSON.stringify(msg))
+                    }
+                })
+                .catch((err) => console.log(err))
+        }
+        else {
+            togglePresenterWarning()
+        }
     }
     const addPresHelper = (newPres: IPresenter) => {
         newPres.time = newPres.time * 1000;
         newPres.nonCompressedTime = newPres.nonCompressedTime * 1000;
         newPres.initTime = newPres.initTime * 1000;
-
         pres.push(newPres)
         setPres(pres)
-        var msg = {name: "presOrder", pres: pres}
+        const msg = {name: "presOrder", pres: pres}
         ws.send(JSON.stringify(msg))
     }
+    useEffect(() => {
+        if (presenterWarning) {
+            setTimeout(() => {
+                togglePresenterWarning();
+            }, 1000)
+        }
+    }, [presenterWarning])
     return (
         <Router>
             <main className='App' id="behindComponent">
@@ -594,7 +612,7 @@ const App: React.FC = () => {
                                                         active={index === cursor}
                                                         done={index < cursor}
                                                         callbackFromParent={timeCallback}
-                                                        percent={getPercent(presenter)}
+                                                        height={getHeight(presenter)}
                                                         bonusTime={bonusTime}
                                                         longestName={getLongestName()}
                                                     />
@@ -604,7 +622,7 @@ const App: React.FC = () => {
                                                     origBonus={origBonus} time={bonusTime}
                                                     active={cursor === pres.length}
                                                     done={cursor === pres.length + 1}
-                                                    percent={(bonusTime) / (totTime + bonusTime) * 100}/>
+                                                    height={(bonusTime) / (totTime + bonusTime) * 100}/>
                                             </ul>)
                                     }}
 
@@ -669,7 +687,7 @@ const App: React.FC = () => {
                                                         active={index === cursor}
                                                         done={index < cursor}
                                                         callbackFromParent={timeCallback}
-                                                        percent={getPercent(presenter)}
+                                                        height={getHeight(presenter)}
                                                         bonusTime={bonusTime}
                                                         longestName={getLongestName()}
                                                     />
@@ -679,7 +697,7 @@ const App: React.FC = () => {
                                                     origBonus={origBonus} time={bonusTime}
                                                     active={cursor === pres.length}
                                                     done={cursor === pres.length + 1}
-                                                    percent={(bonusTime) / (totTime + bonusTime) * 100}/>
+                                                    height={(bonusTime) / (totTime + bonusTime) * 100}/>
                                             </ul>)
                                     }}
 
