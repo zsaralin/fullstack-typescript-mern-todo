@@ -4,7 +4,7 @@ import Timer from "./Timer";
 import Slider from "./Slider";
 import './cssFiles/DiagonalCrossOut.css'
 
-function Bonus(props: { origBonus: number, time: number, active: boolean, done: boolean, percent: number }) {
+function Bonus(props: { origBonus: number, time: number, active: boolean, done: boolean, height: number }) {
     const [realTime, setTime] = useState<number>(0);
     const origBonus = Math.ceil(props.origBonus/1000)
     const time = Math.ceil(props.time/1000)
@@ -38,7 +38,7 @@ function Bonus(props: { origBonus: number, time: number, active: boolean, done: 
 
     return (
         <div className="bottomPanel" style={{
-            height: props.percent + '%'
+            height: props.height + '%'
         }}>
             <Slider start={props.active} time={props.time}/>
             <div className={(realTime < props.time) ? "bonusForward bonusWrap" : "bonusReverse bonusWrap"}
@@ -50,7 +50,7 @@ function Bonus(props: { origBonus: number, time: number, active: boolean, done: 
                  }}>
                 <div className="bonus">Bonus Time</div>
                 <div className="bonusTime" style={{
-                    display: props.percent < 6.25 ? 'none' : '',
+                    display: props.height < 6.25 ? 'none' : '',
                     textDecoration: props.done ? 'grey line-through' : 'none'}}>
                     <div className="setBonus">
                         {origBonus !== time ?

@@ -23,7 +23,7 @@ const Timer = (props:{ active: boolean, done: boolean,
     return (
         <div className="timer" style={{fontSize: "10px", marginTop: '-2%'}}>
             {props.active || props.done ? <div>
-                    {Math.floor(seconds /1000)} min </div> : //timer is active
+                    {Math.floor(seconds / 1000)} min </div> : //timer is active
                 <div> - min </div> //timer is inactive (presenter is not presenting)
             }
         </div>

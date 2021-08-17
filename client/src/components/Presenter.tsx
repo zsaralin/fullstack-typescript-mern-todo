@@ -9,7 +9,7 @@ import Slider from "./Slider";
 import Trashcan from "./Trashcan";
 
 const Presenter = (props: {
-    presenter: IPresenter, percent: number,
+    presenter: IPresenter, height: number,
     active: boolean, done: boolean, admin: boolean,
     index: number, bonusTime: number, longestName: number,
     callbackFromParent(parentTime: number): void,
@@ -66,7 +66,7 @@ const Presenter = (props: {
                    isDragDisabled={props.done || props.active || !props.admin}>
             {provided => {
                 const style = {
-                    height: props.percent + '%', ...provided.draggableProps.style,
+                    height: props.height + '%', ...provided.draggableProps.style,
                     color: props.done ? 'grey' : '', //grey text when presenter is done
                 };
                 return (
