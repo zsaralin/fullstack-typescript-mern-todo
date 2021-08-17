@@ -1,10 +1,10 @@
 import {Router} from 'express'
-import {getPres, addPres, deletePres, getPres2} from '../controllers/todos'
+import {getPresFile, getPresDatabase, addPres, deletePres} from '../controllers/pres'
 
 const router: Router = Router()
 
-router.get('/get-pres', getPres)
-router.get('/get-pres-2', getPres2)
+router.get('/get-pres-file', getPresFile)
+router.get('/get-pres-db', getPresDatabase)
 router.post('/add-pres', addPres)
 router.delete('/delete-pres/:id', deletePres)
 

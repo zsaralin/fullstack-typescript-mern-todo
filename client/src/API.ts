@@ -2,11 +2,11 @@ import axios, {AxiosResponse} from 'axios'
 
 const baseUrl: string = 'http://localhost:4000'
 
-//get presenters
-export const getPres = async (): Promise<AxiosResponse<ApiDataType>> => {
+//get presenters from database
+export const getPresDatabase = async (): Promise<AxiosResponse<ApiDataType>> => {
   try {
     const pres: AxiosResponse<ApiDataType> = await axios.get(
-      baseUrl + '/pres'
+      baseUrl + '/get-pres-db'
     )
     return pres
   } catch (error) {
@@ -36,24 +36,6 @@ export const addPres = async (
   }
 }
 
-export const getMeetingLen = async (): Promise<AxiosResponse<ApiDataType>> => {
-  try {
-    return await axios.get(
-        baseUrl + '/meeting-len'
-    )
-  } catch (error) {
-    throw new Error(error)
-  }
-}
-export const postMeetingLen = async (meetingLen:number): Promise<void> => {
-  try {
-    return await axios.post(
-        baseUrl + '/post-meeting-len', {meetingLen:meetingLen},
-    )
-  } catch (error) {
-    throw new Error(error)
-  }
-}
 export const deletePres = async (
     _id: string
 ): Promise<AxiosResponse<ApiDataType>> => {
@@ -67,12 +49,21 @@ export const deletePres = async (
   }
 }
 
-export const getPres2 = async (): Promise<AxiosResponse<ApiDataType>> => {
+export const getMeetingLen = async (): Promise<AxiosResponse<ApiDataType>> => {
   try {
-    const pres: AxiosResponse<ApiDataType> = await axios.get(
-        baseUrl + '/get-pres-2'
+    return await axios.get(
+        baseUrl + '/meeting-len'
     )
-    return pres
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
+export const postMeetingLen = async (meetingLen:number): Promise<void> => {
+  try {
+    return await axios.post(
+        baseUrl + '/post-meeting-len', {meetingLen:meetingLen},
+    )
   } catch (error) {
     throw new Error(error)
   }

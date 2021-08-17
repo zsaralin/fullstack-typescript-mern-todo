@@ -4,7 +4,8 @@ import Pres from '../../models/pres'
 import fs from 'fs';
 
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\"
-const getPres2 = async (req: Request, res: Response): Promise<void> => {
+
+const getPresDatabase = async (req: Request, res: Response): Promise<void> => {
     try {
         const pres: IPresenter[] = await Pres.find()
         res.status(200).json({ pres })
@@ -13,7 +14,7 @@ const getPres2 = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-const getPres = async (req: Request, res: Response): Promise<void> => {
+const getPresFile = async (req: Request, res: Response): Promise<void> => {
     try {
         const pres: IPresenter[] = [];
         for (const file of fs.readdirSync(pathFull)) {
@@ -83,4 +84,4 @@ const deletePres = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-export {getPres, addPres, deletePres, getPres2}
+export {getPresFile, getPresDatabase, addPres, deletePres}

@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const todos_1 = require("../controllers/todos");
+const pres_1 = require("../controllers/pres");
 const router = express_1.Router();
-router.get('/get-pres', todos_1.getPres);
-router.get('/get-pres-2', todos_1.getPres2);
-router.post('/add-pres', todos_1.addPres);
-router.delete('/delete-pres/:id', todos_1.deletePres);
+router.get('/get-pres-file', pres_1.getPresFile);
+router.get('/get-pres-db', pres_1.getPresDatabase);
+router.post('/add-pres', pres_1.addPres);
+router.delete('/delete-pres/:id', pres_1.deletePres);
 exports.default = router;

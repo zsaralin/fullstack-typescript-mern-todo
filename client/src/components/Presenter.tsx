@@ -2,12 +2,11 @@ import React, {useEffect, useState} from 'react'
 import {Draggable} from 'react-beautiful-dnd'
 
 import './cssFiles/Presenter.css';
-import './cssFiles/Trashcan.css';
 import './cssFiles/DiagonalCrossOut.css'
 
 import Timer from "./Timer";
 import Slider from "./Slider";
-import {FaRegTrashAlt} from "react-icons/fa";
+import Trashcan from "./Trashcan";
 
 const Presenter = (props: {
     presenter: IPresenter, percent: number,
@@ -19,12 +18,20 @@ const Presenter = (props: {
     const [realTime, setTime] = useState<number>(0);
     let reducedTime = props.presenter.time - props.presenter.extra
 
+    //colour constants
+    let DARK_GREY = 'rgb(230,230,230)' //darker grey
+    let LIGHT_GREY = 'rgb(240,240,240)' //light grey
+
     //display constants
     let disReducedTime = Math.ceil(reducedTime / 1000);
     let disTime = Math.ceil(props.presenter.time / 1000);
     let disInitTime = Math.ceil(props.presenter.initTime / 1000);
 
+    //approximate width of trashcan
+    let TRASH_WIDTH = '17.5%';
+    //max width of name component for all presenters
     let MAX_NAME_WIDTH = 90 + 6 * props.longestName;
+
     //set time using time from Timer class
     const timeCallback = (timerTime: number) => {
         setTime(timerTime);
@@ -60,6 +67,7 @@ const Presenter = (props: {
             {provided => {
                 const style = {
                     height: props.percent + '%', ...provided.draggableProps.style,
+                    color: props.done ? 'grey' : '', //grey text when presenter is done
                 };
                 return (
                     <div className="card" ref={provided.innerRef}
@@ -81,26 +89,20 @@ const Presenter = (props: {
                                      textDecoration: props.done ? 'line-through' : 'none',
                                      //ensure same width for name section of all presenters
                                      width: MAX_NAME_WIDTH + "px",
-                                     backgroundColor: props.done ? getColor() : !props.active ? 'rgba(240, 240, 240,1)' : '',
-                                     textIndent: !props.admin ? '17.5%' : '', //create index where trashcan usually is
+                                     backgroundColor: props.done ? getColor() : !props.active ? LIGHT_GREY : '',
+                                     textIndent: !props.admin ? TRASH_WIDTH : '', //create index where trashcan usually is
                                  }}>
-                                <button className="trashWrapper" disabled={props.active || props.done}
-                                        style={{
-                                            display: !props.admin ? 'none' : '',
-                                            cursor: !props.active && !props.done ? 'pointer' : 'default'
-                                        }}
-                                        onClick={() => props.deletePresApp(props.presenter._id, props.index)}
-                                ><FaRegTrashAlt className="trashcan"/>
-                                </button>
+                                <Trashcan active={props.active} done={props.done} admin={props.admin} _id = {props.presenter._id}
+                                          index = {props.index} deletePres={props.deletePresApp}/>
                                 {props.presenter.name}
                             </div>
                             <div className='description' style={{
                                 textDecoration: props.done ? 'line-through' : 'none',
-                                backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active ? 'rgb(230, 230, 230)' : '',
+                                backgroundColor: props.done ? LIGHT_GREY : !props.active ? DARK_GREY : '',
                             }}>{props.presenter.description}
                             </div>
                             <div className="time" style={{
-                                backgroundColor: props.done ? 'rgba(240, 240, 240, 1)' : !props.active ? 'rgb(230, 230, 230)' : '',
+                                backgroundColor: props.done ? LIGHT_GREY : !props.active ? DARK_GREY : '',
                             }}>
                                 <div className="setTime">
                                     {disTime > disInitTime ? //time is greater than initial time
