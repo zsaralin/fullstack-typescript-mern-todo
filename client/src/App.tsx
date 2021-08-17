@@ -187,9 +187,8 @@ const App: React.FC = () => {
                         }
                     }
                 }
-                if (difference > 0) {
                     setBonus(bonusTime + difference);
-                }
+
                 selected.extra += selected.time - realTime
             }
         }
@@ -290,6 +289,9 @@ const App: React.FC = () => {
         fetchPres();
         fetchMeetingLen()
     }, [])
+    useEffect(() => { //when delete/add pres, get and set new total time
+        setTotTime(getTotTime())
+    }, [pres])
     useEffect(() => {
         if (meetingLen > totTime) {
             setOrigBonus(meetingLen - totTime);
@@ -307,12 +309,9 @@ const App: React.FC = () => {
         }
     }, [compressIndex, diff])
     useEffect(() => {
-        resetPres(); //reset pres times when meeting len changes
         setCompressIndex(0) //if need be, compress pres time beginning with the first pres
+        resetPres(); //reset pres times when meeting len changes
     }, [meetingLen])
-    useEffect(() => { //when delete/add pres, get and set new total time
-        setTotTime(getTotTime())
-    }, [pres])
     useEffect(() => { //set bonusTime when origBonus changes
         setBonus(origBonus)
     }, [origBonus])

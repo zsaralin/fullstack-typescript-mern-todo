@@ -62,7 +62,7 @@ export const getMeetingLen = async (): Promise<AxiosResponse<ApiDataType>> => {
 export const postMeetingLen = async (meetingLen:number): Promise<void> => {
   try {
     return await axios.post(
-        baseUrl + '/post-meeting-len', {meetingLen:meetingLen},
+        baseUrl + '/post-meeting-len', {meetingLen: meetingLen},
     )
   } catch (error) {
     throw new Error(error)
