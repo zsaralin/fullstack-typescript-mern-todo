@@ -1,0 +1,15 @@
+.presWrapper{
+    display: flex;
+    margin-left: 3%;
+    flex: 1 1;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+}
+
+.pres {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1;
+    height: 100%;
+}

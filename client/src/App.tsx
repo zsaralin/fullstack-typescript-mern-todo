@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from 'react'
-import Presenter from './components/Presenter'
 import AddPres from './components/AddPres'
-import Bonus from "./components/Bonus";
-import DateComp from './components/theDate';
-import {DragDropContext, Droppable, DropResult} from 'react-beautiful-dnd'
+import Settings from "./components/Settings";
+import PresenterList from "./components/PresenterList";
+
+import {DragDropContext, DropResult} from 'react-beautiful-dnd'
 import {getPresDatabase, addPres, deletePres, getMeetingLen, postMeetingLen} from './API'
-import {MdSettings} from 'react-icons/md'; //settings icon
 import {BrowserRouter as Router, Route, Switch,} from "react-router-dom";
 
 // @ts-ignore
 import audio from './fanfare.mp3';
+import MeetingLenMenu from "./components/MeetingLenMenu";
 
 let trumpetSound = new Audio(audio);
 trumpetSound.muted = true;
@@ -89,6 +89,10 @@ const App: React.FC = () => {
     const [addPresMenu, setAddPresMenu] = useState(false);
     const [presenterWarning, setPresenterWarning] = useState(false);
 
+    let isAdmin = window.location.pathname === '/admin' //true if pathname is admin
+    let bonusActive = cursor === pres.length && bonusTime > 0//true when bonus time is active
+    let bonusDone = cursor === pres.length + 1 && bonusTime > 0//true when bonus time is done
+
     ws.addEventListener('open', function () {
         console.log("Connected to server");
     });
@@ -145,8 +149,10 @@ const App: React.FC = () => {
         }
     }
     const closeMenu = () => {
-        setMeetingLenMenu(false);
-        setAddPresMenu(false);
+        if (isAdmin) {
+            setMeetingLenMenu(false);
+            setAddPresMenu(false);
+        }
     }
     const toggleAddPresMenu = () => {
         setAddPresMenu(!addPresMenu);
@@ -158,19 +164,9 @@ const App: React.FC = () => {
         setPresenterWarning(!presenterWarning);
     }
 
-    function getLongestName() {
-        let longest = '';
-        for (let i = 0; i < pres.length; i++) {
-            if (pres[i].name.length >= longest.length) {
-                longest = pres[i].name;
-            }
-        }
-        return longest.length;
-    }
-
     //returns special case text for addPres functionality
     function dropDownText() {
-        if ((cursor === pres.length && bonusTime > 0)) {
+        if ((bonusActive)) {
             return 'Unable to add presenters during bonus time'
         } else {
             return 'Presenter already in meeting!'
@@ -251,7 +247,7 @@ const App: React.FC = () => {
     function presOvertime() {
         if (selected !== undefined) {
             //if person goes overtime
-            if (realTime > Math.round(selected.time - selected.extra) && !(cursor === pres.length - 1 && bonusTime <= 0)) {
+            if (realTime > Math.round(selected.time - selected.extra) && !bonusActive) {
                 //increase selected.overtime so their box increases in size
                 //only increase box when there is bonusTime or other people's time left to take from
                 if (isTimeLeft() || bonusTime > 0) {
@@ -260,20 +256,37 @@ const App: React.FC = () => {
                 //decrease other slots if bonusTime == 0
                 if (bonusTime < 100) {
                     if (isTimeLeft()) {
-                        let reducedSlot2 = cursor + lastIndex;
-                        pres[reducedSlot2].time -= 100;
+                        let reducedIndex = cursor + getLastIndex(); //index of presenter that time will be taken from
+                        pres[reducedIndex].time -= 100;
                         setAmountSubtract(amountSubtract + 100)
-                        if (amountSubtract === 1000) {
+                        if (amountSubtract === 1000) { //when 1 minute has been taken from presenter, move to next presenter
                             setLastIndex(lastIndex + 1);
                             setAmountSubtract(0)
                         }
                     }
-                } else if (bonusTime >= 100) {//decrease bonusTime
+                } else if (bonusTime >= 100) { //decrease bonusTime
                     setBonus(bonusTime - 100)
                 }
             }
         }
     }
+
+    //time is taken from presenter with index = cursor + lastIndex when active pres is overtime
+    function getLastIndex() {
+        //reset lastIndex at 1 if reducedIndex >= pres.length
+        if (cursor + lastIndex >= pres.length) {
+            setLastIndex(1)
+            return lastIndex;
+        }
+        //if presenter with index = cursor + lastIndex is <= 1 minute, begin taking time from next presenter
+        else if (cursor >= 0 && (cursor + lastIndex) < pres.length && pres[cursor + lastIndex].time <= 1000) {
+            setLastIndex(lastIndex + 1)
+            return lastIndex
+        } else {
+            return lastIndex;
+        }
+    }
+
     //when down key is pressed
     function downPressFn() {
         //play sound only when meeting starts (cursor = -1 --> cursor = 0)
@@ -291,6 +304,7 @@ const App: React.FC = () => {
         setBefore(pres[cursor])
         setSelected(pres[cursor + 1]);
     }
+
     //when up key is pressed
     function upPressFn() {
         setLastIndex(1);
@@ -313,10 +327,6 @@ const App: React.FC = () => {
     const timeCallback = (presenterTime: number) => {
         setTime(presenterTime);
     }
-
-    // function getCompressIndex(){
-    //
-    // }
 
     //compress time of presenters if meetingLen< total time of presenters
     function compressPres() {
@@ -399,21 +409,18 @@ const App: React.FC = () => {
     }, [realTime])
     useEffect(() => { //refresh all clients if admin refreshes
         window.onbeforeunload = () => {
-            if (window.location.pathname === '/admin') {
+            if (isAdmin) {
                 ws.send('refresh')
             }
         }
     })
-
-    //returns height (in percent) of presenter's slot
-    const getHeight = (presenter: IPresenter): number => {
-        let height = (presenter.time - presenter.extra + presenter.overtime);
-        height = height / (totTime + bonusTime) * 100
-        if (height < 6.5) {
-            return (6.5); //minimum height
+    useEffect(() => {
+        if (presenterWarning) {
+            setTimeout(() => {
+                togglePresenterWarning();
+            }, 1000)
         }
-        return height;
-    }
+    }, [presenterWarning])
 
     //delete pres in database
     const handleDeletePres = (_id: string, index: number): void => {
@@ -438,29 +445,19 @@ const App: React.FC = () => {
         const msg = {name: "presOrder", pres: pres}
         ws.send(JSON.stringify(msg))
     }
-
+    //only admin can control the meeting with up/down keys
     useEffect(() => {
-        if (cursor + lastIndex >= pres.length && isTimeLeft()) {
-            setLastIndex(1);
-        }
-    }, [lastIndex, cursor, pres.length])
-    useEffect(() => {
-        if (cursor >= 0 && (cursor + lastIndex) < pres.length && pres[cursor + lastIndex].time <= 1000 && isTimeLeft()) {
-            setLastIndex(lastIndex + 1)
-        }
-    }, [lastIndex, cursor, pres.length])
-    useEffect(() => {
-        if (downPress && window.location.pathname === '/admin') {
+        if (downPress && isAdmin) {
             ws.send('downPress')
         }
     }, [downPress]);
-
     useEffect(() => {
-        if (upPress && window.location.pathname === '/admin') {
+        if (upPress && isAdmin) {
             ws.send('upPress')
         }
     }, [upPress]);
 
+    //get pres from database, and shuffle order
     const fetchPres = (): void => {
         getPresDatabase()
             .then(({data: {pres}}: IPresenter[] | any) =>
@@ -468,52 +465,68 @@ const App: React.FC = () => {
             .catch((err: Error) => console.log(err));
     }
 
+    //shuffle pres
     function shufflePres(inputPres: IPresenter[]) {
-        let namesList: string[] = [];
-        let finalList: IPresenter[] = [];
-        let presList: IPresenter[] = [];
-        let otherList: IPresenter[] = [];
+        //hardcoded arrays
         let interns = ['Daron', 'Srishti', 'Matthew', 'Vikram', 'Saralin', 'Damien', 'Tobias', 'Karthik', 'Michael']
         let fullTimers = ['Jo', 'Kendra', 'Qian', 'Bon', 'David', 'Frederik']
         let finalWord = ['Fraser', 'Justin']
+
+        let namesList: string[] = [];
+        let finalList: IPresenter[] = [];
+        let presList: IPresenter[] = [];
+        let otherList: IPresenter[] = []; //presenters not in hardcoded arrays
+
+        //shuffle each array
         shuffleArray(interns);
         shuffleArray(fullTimers);
         shuffleArray(finalWord)
-        let orderList = interns.concat(fullTimers, finalWord);
+        //combine 3 arrays into one
+        let orderedList = interns.concat(fullTimers, finalWord);
 
         inputPres.forEach(element => {
-            if (orderList.includes(element.name)) {
+            if (orderedList.includes(element.name)) {
                 namesList.push(element.name);
                 presList.push(element)
             } else {
                 otherList.push(element)
             }
         });
+        //add other presenters (not in hardcoded arrays) to final list
         otherList.forEach(element => {
             finalList.push(element);
         });
-        for (let i = 0; i < orderList.length; i++) {
-            if (namesList.includes(orderList[i])) {
-                let file = presList[namesList.indexOf(orderList[i])]
+        for (let i = 0; i < orderedList.length; i++) {
+            if (namesList.includes(orderedList[i])) {
+                let file = presList[namesList.indexOf(orderedList[i])]
                 finalList.push(file);
             }
         }
         for (let i = 0; i < finalList.length; i++) {
-            finalList[i].time = finalList[i].time * 1000;
-            finalList[i].initTime = finalList[i].initTime * 1000;
-            finalList[i].nonCompressedTime = finalList[i].nonCompressedTime * 1000;
+            minToSec(finalList[i]);
         }
+
         setPres(finalList);
-        var msg = {name: "presOrder", pres: finalList}
+        //send order of presenters to each client
+        const msg = {name: "presOrder", pres: finalList}
         ws.send(JSON.stringify(msg))
     }
 
+    //convert time (minutes in DB) to seconds
+    function minToSec(pres: IPresenter) {
+        pres.time = pres.time * 1000;
+        pres.initTime = pres.initTime * 1000;
+        pres.nonCompressedTime = pres.nonCompressedTime * 1000;
+    }
+
+    //get meetingLen from database, set meetingLen in seconds
     function fetchMeetingLen() {
         getMeetingLen()
             .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 1000))
             .catch((err: Error) => console.log(err));
     }
 
+    //update meetingLen in database, set meetingLen in seconds
     const updateMeetingLen = (meetingLen: number | undefined): void => {
         if (meetingLen !== undefined) {
             postMeetingLen(meetingLen).then(response => {
@@ -522,134 +535,72 @@ const App: React.FC = () => {
             setMeetingLen(meetingLen * 1000)
             setTempMeeting(undefined);
             setMeetingLenMenu(false)
-            var msg = {name: "meetingLen", meetingLen: meetingLen}
+            //send new meetingLen to each client
+            const msg = {name: "meetingLen", meetingLen: meetingLen}
             ws.send(JSON.stringify(msg))
         }
     }
-
     const handleForm = (e: any) => {
         if (e.key === 'Enter') {
-            // if (tempMeeting != undefined) {
-            updateMeetingLen(tempMeeting);
-            // }
             e.preventDefault();
+            updateMeetingLen(tempMeeting);
         }
     }
     const handleFormOnSubmit = (e: any) => {
         e.preventDefault();
-        if (tempMeeting !== undefined) {
-            updateMeetingLen(tempMeeting);
-        }
+        updateMeetingLen(tempMeeting);
     }
-    const handleSavePres = (e: React.FormEvent, formData: IPresenter): void => {
+
+    const handleAddPres = (e: React.FormEvent, formData: IPresenter): void => {
         e.preventDefault()
-        let result = pres.map(a => a.name);
-        if (!result.includes(formData.name) && !(cursor === pres.length && bonusTime > 0)) {
+        let presNames = pres.map(a => a.name); //array of pres names
+        //if new presenter name does not already exist in pres array AND bonus time is not active --> add pres
+        if (!presNames.includes(formData.name) && !bonusActive) {
             addPres(formData)
                 .then(({status, data}) => {
                     if (status !== 201) {
                         throw new Error('Error! Presenter not saved')
-                    }
-                    if (data.presenter) {
+                    } else if (data.presenter) {
                         const msg = {name: "addPres", newPres: data.presenter}
                         ws.send(JSON.stringify(msg))
                     }
                 })
                 .catch((err) => console.log(err))
-        }
-        else {
+        } else { //display warning as either presenter name is not unique, or bonus time is active
             togglePresenterWarning()
         }
     }
+    //add pres to frontend
     const addPresHelper = (newPres: IPresenter) => {
-        newPres.time = newPres.time * 1000;
-        newPres.nonCompressedTime = newPres.nonCompressedTime * 1000;
-        newPres.initTime = newPres.initTime * 1000;
-        pres.push(newPres)
-        setPres(pres)
-        const msg = {name: "presOrder", pres: pres}
+        minToSec(newPres) //convert time to seconds
+        pres.push(newPres) //add new pres to pres array
+        setPres(pres) //update state of pres array
+        const msg = {name: "presOrder", pres: pres} //send new order of presenters to each client
         ws.send(JSON.stringify(msg))
     }
-    useEffect(() => {
-        if (presenterWarning) {
-            setTimeout(() => {
-                togglePresenterWarning();
-            }, 1000)
-        }
-    }, [presenterWarning])
+
     return (
         <Router>
-            <main className='App' id="behindComponent">
+            <main className='App'>
                 <Switch>
                     <Route exact path="/">
                         <DragDropContext onDragEnd={onDragEnd}>
-                            <div className='test' style={{marginRight: '3.2%'}}>
-                                <div style={{display: 'flex', flexDirection: 'row'}}>
-                                    <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
-                                        Meeting </h1>
-                                    <div className="headerWrapper" style={{alignContent: 'right', textAlign: 'right'}}>
-                                        <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 1000} min
-                                        </div>
-                                        <DateComp/>
-                                    </div>
-                                </div>
-                                <Droppable droppableId='col-1' isDropDisabled={true}>
-                                    {provided => {
-                                        const style = {
-                                            color: 'black',
-                                            ...provided.droppableProps,
-                                        };
-                                        return (
-                                            <ul className="characters"
-                                                {...provided.droppableProps} ref={provided.innerRef} style={style}>
-                                                {pres.map((presenter: IPresenter, index) => (
-                                                    <Presenter
-                                                        admin={false}
-                                                        key={presenter._id}
-                                                        presenter={presenter}
-                                                        deletePresApp={handleDeletePres}
-                                                        index={index}
-                                                        active={index === cursor}
-                                                        done={index < cursor}
-                                                        callbackFromParent={timeCallback}
-                                                        height={getHeight(presenter)}
-                                                        bonusTime={bonusTime}
-                                                        longestName={getLongestName()}
-                                                    />
-                                                ))}
-                                                {provided.placeholder}
-                                                <Bonus
-                                                    origBonus={origBonus} time={bonusTime}
-                                                    active={cursor === pres.length}
-                                                    done={cursor === pres.length + 1}
-                                                    height={(bonusTime) / (totTime + bonusTime) * 100}/>
-                                            </ul>)
-                                    }}
-
-                                </Droppable>
-                            </div>
+                            <PresenterList
+                                meetingLen={meetingLen} isAdmin={isAdmin} pres={pres}
+                                cursor={cursor} bonusTime={bonusTime} origBonus={origBonus} totTime={totTime}
+                                bonusActive={bonusActive} bonusDone={bonusDone} closeMenu={closeMenu}
+                                timeCallback={timeCallback} handleDeletePres={handleDeletePres}/>
                         </DragDropContext>
                     </Route>
                     <Route exact path="/admin">
                         <DragDropContext onDragEnd={onDragEnd}>
-                            <form className="meetingLen1" onSubmit={handleFormOnSubmit}
-                                  style={{display: !meetingLenMenu ? 'none' : ''}}>
-                                <label> Meeting Length:
-                                    <input className="inputMeetingLen" onKeyDown={handleForm}
-                                           onSubmit={handleFormOnSubmit}
-                                           type={meetingLenMenu ? "number" : "string"}
-                                           onChange={(e: any) => setTempMeeting(e.target.value)}
-                                           value={tempMeeting || ""}
-                                           id='meetingLen'/> min
-                                </label>
-                                <button className="buttonStyle" disabled={tempMeeting === undefined}
-                                        type='submit'>Submit
-                                </button>
-                                <button className="xOutMeetingLen" onClick={toggleMeetingLenMenu}>x</button>
-                            </form>
+                            <MeetingLenMenu handleFormOnSubmit={handleFormOnSubmit}
+                                            meetingLenMenu={meetingLenMenu} handleForm={handleForm}
+                                            tempMeeting={tempMeeting} setTempMeeting={setTempMeeting}
+                                            toggleMeetingLenMenu={toggleMeetingLenMenu}/>
                             <div className="meetingLenWrapper">
                                 <div className="meetingLen" style={{display: !addPresMenu ? 'none' : ''}}>
-                                    <AddPres savePres={handleSavePres}/>
+                                    <AddPres savePres={handleAddPres}/>
                                     <button className="xOutMeetingLen" onClick={toggleAddPresMenu}>x</button>
                                 </div>
                                 <div className='meetingLen'
@@ -658,59 +609,13 @@ const App: React.FC = () => {
                                              !presenterWarning ? 'opacity 5s' : 'opacity 1s'
                                      }}> {dropDownText()}</div>
                             </div>
-                            <div className='test' onClick={closeMenu}>
-                                <div style={{display: 'flex', flexDirection: 'row'}}>
-                                    <h1 style={{fontSize: '30px', flex: '1 1', color: 'black'}}>Research Project Updates
-                                        Meeting </h1>
-                                    <div className="headerWrapper" style={{alignContent: 'right', textAlign: 'right'}}>
-                                        <div style={{fontSize: '20px', fontWeight: 'bold'}}> {meetingLen / 1000} min
-                                        </div>
-                                        <DateComp/>
-                                    </div>
-                                </div>
-                                <Droppable droppableId='col-1' isDropDisabled={false}>
-                                    {provided => {
-                                        const style = {
-                                            color: 'black',
-                                            ...provided.droppableProps,
-                                        };
-                                        return (
-                                            <ul className="characters"
-                                                {...provided.droppableProps} ref={provided.innerRef} style={style}>
-                                                {pres.map((presenter: IPresenter, index) => (
-                                                    <Presenter
-                                                        admin={true}
-                                                        key={presenter._id}
-                                                        presenter={presenter}
-                                                        deletePresApp={handleDeletePres}
-                                                        index={index}
-                                                        active={index === cursor}
-                                                        done={index < cursor}
-                                                        callbackFromParent={timeCallback}
-                                                        height={getHeight(presenter)}
-                                                        bonusTime={bonusTime}
-                                                        longestName={getLongestName()}
-                                                    />
-                                                ))}
-                                                {provided.placeholder}
-                                                <Bonus
-                                                    origBonus={origBonus} time={bonusTime}
-                                                    active={cursor === pres.length}
-                                                    done={cursor === pres.length + 1}
-                                                    height={(bonusTime) / (totTime + bonusTime) * 100}/>
-                                            </ul>)
-                                    }}
-
-                                </Droppable>
-                            </div>
-                            <div className="topButton">
-                                <div className="dropdown"><MdSettings size={26} color='rgb(200,200,200)'/>
-                                    <div className="dropdown-content">
-                                        <div className="option" onClick={toggleMeetingLenMenu}>Meeting length</div>
-                                        <div className="option" onClick={toggleAddPresMenu}>Add Presenter</div>
-                                    </div>
-                                </div>
-                            </div>
+                            <PresenterList
+                                meetingLen={meetingLen} isAdmin={isAdmin} pres={pres}
+                                cursor={cursor} bonusTime={bonusTime} origBonus={origBonus} totTime={totTime}
+                                bonusActive={bonusActive} bonusDone={bonusDone} closeMenu={closeMenu}
+                                timeCallback={timeCallback} handleDeletePres={handleDeletePres}/>
+                            <Settings toggleMeetingLenMenu={toggleMeetingLenMenu}
+                                      toggleAddPresMenu={toggleAddPresMenu}/>
                         </DragDropContext>
                     </Route>
                 </Switch>

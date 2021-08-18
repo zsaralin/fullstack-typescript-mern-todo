@@ -105,7 +105,7 @@ const Presenter = (props: {
                                 backgroundColor: props.done ? LIGHT_GREY : !props.active ? DARK_GREY : '',
                             }}>
                                 <div className="setTime">
-                                    {disTime > disInitTime ? //time is greater than initial time
+                                    {disTime < disInitTime ? //time is greater than initial time
                                         <span style={{display: 'inline'}}>
                                         <span className="crossedOut">
                                             {disInitTime}</span>
