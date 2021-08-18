@@ -275,13 +275,13 @@ const App: React.FC = () => {
     function getLastIndex() {
         //reset lastIndex at 1 if reducedIndex >= pres.length
         if ((cursor + lastIndex) >= pres.length) {
-            setLastIndex(1)
+            setLastIndex(1);
             return 1;
         }
         //if presenter with index = cursor + lastIndex is <= 1 minute, begin taking time from next presenter
         else if (cursor >= 0 && (cursor + lastIndex) < pres.length && pres[cursor + lastIndex].time <= 1000) {
             setLastIndex(lastIndex + 1)
-            return lastIndex;
+            return lastIndex + 1;
         } else {
             return lastIndex;
         }

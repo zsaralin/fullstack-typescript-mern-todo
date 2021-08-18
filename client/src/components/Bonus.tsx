@@ -38,7 +38,8 @@ function Bonus(props: { origBonus: number, time: number, active: boolean, done: 
 
     return (
         <div className="bottomPanel" style={{
-            height: props.height + '%'
+            height: props.height + '%',
+            display: props.height < 6.25 ? 'none' : '',
         }}>
             <Slider start={props.active} time={props.time}/>
             <div className={(realTime < props.time) ? "bonusForward bonusWrap" : "bonusReverse bonusWrap"}
