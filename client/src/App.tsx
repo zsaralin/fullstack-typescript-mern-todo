@@ -247,7 +247,7 @@ const App: React.FC = () => {
     function presOvertime() {
         if (selected !== undefined) {
             //if person goes overtime
-            if (realTime > Math.round(selected.time - selected.extra) && !bonusActive) {
+            if (realTime > Math.round(selected.time - selected.extra) && !(cursor === pres.length - 1 && bonusTime <= 0)) {
                 //increase selected.overtime so their box increases in size
                 //only increase box when there is bonusTime or other people's time left to take from
                 if (isTimeLeft() || bonusTime > 0) {
@@ -256,8 +256,8 @@ const App: React.FC = () => {
                 //decrease other slots if bonusTime == 0
                 if (bonusTime < 100) {
                     if (isTimeLeft()) {
-                        let reducedIndex = cursor + getLastIndex(); //index of presenter that time will be taken from
-                        pres[reducedIndex].time -= 100;
+                        if(pres[cursor + getLastIndex()].time > 1000){
+                        pres[cursor + getLastIndex()].time -= 100;}
                         setAmountSubtract(amountSubtract + 100)
                         if (amountSubtract === 1000) { //when 1 minute has been taken from presenter, move to next presenter
                             setLastIndex(lastIndex + 1);
@@ -274,14 +274,14 @@ const App: React.FC = () => {
     //time is taken from presenter with index = cursor + lastIndex when active pres is overtime
     function getLastIndex() {
         //reset lastIndex at 1 if reducedIndex >= pres.length
-        if (cursor + lastIndex >= pres.length) {
+        if ((cursor + lastIndex) >= pres.length) {
             setLastIndex(1)
-            return lastIndex;
+            return 1;
         }
         //if presenter with index = cursor + lastIndex is <= 1 minute, begin taking time from next presenter
         else if (cursor >= 0 && (cursor + lastIndex) < pres.length && pres[cursor + lastIndex].time <= 1000) {
             setLastIndex(lastIndex + 1)
-            return lastIndex
+            return lastIndex;
         } else {
             return lastIndex;
         }
@@ -440,7 +440,7 @@ const App: React.FC = () => {
     const deletePresHelper = (index: number) => {
         pres.splice(index, 1);
         setPres(pres)
-        resetPres()
+        // resetPres()
         //ensure same order of presenters after pres is deleted
         const msg = {name: "presOrder", pres: pres}
         ws.send(JSON.stringify(msg))
