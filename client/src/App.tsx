@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react'
-import AddPres from './components/AddPres'
 import Settings from "./components/Settings";
 import PresenterList from "./components/PresenterList";
+import MeetingLenMenu from "./components/MeetingLenMenu";
+import AddPresMenu from "./components/AddPresMenu";
 
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
 import {getPresDatabase, addPres, deletePres, getMeetingLen, postMeetingLen} from './API'
@@ -9,7 +10,7 @@ import {BrowserRouter as Router, Route, Switch,} from "react-router-dom";
 
 // @ts-ignore
 import audio from './fanfare.mp3';
-import MeetingLenMenu from "./components/MeetingLenMenu";
+import TimeMenu from "./components/TimeMenu";
 
 let trumpetSound = new Audio(audio);
 trumpetSound.muted = true;
@@ -67,7 +68,8 @@ const App: React.FC = () => {
     const [realTime, setTime] = useState<number>(0);
 
     //index of pres that time is currently being taken from
-    const [lastIndex, setLastIndex] = useState<number>(0);
+    const [lastIndex, setLastIndex] = useState<number>(1);
+
     //time that has been subtracted from pres when active pres is overtime
     const [amountSubtract, setAmountSubtract] = useState<number>(0);
 
@@ -79,7 +81,7 @@ const App: React.FC = () => {
     const [compressIndex, setCompressIndex] = useState<number>(cursor + 1);
 
     const [meetingLen, setMeetingLen] = useState<number>(0);
-    const [tempMeeting, setTempMeeting] = useState<number>();
+    // const [tempMeeting, setTempMeeting] = useState<number>();
 
     const [origBonus, setOrigBonus] = useState<number>(0);
     const [bonusTime, setBonus] = useState<number>(0);
@@ -87,7 +89,11 @@ const App: React.FC = () => {
     //boolean values to display menu/dropdown text
     const [meetingLenMenu, setMeetingLenMenu] = useState(false);
     const [addPresMenu, setAddPresMenu] = useState(false);
+    const [timeMenu, setTimeMenu] = useState(false);
     const [presenterWarning, setPresenterWarning] = useState(false);
+
+    //meeting in seconds (for demo) or minutes (for actual meetings)
+    const [isDemo, setDemo] = useState(false);
 
     let isAdmin = window.location.pathname === '/admin' //true if pathname is admin
     let bonusActive = cursor === pres.length && bonusTime > 0//true when bonus time is active
@@ -144,32 +150,27 @@ const App: React.FC = () => {
     }
     const toggleMeetingLenMenu = () => {
         setMeetingLenMenu(!meetingLenMenu);
-        if (addPresMenu) {
-            setAddPresMenu(false)
-        }
+        setAddPresMenu(false)
+        setTimeMenu(false);
+    }
+    const toggleTimeMenu = () => {
+        setTimeMenu(!timeMenu);
+        setAddPresMenu(false)
+        setMeetingLenMenu(false)
+    }
+    const toggleAddPresMenu = () => {
+        setAddPresMenu(!addPresMenu);
+        setMeetingLenMenu(false)
+        setTimeMenu(false)
+    }
+    const togglePresenterWarning = () => {
+        setPresenterWarning(!presenterWarning);
     }
     const closeMenu = () => {
         if (isAdmin) {
             setMeetingLenMenu(false);
             setAddPresMenu(false);
-        }
-    }
-    const toggleAddPresMenu = () => {
-        setAddPresMenu(!addPresMenu);
-        if (meetingLenMenu) {
-            setMeetingLenMenu(false)
-        }
-    }
-    const togglePresenterWarning = () => {
-        setPresenterWarning(!presenterWarning);
-    }
-
-    //returns special case text for addPres functionality
-    function dropDownText() {
-        if ((bonusActive)) {
-            return 'Unable to add presenters during bonus time'
-        } else {
-            return 'Presenter already in meeting!'
+            setTimeMenu(false)
         }
     }
 
@@ -256,11 +257,19 @@ const App: React.FC = () => {
                 //decrease other slots if bonusTime == 0
                 if (bonusTime < 100) {
                     if (isTimeLeft()) {
-                        if(pres[cursor + getLastIndex()].time > 1000){
-                        pres[cursor + getLastIndex()].time -= 100;}
+                        if (cursor + lastIndex >= pres.length) { //reset lastIndex at 1
+                            setLastIndex(getLastIndex(1));
+                        }
+                        pres[cursor + lastIndex].time -= 100;
                         setAmountSubtract(amountSubtract + 100)
                         if (amountSubtract === 1000) { //when 1 minute has been taken from presenter, move to next presenter
-                            setLastIndex(lastIndex + 1);
+                            if (lastIndex + 1 < pres.length) {
+                                setLastIndex(getLastIndex(lastIndex + 1));
+                            }
+                            //if presenter with index = cursor + lastIndex is <= 1 minute, begin taking time from next presenter
+                            else { //reset lastIndex at 1 if cursor + lastIndex >= pres.length
+                                setLastIndex(getLastIndex(1));
+                            }
                             setAmountSubtract(0)
                         }
                     }
@@ -272,19 +281,23 @@ const App: React.FC = () => {
     }
 
     //time is taken from presenter with index = cursor + lastIndex when active pres is overtime
-    function getLastIndex() {
-        //reset lastIndex at 1 if reducedIndex >= pres.length
-        if ((cursor + lastIndex) >= pres.length) {
-            setLastIndex(1);
-            return 1;
+    function getLastIndex(lastIndex: number) {
+        //find next presenter with time > 1 min
+        for (let i = cursor + lastIndex; i < pres.length; i++) {
+            if (pres[i].time > 1000) {
+                return i - cursor;
+            }
         }
-        //if presenter with index = cursor + lastIndex is <= 1 minute, begin taking time from next presenter
-        else if (cursor >= 0 && (cursor + lastIndex) < pres.length && pres[cursor + lastIndex].time <= 1000) {
-            setLastIndex(lastIndex + 1)
-            return lastIndex + 1;
-        } else {
-            return lastIndex;
-        }
+        //if no presenter following lastIndex with time > 1 min and presenter at cursor + 1 has time < 1
+        //find next presenter after cursor + 1 with time > 1 min
+        if (pres[cursor + 1].time <= 1000) {
+            for (let i = cursor + 2; i < pres.length; i++) {
+                if (pres[i].time > 1000) {
+                    return i - cursor;
+                }
+            }
+        } //otherwise, return 1 (reset lastIndex at 1)
+        return 1;
     }
 
     //when down key is pressed
@@ -372,6 +385,11 @@ const App: React.FC = () => {
         return timeLost;
     }
 
+    //change meeting style (seconds or minutes)
+    function changeMeetingStyle(){
+        setDemo(!isDemo)
+    }
+
     useEffect(() => { //get meeting length and presenters at start
         fetchMeetingLen()
     }, [])
@@ -440,7 +458,7 @@ const App: React.FC = () => {
     const deletePresHelper = (index: number) => {
         pres.splice(index, 1);
         setPres(pres)
-        // resetPres()
+        resetPres()
         //ensure same order of presenters after pres is deleted
         const msg = {name: "presOrder", pres: pres}
         ws.send(JSON.stringify(msg))
@@ -527,28 +545,18 @@ const App: React.FC = () => {
     }
 
     //update meetingLen in database, set meetingLen in seconds
-    const updateMeetingLen = (meetingLen: number | undefined): void => {
+    const handleMeetingLen = (e: React.FormEvent, meetingLen: number | undefined): void => {
+        e.preventDefault()
         if (meetingLen !== undefined) {
             postMeetingLen(meetingLen).then(response => {
                 console.log(response)
             });
             setMeetingLen(meetingLen * 1000)
-            setTempMeeting(undefined);
             setMeetingLenMenu(false)
             //send new meetingLen to each client
             const msg = {name: "meetingLen", meetingLen: meetingLen}
             ws.send(JSON.stringify(msg))
         }
-    }
-    const handleForm = (e: any) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            updateMeetingLen(tempMeeting);
-        }
-    }
-    const handleFormOnSubmit = (e: any) => {
-        e.preventDefault();
-        updateMeetingLen(tempMeeting);
     }
 
     const handleAddPres = (e: React.FormEvent, formData: IPresenter): void => {
@@ -563,6 +571,7 @@ const App: React.FC = () => {
                     } else if (data.presenter) {
                         const msg = {name: "addPres", newPres: data.presenter}
                         ws.send(JSON.stringify(msg))
+                        setAddPresMenu(false)
                     }
                 })
                 .catch((err) => console.log(err))
@@ -575,6 +584,7 @@ const App: React.FC = () => {
         minToSec(newPres) //convert time to seconds
         pres.push(newPres) //add new pres to pres array
         setPres(pres) //update state of pres array
+        resetPres()
         const msg = {name: "presOrder", pres: pres} //send new order of presenters to each client
         ws.send(JSON.stringify(msg))
     }
@@ -594,34 +604,26 @@ const App: React.FC = () => {
                     </Route>
                     <Route exact path="/admin">
                         <DragDropContext onDragEnd={onDragEnd}>
-                            <MeetingLenMenu handleFormOnSubmit={handleFormOnSubmit}
-                                            meetingLenMenu={meetingLenMenu} handleForm={handleForm}
-                                            tempMeeting={tempMeeting} setTempMeeting={setTempMeeting}
+                            <MeetingLenMenu meetingLenCallback={handleMeetingLen}
+                                            meetingLenMenu={meetingLenMenu}
                                             toggleMeetingLenMenu={toggleMeetingLenMenu}/>
-                            <div className="meetingLenWrapper">
-                                <div className="meetingLen" style={{display: !addPresMenu ? 'none' : ''}}>
-                                    <AddPres savePres={handleAddPres}/>
-                                    <button className="xOutMeetingLen" onClick={toggleAddPresMenu}>x</button>
-                                </div>
-                                <div className='meetingLen'
-                                     style={{
-                                         width: '13%', opacity: !presenterWarning ? 0 : '100%', transition:
-                                             !presenterWarning ? 'opacity 5s' : 'opacity 1s'
-                                     }}> {dropDownText()}</div>
-                            </div>
+                            <AddPresMenu toggleAddPresMenu={toggleAddPresMenu} addPresMenu={addPresMenu}
+                                         bonusActive={bonusActive} handleAddPres={handleAddPres}
+                                         presenterWarning={presenterWarning}/>
                             <PresenterList
                                 meetingLen={meetingLen} isAdmin={isAdmin} pres={pres}
                                 cursor={cursor} bonusTime={bonusTime} origBonus={origBonus} totTime={totTime}
                                 bonusActive={bonusActive} bonusDone={bonusDone} closeMenu={closeMenu}
                                 timeCallback={timeCallback} handleDeletePres={handleDeletePres}/>
+                            <TimeMenu changeMeetingStyle={changeMeetingStyle} toggleTimeMenu={toggleTimeMenu} isDemo={isDemo}
+                            timeMenu={timeMenu}/>
                             <Settings toggleMeetingLenMenu={toggleMeetingLenMenu}
-                                      toggleAddPresMenu={toggleAddPresMenu}/>
+                                      toggleAddPresMenu={toggleAddPresMenu} toggleTimeMenu={toggleTimeMenu}/>
                         </DragDropContext>
                     </Route>
                 </Switch>
             </main>
         </Router>
-
     );
 }
 
