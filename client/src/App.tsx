@@ -3,6 +3,8 @@ import Settings from "./components/Settings";
 import PresenterList from "./components/PresenterList";
 import MeetingLenMenu from "./components/MeetingLenMenu";
 import AddPresMenu from "./components/AddPresMenu";
+import TimeMenu from "./components/TimeMenu";
+import { FullScreen, useFullScreenHandle } from "react-full-screen";
 
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
 import {getPresDatabase, addPres, deletePres, getMeetingLen, postMeetingLen} from './API'
@@ -10,13 +12,11 @@ import {BrowserRouter as Router, Route, Switch,} from "react-router-dom";
 
 // @ts-ignore
 import audio from './fanfare.mp3';
-import TimeMenu from "./components/TimeMenu";
 
 let trumpetSound = new Audio(audio);
 trumpetSound.muted = true;
 
 const ws = new WebSocket("ws://localhost:8000");
-
 //shuffle array of participants so order of meeting isn't the same for every meeting
 function shuffleArray(array: any) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -588,10 +588,16 @@ const App: React.FC = () => {
         const msg = {name: "presOrder", pres: pres} //send new order of presenters to each client
         ws.send(JSON.stringify(msg))
     }
+    const handle = useFullScreenHandle();
+
 
     return (
         <Router>
             <main className='App'>
+                <button onClick={handle.enter}>
+                    Enter Fullscreen
+                </button>
+                <FullScreen handle={handle}>
                 <Switch>
                     <Route exact path="/">
                         <DragDropContext onDragEnd={onDragEnd}>
@@ -620,8 +626,10 @@ const App: React.FC = () => {
                             <Settings toggleMeetingLenMenu={toggleMeetingLenMenu}
                                       toggleAddPresMenu={toggleAddPresMenu} toggleTimeMenu={toggleTimeMenu}/>
                         </DragDropContext>
+
                     </Route>
                 </Switch>
+                    </FullScreen>
             </main>
         </Router>
     );

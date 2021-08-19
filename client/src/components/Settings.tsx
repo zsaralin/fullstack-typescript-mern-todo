@@ -10,7 +10,7 @@ function Settings(props: {toggleMeetingLenMenu(): void; toggleAddPresMenu(): voi
                 <div className="dropdown-content">
                     <div className="option" onClick={props.toggleMeetingLenMenu}>Meeting length</div>
                     <div className="option" onClick={props.toggleAddPresMenu}>Add Presenter</div>
-                    <div className="option" onClick={props.toggleTimeMenu}>Seconds/Minutes</div>
+                    <div className="option" onClick={props.toggleTimeMenu}>Debug Mode</div>
                 </div>
             </div>
         </div>)

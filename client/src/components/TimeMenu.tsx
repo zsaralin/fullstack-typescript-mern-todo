@@ -1,4 +1,5 @@
 import React from 'react'
+import ToggleButton from "./ToggleButton";
 
 function TimeMenu(props: {
     timeMenu: boolean, toggleTimeMenu: () => void, isDemo: boolean, changeMeetingStyle: () => void,
@@ -6,11 +7,12 @@ function TimeMenu(props: {
     return (
         <div className="dropdownMenu">
             <div className="addPresMenu" style={{display: !props.timeMenu ? 'none' : ''}}>
-                <label> Meeting Time:
-                    <button className= 'timeButton' onClick={props.changeMeetingStyle}>{props.isDemo? 'SECONDS': 'MINUTES'}</button>
+                <label> Debug Mode:
+                    <ToggleButton/>
                 </label>
                 <button className="xOutSettingsBar" onClick={props.toggleTimeMenu}>x</button>
             </div>
+
         </div>)
 }
 
