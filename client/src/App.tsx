@@ -4,7 +4,7 @@ import PresenterList from "./components/PresenterList";
 import MeetingLenMenu from "./components/MeetingLenMenu";
 import AddPresMenu from "./components/AddPresMenu";
 import TimeMenu from "./components/TimeMenu";
-import { FullScreen, useFullScreenHandle } from "react-full-screen";
+// import { FullScreen, useFullScreenHandle } from "react-full-screen";
 
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
 import {getPresDatabase, addPres, deletePres, getMeetingLen, postMeetingLen} from './API'
@@ -588,16 +588,16 @@ const App: React.FC = () => {
         const msg = {name: "presOrder", pres: pres} //send new order of presenters to each client
         ws.send(JSON.stringify(msg))
     }
-    const handle = useFullScreenHandle();
+    // const handle = useFullScreenHandle();
 
 
     return (
         <Router>
             <main className='App'>
-                <button onClick={handle.enter}>
-                    Enter Fullscreen
-                </button>
-                <FullScreen handle={handle}>
+                {/*<button onClick={handle.enter}>*/}
+                {/*    Enter Fullscreen*/}
+                {/*</button>*/}
+                {/*<FullScreen handle={handle}>*/}
                 <Switch>
                     <Route exact path="/">
                         <DragDropContext onDragEnd={onDragEnd}>
@@ -629,7 +629,7 @@ const App: React.FC = () => {
 
                     </Route>
                 </Switch>
-                    </FullScreen>
+                    {/*</FullScreen>*/}
             </main>
         </Router>
     );
