@@ -18,13 +18,6 @@ const fs_1 = __importDefault(require("fs"));
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\";
 const getPresDatabase = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        pres_1.default.deleteMany(); //clear all presenters in database
-        for (const file of fs_1.default.readdirSync(pathFull)) {
-            const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
-            let pres = createPres(data, file.toString());
-            yield pres.save();
-            // pres.push(presenter)
-        }
         const pres = yield pres_1.default.find();
         res.status(200).json({ pres });
     }
@@ -35,14 +28,16 @@ const getPresDatabase = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.getPresDatabase = getPresDatabase;
 const getPresFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        pres_1.default.deleteMany(); //clear all presenters in database
-        const pres = [];
+        // const pres: IPresenter[] = [];
         for (const file of fs_1.default.readdirSync(pathFull)) {
             const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
             let pres = createPres(data, file.toString());
+            const query = { name: pres.name };
+            yield pres_1.default.deleteMany(query);
             yield pres.save();
             // pres.push(presenter)
         }
+        const pres = yield pres_1.default.find();
         res.status(200).json({ pres });
     }
     catch (error) {
@@ -93,6 +88,13 @@ exports.addPres = addPres;
 const deletePres = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const deletedPres = yield pres_1.default.findByIdAndRemove(req.params.id);
+        if (deletedPres !== null && fs_1.default.existsSync(pathFull + '\\' + deletedPres.name + '.txt')) {
+            fs_1.default.unlink(pathFull + '\\' + deletedPres.name + '.txt', function (err) {
+                if (err)
+                    return console.log(err);
+                console.log('file deleted successfully');
+            });
+        }
         const allPres = yield pres_1.default.find();
         res.status(200).json({
             message: 'Presenter deleted',

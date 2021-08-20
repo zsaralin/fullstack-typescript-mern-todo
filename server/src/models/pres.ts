@@ -4,7 +4,8 @@ import { model, Schema } from 'mongoose'
 const presSchema: Schema = new Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
     },
     description: {
         type: String,

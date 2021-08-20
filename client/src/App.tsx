@@ -6,7 +6,7 @@ import AddPresMenu from "./components/AddPresMenu";
 import TimeMenu from "./components/TimeMenu";
 
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
-import {getPresDatabase, addPres, deletePres, getMeetingLen, postMeetingLen} from './API'
+import {getPresFile, addPres, deletePres, getMeetingLen, postMeetingLen} from './API'
 import {BrowserRouter as Router, Route, Switch,} from "react-router-dom";
 
 // @ts-ignore
@@ -507,7 +507,7 @@ const App: React.FC = () => {
 
     //get pres from database, and shuffle order
     const fetchPres = (): void => {
-        getPresDatabase()
+        getPresFile()
             .then(({data: {pres}}: IPresenter[] | any) =>
                 shufflePres(pres))
             .catch((err: Error) => console.log(err));
