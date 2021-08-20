@@ -18,7 +18,8 @@ function TimeMenu(props: {
     }, [presenterWarning])
     return (
         <div className="dropdownMenu">
-            <div className="addPresMenu" style={{display: !props.timeMenu ? 'none' : ''}}>
+            <div className="addPresMenu" style={{display: !props.timeMenu ? 'none' : '',
+            zIndex: !props.timeMenu ? 0:1}}>
                 <label> Debug Mode:
                     <ToggleButton isDebug={props.isDebug} meetingActive = {props.meetingActive}
                     presenterWarning={warningCallback}/>

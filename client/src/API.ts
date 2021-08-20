@@ -14,6 +14,18 @@ export const getPresDatabase = async (): Promise<AxiosResponse<ApiDataType>> => 
   }
 }
 
+//get presenters from files
+export const getPresFile = async (): Promise<AxiosResponse<ApiDataType>> => {
+  try {
+    const pres: AxiosResponse<ApiDataType> = await axios.get(
+        baseUrl + '/get-pres-file'
+    )
+    return pres
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const addPres = async (
     formData: IPresenter
 ): Promise<AxiosResponse<ApiDataType>> => {

@@ -7,6 +7,13 @@ const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-to
 
 const getPresDatabase = async (req: Request, res: Response): Promise<void> => {
     try {
+        Pres.deleteMany(); //clear all presenters in database
+        for (const file of fs.readdirSync(pathFull)) {
+            const data = fs.readFileSync(pathFull + '\\' + file).toString('utf8')
+            let pres = createPres(data, file.toString())
+            await pres.save()
+            // pres.push(presenter)
+        }
         const pres: IPresenter[] = await Pres.find()
         res.status(200).json({ pres })
     } catch (error) {
@@ -16,11 +23,13 @@ const getPresDatabase = async (req: Request, res: Response): Promise<void> => {
 
 const getPresFile = async (req: Request, res: Response): Promise<void> => {
     try {
+        Pres.deleteMany(); //clear all presenters in database
         const pres: IPresenter[] = [];
         for (const file of fs.readdirSync(pathFull)) {
             const data = fs.readFileSync(pathFull + '\\' + file).toString('utf8')
-            let presenter = createPres(data, file.toString())
-            pres.push(presenter)
+            let pres = createPres(data, file.toString())
+            await pres.save()
+            // pres.push(presenter)
             }
         res.status(200).json({pres})
     } catch (error) {
@@ -39,9 +48,9 @@ function createPres(data: string, fileName: string): IPresenter{
     return new Pres({
         name: fileName.substring(0, fileName.length - 4),
         description: data.substring(2, data.length - 2),
-        initTime: timeNum * 1000,
-        time: timeNum * 1000,
-        nonCompressedTime: timeNum * 1000,
+        initTime: timeNum,
+        time: timeNum,
+        nonCompressedTime: timeNum,
         overtime: 0,
         extra: 0,
     });

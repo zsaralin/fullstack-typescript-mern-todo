@@ -513,6 +513,12 @@ const App: React.FC = () => {
             .catch((err: Error) => console.log(err));
     }
 
+    // function addPresFile(inputPres: IPresenter[]){
+    //     for(let i=0;i<inputPres.length;i++){
+    //         addPresHelper(inputPres[i])
+    //     }
+    //     return pres;
+    // }
     //shuffle pres
     function shufflePres(inputPres: IPresenter[]) {
         //hardcoded arrays

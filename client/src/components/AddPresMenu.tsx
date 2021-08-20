@@ -17,7 +17,8 @@ function AddPresMenu(props: {
 
     return (
         <div className="dropdownMenu">
-            <div className="addPresMenu" style={{display: !props.addPresMenu ? 'none' : ''}}>
+            <div className="addPresMenu" style={{display: !props.addPresMenu ? 'none' : '',
+                zIndex: !props.addPresMenu ? 0 : 1}}>
                 <AddPres addPres={props.handleAddPres}/>
                 <button className="xOutSettingsBar" onClick={props.toggleAddPresMenu}>x</button>
             </div>

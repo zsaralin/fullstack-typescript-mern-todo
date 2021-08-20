@@ -18,6 +18,13 @@ const fs_1 = __importDefault(require("fs"));
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\";
 const getPresDatabase = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        pres_1.default.deleteMany(); //clear all presenters in database
+        for (const file of fs_1.default.readdirSync(pathFull)) {
+            const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
+            let pres = createPres(data, file.toString());
+            yield pres.save();
+            // pres.push(presenter)
+        }
         const pres = yield pres_1.default.find();
         res.status(200).json({ pres });
     }
@@ -28,11 +35,13 @@ const getPresDatabase = (req, res) => __awaiter(void 0, void 0, void 0, function
 exports.getPresDatabase = getPresDatabase;
 const getPresFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        pres_1.default.deleteMany(); //clear all presenters in database
         const pres = [];
         for (const file of fs_1.default.readdirSync(pathFull)) {
             const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
-            let presenter = createPres(data, file.toString());
-            pres.push(presenter);
+            let pres = createPres(data, file.toString());
+            yield pres.save();
+            // pres.push(presenter)
         }
         res.status(200).json({ pres });
     }
@@ -52,9 +61,9 @@ function createPres(data, fileName) {
     return new pres_1.default({
         name: fileName.substring(0, fileName.length - 4),
         description: data.substring(2, data.length - 2),
-        initTime: timeNum * 1000,
-        time: timeNum * 1000,
-        nonCompressedTime: timeNum * 1000,
+        initTime: timeNum,
+        time: timeNum,
+        nonCompressedTime: timeNum,
         overtime: 0,
         extra: 0,
     });

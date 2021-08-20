@@ -10,18 +10,20 @@ function MeetingLenMenu(props: { meetingLenMenu: boolean, toggleMeetingLenMenu:(
         if (e.key === 'Enter') {
             e.preventDefault();
             setTempMeeting(undefined)
-            props.meetingLenCallback(e,e.target.value);
+            props.meetingLenCallback(e, e.target.value);
         }
     }
     const handleFormOnSubmit = (e: any) => {
         e.preventDefault();
         setTempMeeting(undefined)
-        props.meetingLenCallback(e,e.target.value);
+        props.meetingLenCallback(e, e.target.value);
     }
     return (
         <form className="meetingLenForm" onSubmit={handleFormOnSubmit}
-              style={{display: !props.meetingLenMenu ? 'none' : ''}}
-        >
+              style={{
+                  display: !props.meetingLenMenu ? 'none' : '',
+                  zIndex: !props.meetingLenMenu ? 0 : 1
+              }}>
             <label> Meeting Length:
                 <input className="inputMeetingLen" onKeyDown={handleForm}
                        onSubmit={handleFormOnSubmit}
