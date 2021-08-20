@@ -12,32 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePres = exports.addPres = exports.getPresDatabase = exports.getPresFile = void 0;
+exports.deletePres = exports.addPres = exports.getPresFile = void 0;
 const pres_1 = __importDefault(require("../../models/pres"));
 const fs_1 = __importDefault(require("fs"));
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\";
-const getPresDatabase = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const pres = yield pres_1.default.find();
-        res.status(200).json({ pres });
-    }
-    catch (error) {
-        throw error;
-    }
-});
-exports.getPresDatabase = getPresDatabase;
+//add all presenters from txt files (Meeting folder) to database
 const getPresFile = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // const pres: IPresenter[] = [];
         for (const file of fs_1.default.readdirSync(pathFull)) {
             const data = fs_1.default.readFileSync(pathFull + '\\' + file).toString('utf8');
             let pres = createPres(data, file.toString());
-            const query = { name: pres.name };
-            yield pres_1.default.deleteMany(query);
-            yield pres.save();
-            // pres.push(presenter)
+            yield pres_1.default.deleteMany({ name: pres.name }); //delete any old items with same name
+            yield pres.save(); //add new item to database
         }
-        const pres = yield pres_1.default.find();
+        const pres = yield pres_1.default.find(); //get updated database
         res.status(200).json({ pres });
     }
     catch (error) {

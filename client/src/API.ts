@@ -3,18 +3,6 @@ import axios, {AxiosResponse} from 'axios'
 const baseUrl: string = 'http://localhost:4000'
 
 //get presenters from database
-export const getPresDatabase = async (): Promise<AxiosResponse<ApiDataType>> => {
-  try {
-    const pres: AxiosResponse<ApiDataType> = await axios.get(
-      baseUrl + '/get-pres-db'
-    )
-    return pres
-  } catch (error) {
-    throw new Error(error)
-  }
-}
-
-//get presenters from files
 export const getPresFile = async (): Promise<AxiosResponse<ApiDataType>> => {
   try {
     const pres: AxiosResponse<ApiDataType> = await axios.get(

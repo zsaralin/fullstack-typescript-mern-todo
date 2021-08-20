@@ -5,27 +5,16 @@ import fs from 'fs';
 
 const pathFull = "C:\\Users\\Saralin\\IdeaProjects\\fullstack-typescript-mern-todo\\Meeting\\"
 
-const getPresDatabase = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const pres: IPresenter[] = await Pres.find()
-        res.status(200).json({pres})
-    } catch (error) {
-        throw error
-    }
-}
-
+//add all presenters from txt files (Meeting folder) to database
 const getPresFile = async (req: Request, res: Response): Promise<void> => {
     try {
-        // const pres: IPresenter[] = [];
         for (const file of fs.readdirSync(pathFull)) {
             const data = fs.readFileSync(pathFull + '\\' + file).toString('utf8')
             let pres = createPres(data, file.toString())
-            const query = { name: pres.name};
-            await Pres.deleteMany(query);
-            await pres.save()
-            // pres.push(presenter)
+            await Pres.deleteMany({ name: pres.name}); //delete any old items with same name
+            await pres.save() //add new item to database
         }
-        const pres: IPresenter[] = await Pres.find()
+        const pres: IPresenter[] = await Pres.find() //get updated database
         res.status(200).json({pres})
     } catch (error) {
         throw error
@@ -94,4 +83,4 @@ const deletePres = async (req: Request, res: Response): Promise<void> => {
     }
 }
 
-export {getPresFile, getPresDatabase, addPres, deletePres}
+export {getPresFile, addPres, deletePres}
