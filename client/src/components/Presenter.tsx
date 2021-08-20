@@ -13,19 +13,21 @@ const Presenter = (props: {
     active: boolean, done: boolean, admin: boolean,
     index: number, bonusTime: number, longestName: number,
     callbackFromParent(parentTime: number): void,
-    deletePresApp: (_id: string, index: number) => void
+    deletePresApp: (_id: string, index: number) => void,
+    debug:boolean,
 }) => {
     const [realTime, setTime] = useState<number>(0);
     let reducedTime = props.presenter.time - props.presenter.extra
-
+    let divValue = props.debug ? 1000:60;
+    let seconds = props.debug ? 'ms, .5s':'s, .5s';
     //colour constants
     let DARK_GREY = 'rgb(230,230,230)' //darker grey
     let LIGHT_GREY = 'rgb(240,240,240)' //light grey
 
     //display constants
-    let disReducedTime = Math.ceil(reducedTime / 1000);
-    let disTime = Math.ceil(props.presenter.time / 1000);
-    let disInitTime = Math.ceil(props.presenter.initTime / 1000);
+    let disReducedTime = Math.ceil(reducedTime / divValue);
+    let disTime = Math.ceil(props.presenter.time / divValue);
+    let disInitTime = Math.ceil(props.presenter.initTime / divValue);
 
     //approximate width of trashcan
     let TRASH_WIDTH = '17.5%';
@@ -46,7 +48,7 @@ const Presenter = (props: {
     function getColor() {
         const diff = realTime - props.presenter.time
         //less than or equal to designated time + 1 minute
-        if (realTime <= props.presenter.time + 1000) {
+        if (realTime <= props.presenter.time + divValue) {
             return 'rgb(198,246,241)';
         } else if (props.bonusTime > 0) {
             if (diff > 4) { //overtime
@@ -74,7 +76,8 @@ const Presenter = (props: {
                          {...provided.draggableProps}
                          {...provided.dragHandleProps} style={style}>
                         <Slider start={props.active}
-                                time={(realTime < reducedTime) ? reducedTime : 0}/>
+                                time={(realTime < reducedTime) ? reducedTime : 0}
+                                debug={props.debug}/>
                         <div
                             className={(realTime < props.presenter.time) ? "cardForward cardWrap" : props.bonusTime > 0 ?
                                 "cardReverse cardWrap" : "cardReverseNoBonus cardWrap"}
@@ -82,7 +85,7 @@ const Presenter = (props: {
                                 //gradient is paused when presenter is not active
                                 animationPlayState: props.active ? 'running' : 'paused',
                                 //presenter gradient, transition to darker pink (when cutting into other presenters' time)
-                                animationDuration: reducedTime + 'ms, .5s',
+                                animationDuration: reducedTime + seconds,
                             }}>
                             <div className='name'
                                  style={{
@@ -113,7 +116,7 @@ const Presenter = (props: {
                                         </span> : props.active ? disReducedTime
                                             : disInitTime} min
                                 </div>
-                                <Timer callbackFromParent={timeCallback} active={props.active} done={props.done}/>
+                                <Timer callbackFromParent={timeCallback} active={props.active} done={props.done} debug={props.debug}/>
                             </div>
                         </div>
                     </div>

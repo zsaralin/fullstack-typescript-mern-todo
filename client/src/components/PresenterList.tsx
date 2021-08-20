@@ -10,7 +10,8 @@ function PresenterList(props: {
     cursor: number, bonusTime: number, origBonus: number, totTime: number,
     bonusActive: boolean, bonusDone: boolean,closeMenu:()=>void,
     timeCallback:(presenterTime: number)=>void,
-    handleDeletePres:(_id: string, index: number)=>void }) {
+    handleDeletePres:(_id: string, index: number)=>void, debug: boolean })
+    {
 
     let SETTINGS_WIDTH = '3.2%'; //width of settings button
 
@@ -38,7 +39,7 @@ function PresenterList(props: {
     return (
         <div className='presWrapper' style={{marginRight: props.isAdmin ? '0' : SETTINGS_WIDTH}}
              onClick={props.closeMenu}>
-            <Header meetingLen={props.meetingLen}/>
+            <Header meetingLen={props.meetingLen} debug = {props.debug}/>
             <Droppable droppableId='col-1' isDropDisabled={!props.isAdmin}>
                 {provided => {
                     return (
@@ -53,13 +54,16 @@ function PresenterList(props: {
                                     longestName={getLongestName()}
                                     deletePresApp={props.handleDeletePres}
                                     admin={props.isAdmin}
+                                    debug={props.debug}
                                 />
                             ))}
                             {provided.placeholder}
                             <Bonus
                                 origBonus={props.origBonus} time={props.bonusTime}
                                 active={props.bonusActive} done={props.bonusDone}
-                                height={(props.bonusTime) / (props.totTime + props.bonusTime) * 100}/>
+                                height={(props.bonusTime) / (props.totTime + props.bonusTime) * 100}
+                                debug = {props.debug}
+                            />
                         </ul>)
                 }}
             </Droppable>

@@ -4,7 +4,6 @@ import PresenterList from "./components/PresenterList";
 import MeetingLenMenu from "./components/MeetingLenMenu";
 import AddPresMenu from "./components/AddPresMenu";
 import TimeMenu from "./components/TimeMenu";
-// import { FullScreen, useFullScreenHandle } from "react-full-screen";
 
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
 import {getPresDatabase, addPres, deletePres, getMeetingLen, postMeetingLen} from './API'
@@ -17,6 +16,7 @@ let trumpetSound = new Audio(audio);
 trumpetSound.muted = true;
 
 const ws = new WebSocket("ws://localhost:8000");
+
 //shuffle array of participants so order of meeting isn't the same for every meeting
 function shuffleArray(array: any) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -92,8 +92,10 @@ const App: React.FC = () => {
     const [timeMenu, setTimeMenu] = useState(false);
     const [presenterWarning, setPresenterWarning] = useState(false);
 
-    //meeting in seconds (for demo) or minutes (for actual meetings)
-    const [isDemo, setDemo] = useState(false);
+    //meeting in seconds (for debug) or minutes (for actual meetings)
+    const [debug, setDebug] = useState(false);
+    const [divValue, setDivValue] = useState(60);
+    const [incValue, setIncValue] = useState(1); //increment by 100s (for demo) or 1s (for meeting)
 
     let isAdmin = window.location.pathname === '/admin' //true if pathname is admin
     let bonusActive = cursor === pres.length && bonusTime > 0//true when bonus time is active
@@ -109,6 +111,8 @@ const App: React.FC = () => {
             upPressFn();
         } else if (event.data === 'refresh') {
             window.location.reload();
+        } else if (event.data === 'debug') {
+            setDebug(!debug)
         } else if (JSON.parse(event.data).name === 'deletePres') {
             const object = JSON.parse(event.data);
             deletePresHelper(object.index)
@@ -117,7 +121,7 @@ const App: React.FC = () => {
             addPresHelper(object.newPres)
         } else if (JSON.parse(event.data).name === 'meetingLen') {
             const object = JSON.parse(event.data);
-            setMeetingLen(object.meetingLen * 1000)
+            setMeetingLen(object.meetingLen * divValue)
         } else if (JSON.parse(event.data).name === 'presOrder') {
             const object = JSON.parse(event.data);
             setPres(object.pres)
@@ -255,14 +259,14 @@ const App: React.FC = () => {
                     selected.overtime = (realTime - Math.round(selected.time - selected.extra));
                 }
                 //decrease other slots if bonusTime == 0
-                if (bonusTime < 100) {
+                if (bonusTime < incValue) {
                     if (isTimeLeft()) {
                         if (cursor + lastIndex >= pres.length) { //reset lastIndex at 1
                             setLastIndex(getLastIndex(1));
                         }
-                        pres[cursor + lastIndex].time -= 100;
-                        setAmountSubtract(amountSubtract + 100)
-                        if (amountSubtract === 1000) { //when 1 minute has been taken from presenter, move to next presenter
+                        pres[cursor + lastIndex].time -= incValue;
+                        setAmountSubtract(amountSubtract + incValue)
+                        if (amountSubtract === divValue) { //when 1 minute has been taken from presenter, move to next presenter
                             if (lastIndex + 1 < pres.length) {
                                 setLastIndex(getLastIndex(lastIndex + 1));
                             }
@@ -273,8 +277,8 @@ const App: React.FC = () => {
                             setAmountSubtract(0)
                         }
                     }
-                } else if (bonusTime >= 100) { //decrease bonusTime
-                    setBonus(bonusTime - 100)
+                } else if (bonusTime >= incValue) { //decrease bonusTime
+                    setBonus(bonusTime - incValue)
                 }
             }
         }
@@ -284,15 +288,15 @@ const App: React.FC = () => {
     function getLastIndex(lastIndex: number) {
         //find next presenter with time > 1 min
         for (let i = cursor + lastIndex; i < pres.length; i++) {
-            if (pres[i].time > 1000) {
+            if (pres[i].time > divValue) {
                 return i - cursor;
             }
         }
         //if no presenter following lastIndex with time > 1 min and presenter at cursor + 1 has time < 1
         //find next presenter after cursor + 1 with time > 1 min
-        if (pres[cursor + 1].time <= 1000) {
+        if (pres[cursor + 1].time <= divValue) {
             for (let i = cursor + 2; i < pres.length; i++) {
-                if (pres[i].time > 1000) {
+                if (pres[i].time > divValue) {
                     return i - cursor;
                 }
             }
@@ -343,11 +347,12 @@ const App: React.FC = () => {
 
     //compress time of presenters if meetingLen< total time of presenters
     function compressPres() {
+        console.log('here')
         if (pres[compressIndex] !== undefined) {
-            if (pres[compressIndex].time > 1000) {
-                pres[compressIndex].initTime -= 1000;
-                pres[compressIndex].time -= 1000;
-                setDiff(diff - 1000)
+            if (pres[compressIndex].time > divValue) {
+                pres[compressIndex].initTime -= divValue;
+                pres[compressIndex].time -= divValue;
+                setDiff(diff - divValue)
             }
             setCompressIndex(compressIndex + 1);
             if (compressIndex === pres.length - 1) {
@@ -368,7 +373,7 @@ const App: React.FC = () => {
     //returns true if any presenter has time > 1 minute
     const isTimeLeft = () => {
         for (let i = cursor + 1; i < pres.length; i++) {
-            if (pres[i].time > 1000) {
+            if (pres[i].time > divValue) {
                 return true
             }
         }
@@ -386,9 +391,34 @@ const App: React.FC = () => {
     }
 
     //change meeting style (seconds or minutes)
-    function changeMeetingStyle(){
-        setDemo(!isDemo)
+    function debugMessage() {
+        ws.send('debug')
     }
+
+    useEffect(() => { //get meeting length and presenters at start
+        console.log('meetingLen'+ meetingLen)
+        if (debug) { //convert to seconds version
+            setDivValue(1000)
+            setIncValue(100)
+            for (let i = 0; i < pres.length; i++) {
+                pres[i].time = (pres[i].time/60)*1000;
+                pres[i].initTime = (pres[i].initTime/60)*1000;
+                pres[i].nonCompressedTime = (pres[i].nonCompressedTime/60)*1000;
+            }
+            setTotTime(getTotTime)
+            setMeetingLen(meetingLen/60*1000)
+        } else if(meetingLen !== 0) {
+            setDivValue(60)
+            setIncValue(1)
+            for (let i = 0; i < pres.length; i++) {
+                pres[i].time = (pres[i].time/1000)*60;
+                pres[i].initTime = (pres[i].initTime/1000)*60;
+                pres[i].nonCompressedTime = (pres[i].nonCompressedTime/1000)*60;
+            }
+            setTotTime(getTotTime)
+            setMeetingLen((meetingLen/1000)*60)
+        }
+    }, [debug])
 
     useEffect(() => { //get meeting length and presenters at start
         fetchMeetingLen()
@@ -411,7 +441,7 @@ const App: React.FC = () => {
         }
     }, [totTime, meetingLen])
     useEffect(() => {
-        if (diff > 0 && totTime !== pres.length * 1000) {
+        if (diff > 0 && totTime !== pres.length * divValue) {
             compressPres();
         }
     }, [compressIndex, diff])
@@ -532,15 +562,15 @@ const App: React.FC = () => {
 
     //convert time (minutes in DB) to seconds
     function minToSec(pres: IPresenter) {
-        pres.time = pres.time * 1000;
-        pres.initTime = pres.initTime * 1000;
-        pres.nonCompressedTime = pres.nonCompressedTime * 1000;
+        pres.time = pres.time * divValue;
+        pres.initTime = pres.initTime * divValue;
+        pres.nonCompressedTime = pres.nonCompressedTime * divValue;
     }
 
     //get meetingLen from database, set meetingLen in seconds
     function fetchMeetingLen() {
         getMeetingLen()
-            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * 1000))
+            .then(({data: {meetingLen}}: number | any) => setMeetingLen(meetingLen * divValue))
             .catch((err: Error) => console.log(err));
     }
 
@@ -551,7 +581,7 @@ const App: React.FC = () => {
             postMeetingLen(meetingLen).then(response => {
                 console.log(response)
             });
-            setMeetingLen(meetingLen * 1000)
+            setMeetingLen(meetingLen * divValue)
             setMeetingLenMenu(false)
             //send new meetingLen to each client
             const msg = {name: "meetingLen", meetingLen: meetingLen}
@@ -588,16 +618,10 @@ const App: React.FC = () => {
         const msg = {name: "presOrder", pres: pres} //send new order of presenters to each client
         ws.send(JSON.stringify(msg))
     }
-    // const handle = useFullScreenHandle();
-
 
     return (
         <Router>
             <main className='App'>
-                {/*<button onClick={handle.enter}>*/}
-                {/*    Enter Fullscreen*/}
-                {/*</button>*/}
-                {/*<FullScreen handle={handle}>*/}
                 <Switch>
                     <Route exact path="/">
                         <DragDropContext onDragEnd={onDragEnd}>
@@ -605,7 +629,7 @@ const App: React.FC = () => {
                                 meetingLen={meetingLen} isAdmin={isAdmin} pres={pres}
                                 cursor={cursor} bonusTime={bonusTime} origBonus={origBonus} totTime={totTime}
                                 bonusActive={bonusActive} bonusDone={bonusDone} closeMenu={closeMenu}
-                                timeCallback={timeCallback} handleDeletePres={handleDeletePres}/>
+                                timeCallback={timeCallback} handleDeletePres={handleDeletePres} debug={debug}/>
                         </DragDropContext>
                     </Route>
                     <Route exact path="/admin">
@@ -620,16 +644,15 @@ const App: React.FC = () => {
                                 meetingLen={meetingLen} isAdmin={isAdmin} pres={pres}
                                 cursor={cursor} bonusTime={bonusTime} origBonus={origBonus} totTime={totTime}
                                 bonusActive={bonusActive} bonusDone={bonusDone} closeMenu={closeMenu}
-                                timeCallback={timeCallback} handleDeletePres={handleDeletePres}/>
-                            <TimeMenu changeMeetingStyle={changeMeetingStyle} toggleTimeMenu={toggleTimeMenu} isDemo={isDemo}
-                            timeMenu={timeMenu}/>
+                                timeCallback={timeCallback} handleDeletePres={handleDeletePres} debug={debug}/>
+                            <TimeMenu isDebug={debugMessage} toggleTimeMenu={toggleTimeMenu}
+                                      meetingActive = {cursor > -1} timeMenu={timeMenu}/>
                             <Settings toggleMeetingLenMenu={toggleMeetingLenMenu}
                                       toggleAddPresMenu={toggleAddPresMenu} toggleTimeMenu={toggleTimeMenu}/>
                         </DragDropContext>
 
                     </Route>
                 </Switch>
-                    {/*</FullScreen>*/}
             </main>
         </Router>
     );

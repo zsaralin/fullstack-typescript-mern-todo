@@ -23,7 +23,7 @@ function AddPresMenu(props: {
             </div>
             <div className='addPresMenu'
                  style={{
-                     width: '14%', opacity: !props.presenterWarning ? 0 : '100%',
+                     width: 'fit-content', opacity: !props.presenterWarning ? 0 : '100%',
                      transition: !props.presenterWarning ? 'opacity 5s' : 'opacity 1s'
                  }}> {dropDownText()}</div>
         </div>)

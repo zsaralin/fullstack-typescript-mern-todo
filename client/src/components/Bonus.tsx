@@ -4,10 +4,12 @@ import Timer from "./Timer";
 import Slider from "./Slider";
 import './cssFiles/DiagonalCrossOut.css'
 
-function Bonus(props: { origBonus: number, time: number, active: boolean, done: boolean, height: number }) {
+function Bonus(props: { origBonus: number, time: number, active: boolean, done: boolean, height: number, debug: boolean }) {
     const [realTime, setTime] = useState<number>(0);
-    const origBonus = Math.ceil(props.origBonus/1000)
-    const time = Math.ceil(props.time/1000)
+    let divValue = props.debug? 1000:60;
+
+    const origBonus = Math.ceil(props.origBonus/divValue)
+    const time = Math.ceil(props.time/divValue)
 
     //set time using time from Timer class
     const myCallback = (time: number) => {
@@ -41,7 +43,7 @@ function Bonus(props: { origBonus: number, time: number, active: boolean, done: 
             height: props.height + '%',
             display: props.height < 6.25 ? 'none' : '',
         }}>
-            <Slider start={props.active} time={props.time}/>
+            <Slider start={props.active} time={props.time} debug = {props.debug}/>
             <div className={(realTime < props.time) ? "bonusForward bonusWrap" : "bonusReverse bonusWrap"}
                  style={{
                      animationDuration: props.time + 'ms',
@@ -59,7 +61,7 @@ function Bonus(props: { origBonus: number, time: number, active: boolean, done: 
                                         <span className="crossedOut"> {origBonus}</span>
                                             <span> {time}</span>
                                         </span> : origBonus} min
-                        <Timer callbackFromParent={myCallback} active={props.active} done={props.done}/>
+                        <Timer callbackFromParent={myCallback} active={props.active} done={props.done} debug = {props.debug}/>
                     </div>
                 </div>
             </div>

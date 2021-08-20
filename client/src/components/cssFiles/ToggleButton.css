@@ -1,4 +1,6 @@
 .wrg-toggle {
+    margin-left: 3px;
+    margin-bottom: -5px;
     touch-action: pan-x;
     display: inline-block;
     position: relative;
@@ -63,7 +65,7 @@
     height: 24px;
     padding: 0;
     border-radius: 30px;
-    background-color: #4d4d4d;
+    background-color: darkgrey;
     transition: all .2s ease;
 }
 
@@ -74,7 +76,7 @@
     left: 1px;
     width: 22px;
     height: 22px;
-    border: 1px solid #4d4d4d;
+    border: 1px solid lightgrey;
     border-radius: 50%;
     background-color: #fafafa;
     box-sizing: border-box;
